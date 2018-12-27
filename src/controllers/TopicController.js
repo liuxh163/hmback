@@ -1,6 +1,5 @@
 import dateFormat from 'date-fns/format'
 
-import { User } from '../models/User'
 import { Topic } from '../models/Topic'
 
 class TopicController {

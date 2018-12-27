@@ -11,7 +11,9 @@ exports.up = function(knex, Promise) {
         //话题名称
         table.string('name', 20).notNullable();
         //话题描述
-        table.string('description',64);
+        table.string('desc',64);
+        //话题状态 01-启用  02-关闭
+        table.string('status',2).notNullable().defaultTo('02');
 
         // 记录操作人id
         table.string('operator').notNullable();

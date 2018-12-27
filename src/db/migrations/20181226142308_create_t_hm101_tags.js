@@ -1,27 +1,19 @@
-// 产品专家信息表
+// 标签信息表，用户服务人员和产品标签
 if (!process.env.NODE_ENV) {
     throw new Error('NODE_ENV not set')
 }
 exports.up = function(knex, Promise) {
-    return knex.schema.createTable('t_hm101_product_experts', function(table) {
+    return knex.schema.createTable('t_hm101_tags', function(table) {
         table.charset('utf8mb4')
         table.collate('utf8mb4_unicode_ci')
         //id主键
         table.increments('id').primary();
-        //产品Id
-        table.integer('productId', 11).notNullable();
-        //专家图片位置
-        table.string('picPath', 96).notNullable();
-        //专家描述
-        table.string('desc', 128);
-        //专家点赞数
-        table.integer('likes', 8).notNullable().defaultTo(0);
-        //专家星级
-        table.string('ranks', 3);
-        //专家姓名
+        //标签对象 01-产品  02-服务人员
+        table.string('target', 2);
+        //标签对象id
+        table.integer('targetId', 11);
+        //标签名称
         table.string('name', 20);
-        //专家国籍
-        table.string('nation', 20);
 
         // 记录操作人id
         table.string('operator').notNullable();
@@ -42,6 +34,6 @@ exports.up = function(knex, Promise) {
 exports.down = function(knex, Promise) {
     // 生产环境下不做表删除操作
     if (process.env.NODE_ENV !== 'production') {
-        return knex.schema.dropTableIfExists('t_hm101_product_experts')
+        return knex.schema.dropTableIfExists('t_hm101_tags')
     }
 };

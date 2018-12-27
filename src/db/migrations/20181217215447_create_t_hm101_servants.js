@@ -11,7 +11,7 @@ exports.up = function(knex, Promise) {
         //服务人员姓名
         table.string('name', 20).notNullable();
         //服务人员简介
-        table.string('introduction', 128);
+        table.string('intro', 128);
         //服务人员图片位置
         table.string('picPath', 96).notNullable();
         //服务人员类型 01-翻译  02-地接

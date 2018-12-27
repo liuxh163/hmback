@@ -11,9 +11,11 @@ exports.up = function(knex, Promise) {
         //附加项名称
         table.string('name', 20).notNullable();
         //附加项简介
-        table.string('description',256);
+        table.string('desc',256);
         //附加项金额
-        table.decimal('money', 8, 2).notNullable();
+        table.decimal('price', 8, 2).notNullable();
+        //附加项使用对象性别 01-成人男 02-成人女 03-儿童男  04-儿童女
+        table.string('target', 2);
         //附加项分类
         table.string('type', 4);
         //附加项状态 01-启用，02-停用

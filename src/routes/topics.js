@@ -8,21 +8,27 @@ const router = new Router()
 const tokenMw = RdsToken()
 
 const topicController = new TopicController()
-
-router.get('/api/v1/topics', tokenMw, async (ctx, next) => {
+// 获取所有话题
+router.get('/v1/forum/topics', tokenMw, async (ctx, next) => {
     await topicController.index(ctx)
 })
-
-router.post('/api/v1/topics', tokenMw, async (ctx, next) => {
+// 创建新话题
+router.post('/v1/forum/topics', tokenMw, async (ctx, next) => {
     await topicController.create(ctx)
 })
-
-router.get('/api/v1/topics/:id', tokenMw, async (ctx, next) => {
-    await topicController.show(ctx)
+// 更新话题信息
+router.put('/v1/forum/topics/:id', tokenMw, async (ctx, next) => {
+    await topicController.update(ctx)
 })
 
-router.delete('/api/v1/topics/:id', tokenMw, async (ctx, next) => {
-    await topicController.delete(ctx)
+// 关闭指定话题
+router.delete('/v1/forum/topics/:id/halt', tokenMw, async (ctx, next) => {
+    await topicController.halt(ctx)
+})
+
+// 启用指定话题
+router.delete('/v1/forum/topics/:id/awaken', tokenMw, async (ctx, next) => {
+    await topicController.awaken(ctx)
 })
 
 export default router

@@ -11,17 +11,31 @@ exports.up = function(knex, Promise) {
         //页首轮播图id
         table.integer('carouselId', 11).notNullable();
         //产品描述
-        table.string('decription', 128);
+        table.string('desc', 128);
         //产品浏览次数
         table.integer('views', 8).notNullable().defaultTo(0);
-        //医院简介H5页面内容Id
+
+        //亮点页面Id
+        table.integer('featureH5Id', 11);
+        //详情页面Id
+        table.integer('detailH5Id', 11);
+        //行程页面id
+        table.integer('routinH5Id', 11);
+        //费用页面Id
+        table.integer('feeH5Id', 11);
+        //须知页面Id
+        table.integer('noticeH5Id', 11);
+        //医院页面id
         table.integer('hospitalH5Id', 11);
-        //行程轮播图id
-        table.integer('daysCarouId', 11).notNullable();
-        //产品服务H5页面内容Id
-        table.integer('serviceH5Id', 11);
-        //体检详情H5页面内容Id
-        table.integer('examH5Id', 11);
+        //基础项页面Id
+        table.integer('priceH5Id', 11);
+
+        //产品成人单价
+        table.decimal('adultPrice', 8, 2).notNullable();
+        //产品随行单价
+        table.decimal('companyPrice', 8, 2).notNullable();
+        //产品儿童单价
+        table.decimal('childPrice', 8, 2).notNullable();
         //启停用状态 01-启用  02-停用
         table.string('status',2).notNullable().defaultTo('01');
 

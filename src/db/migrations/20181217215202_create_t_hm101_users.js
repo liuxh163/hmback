@@ -29,7 +29,7 @@ exports.up = function(knex, Promise) {
         // 用户状态 01-启用  02-停用
         table.string('status').notNullable().defaultTo("01");
         // 用户名
-        table.string('username', 64);
+        table.string('userName', 64);
         // 用户来源渠道编码
         table.string('source', 10);
         // 用户类型 01-普通用户 02-管理员

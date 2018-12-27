@@ -9,11 +9,11 @@ exports.up = function(knex, Promise) {
         //id主键
         table.increments('id').primary();
         //订单编号
-        table.string('number', 20).notNullable().unique();
+        table.string('orderNumber', 20).notNullable().unique();
         //附加项编号
         table.integer('target',11).notNullable();
         //附加项金额
-        table.decimal('money', 8, 2).notNullable();
+        table.decimal('price', 8, 2).notNullable();
         //附加项数量
         table.integer('quantity', 4).notNullable().defaultTo(1);
         //附加项名称

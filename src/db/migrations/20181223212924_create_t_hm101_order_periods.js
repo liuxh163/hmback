@@ -9,13 +9,13 @@ exports.up = function(knex, Promise) {
         //id主键
         table.increments('id').primary();
         //订单编号
-        table.string('OrderNumber', 20).notNullable().unique();
+        table.string('orderNumber', 20).notNullable().unique();
         //金融产品编号
         table.integer('loanId', 11).notNullable();
         //金融产品名称
         table.string('name',20);
         //贷款总金额
-        table.decimal('money', 8, 2).notNullable();
+        table.decimal('price', 8, 2).notNullable();
         //贷款分期数
         table.integer('periods', 3).notNullable().defaultTo(6);
         //订单状态 01-启用分期，02-停用分期

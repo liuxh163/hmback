@@ -8,25 +8,22 @@ class Note {
         }
 
         this.id = data.id
-        this.userId = data.userId
+        this.topicId = data.topicId
         this.title = data.title
-        this.content = data.content
-        this.ipAddress = data.ipAddress
+        this.contentH5Id = data.contentH5Id
+        this.posterId = data.posterId
+        this.views = data.views
+        this.location = data.location
     }
 
     async all(request) {
         try {
-            return await db('notes')
+            return await db('t_hm101_posts')
                 .select('*')
-                .where({ userId: request.userId })
-                .where(
-                    'title',
-                    'like',
-                    '%' + (request.sort ? request.sort : '') + '%'
-                )
-                .orderBy('createdAt', request.order)
-                .offset(+request.page * +request.limit)
-                .limit(+request.limit)
+                .where({ topicId: request.topicId })
+                .orderBy('updatedAt', request.order)
+                .offset(+request.pages * +request.pagenum)
+                .limit(+request.pagenum)
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
@@ -46,7 +43,7 @@ class Note {
 
     async store() {
         try {
-            return await db('notes').insert(this)
+            return await db('t_hm101_posts').insert(this)
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
@@ -55,7 +52,7 @@ class Note {
 
     async save(request) {
         try {
-            return await db('notes')
+            return await db('t_hm101_posts')
                 .update(this)
                 .where({ id: this.id })
         } catch (error) {
@@ -66,7 +63,7 @@ class Note {
 
     async destroy(request) {
         try {
-            return await db('notes')
+            return await db('t_hm101_posts')
                 .delete()
                 .where({ id: this.id })
         } catch (error) {
@@ -78,8 +75,8 @@ class Note {
 
 async function findById(id) {
     try {
-        let [noteData] = await db('notes')
-            .select('id', 'userId', 'title', 'content')
+        let [noteData] = await db('t_hm101_posts')
+            .select('id', 'topicId', 'title', 'contentH5Id', 'posterId', 'views', 'location')
             .where({ id: id })
         return noteData
     } catch (error) {

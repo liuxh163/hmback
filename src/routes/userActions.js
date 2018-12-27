@@ -25,7 +25,7 @@ router.post('/v1/user/login', async (ctx, next) => {
     await userActionController.login(ctx)
 })
 // 用户信息修改
-router.put('/v1/user', tokenMw, async (ctx, next) => {
+router.put('/v1/users', tokenMw, async (ctx, next) => {
     await userActionController.update(ctx)
 })
 // 用户登出
@@ -37,15 +37,15 @@ router.get('/v1/users/{?pages,pagenum}', tokenMw, async (ctx, next) => {
     await userActionController.index(ctx)
 })
 // 停用用户
-router.put('/v1/user/:id/halt', tokenMw, async (ctx, next) => {
+router.put('/v1/users/:id/halt', tokenMw, async (ctx, next) => {
     await userActionController.halt(ctx)
 })
 // 启用用户
-router.put('/v1/user/:id/awaken', tokenMw, async (ctx, next) => {
+router.put('/v1/users/:id/awaken', tokenMw, async (ctx, next) => {
     await userActionController.awaken(ctx)
 })
 // 发送手机验证短信
-router.post('/v1/user/sendSms', async (ctx, next) => {
+router.post('/v1/users/sendSms', async (ctx, next) => {
     await userActionController.sendSms(ctx)
 })
 

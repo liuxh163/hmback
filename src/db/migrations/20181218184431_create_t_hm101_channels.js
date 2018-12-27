@@ -11,9 +11,9 @@ exports.up = function(knex, Promise) {
         //渠道名称
         table.string('name', 20).notNullable();
         //渠道简介
-        table.string('description',256);
+        table.string('desc',256);
         //渠道编号
-        table.integer('chNum', 6).notNullable();
+        table.integer('channelNum', 6).notNullable();
         //渠道联系人
         table.string('contact', 20).notNullable();
         //渠道联系人电话

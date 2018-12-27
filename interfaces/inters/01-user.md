@@ -98,7 +98,7 @@
           }
       }
 
-### 停用用户 [PUT /api/v1/user/:id/halt]
+### 停用用户 [PUT /api/v1/users/:id/halt]
 停用指定用户，处于停用状态的用户无法继续登录系统，用于后台管理。
 
 + Headers
@@ -117,7 +117,7 @@
           "data": {"id": "123"}
       }
 
-### 启用用户 [PUT /api/v1/user/:id/awaken]
+### 启用用户 [PUT /api/v1/users/:id/awaken]
 重新启用处于停用状态的指定用户，用于后台管理。
 
 + Headers
@@ -136,7 +136,7 @@
           "data": {"id": "123"}
       }
 
-### 验证短信 [POST /api/v1/user/sendSms]
+### 验证短信 [POST /api/v1/users/sendSms]
 用户注册或修改密码时短信验证。
 
 + Request (application/json)
@@ -155,7 +155,7 @@
           "data":{}
       }
 
-### 用户信息修改 [PUT /api/v1/user]
+### 用户信息修改 [PUT /api/v1/users]
 登陆后的用户修改自身信息。
 
 + Headers

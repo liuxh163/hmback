@@ -1,4 +1,3 @@
-import joi from 'joi'
 import dateFormat from 'date-fns/format'
 
 import { User } from '../models/User'

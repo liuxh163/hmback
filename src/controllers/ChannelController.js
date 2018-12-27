@@ -1,21 +1,8 @@
-import joi from 'joi'
 import dateFormat from 'date-fns/format'
 
-import { User } from '../models/User'
-import { Note } from '../models/Note'
+import { Channel } from '../models/Channel'
 
-const noteSchema = joi.object({
-    id: joi.number().integer(),
-    userId: joi
-        .number()
-        .integer()
-        .required(),
-    title: joi.string().required(),
-    content: joi.string().required(),
-    ipAddress: joi.string(),
-})
-
-class NoteController {
+class ChannelController {
     async index(ctx) {
         const query = ctx.query
 
@@ -143,4 +130,4 @@ class NoteController {
     }
 }
 
-export default NoteController
+export default ChannelController

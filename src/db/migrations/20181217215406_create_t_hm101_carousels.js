@@ -13,7 +13,7 @@ exports.up = function(knex, Promise) {
         //轮播图名称
         table.string('name', 20);
         //轮播图描述
-        table.string('decription', 64);
+        table.string('desc', 64);
         //轮播图图片位置
         table.string('picPath', 96).notNullable();
         //链接目标类型 01-产品 02-静态页员

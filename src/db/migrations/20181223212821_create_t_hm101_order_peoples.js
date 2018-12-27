@@ -9,15 +9,24 @@ exports.up = function(knex, Promise) {
         //id主键
         table.increments('id').primary();
         //订单编号
-        table.string('number', 20).notNullable().unique();
-        //订单人员姓名
-        table.string('name',20).notNullable();
-        //人员身份证
-        table.integer('idNumber', 20).notNullable();
-        //人员联系电话
-        table.string('telephone', 16).notNullable();
+        table.string('orderNumber', 20).notNullable().unique();
+
+        //中文姓
+        table.string('firstName',20).notNullable();
+        //中文名
+        table.integer('lastName', 20).notNullable();
+        //拼音姓
+        table.string('firstPiyin',20).notNullable();
+        //拼音名
+        table.string('lastPiyin', 20).notNullable();
+        //护照号
+        table.integer('passport', 20).notNullable();
+        //出生日期
+        table.string('birthday', 10).notNullable();
+        //证件期限
+        table.string('passExpir', 10).notNullable();
         //人员目的 01-体检，02-随行
-        table.string('status', 2).notNullable().defaultTo('02');
+        table.string('objective', 2).notNullable().defaultTo('02');
 
         // 记录操作人id
         table.string('operator').notNullable();

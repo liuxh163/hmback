@@ -15,11 +15,15 @@ exports.up = function(knex, Promise) {
         //订单对象编号
         table.integer('targetId', 11);
         //订单金额
-        table.decimal('money', 8, 2).notNullable();
+        table.decimal('price', 8, 2).notNullable();
         //已付金额
         table.decimal('payedMoney', 8, 2).notNullable().defaultTo(0.00);
         //订单用户
         table.integer('buyerId', 11);
+        //订单联系人姓名，订单生成时由订单用户带出，可修改
+        table.string('contact',2).notNullable();
+        //订单联系人电话，订单生成时由订单用户带出，可修改
+        table.string('telephone',2).notNullable();
         //订单状态 01-未支付，02-定金已付，03-全额已付，04-取消，05-过期，06-申请退款，07-退款中，08-已退款
         table.string('status', 2).notNullable().defaultTo('01');
 

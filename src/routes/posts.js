@@ -1,31 +1,31 @@
 import Router from 'koa-router'
-import jwt from '../middleware/jwt'
+import RdsToken from '../middleware/rdsToken'
 import logger from '../logs/log'
 
 import PostController from '../controllers/PostController'
 
 const router = new Router()
-const jwtMiddleware = jwt({ secret: process.env.JWT_SECRET })
+const tokenMw = RdsToken()
 
 const postController = new PostController()
-
-router.get('/api/v1/topics/:id/posts', jwtMiddleware, async (ctx, next) => {
+// 获取指定话题下所有帖子
+router.get('/v1/topics/:id/posts', tokenMw, async (ctx, next) => {
     await postController.index(ctx)
 })
-
-router.post('/api/v1/topics/:id/posts', jwtMiddleware, async (ctx, next) => {
+// 在指定话题下新建帖子
+router.post('/v1/topics/:id/posts', tokenMw, async (ctx, next) => {
     await postController.create(ctx)
 })
-
-router.get('/api/v1/topics/:id/posts/:id', jwtMiddleware, async (ctx, next) => {
+// 查询指定话题下的指定帖子
+router.get('/v1/topics/:id/posts/:id', tokenMw, async (ctx, next) => {
     await postController.show(ctx)
 })
-
-router.put('/api/v1/topics/:id/posts/:id', jwtMiddleware, async (ctx, next) => {
+// 更新指定话题下的指定帖子
+router.put('/v1/topics/:id/posts/:id', tokenMw, async (ctx, next) => {
     await postController.update(ctx)
 })
-
-router.delete('/api/v1/topics/:id/posts/:id', jwtMiddleware, async (ctx, next) => {
+// 删除指定话题下的指定帖子
+router.delete('/v1/topics/:id/posts/:id', tokenMw, async (ctx, next) => {
     await postController.delete(ctx)
 })
 
