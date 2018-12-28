@@ -1,26 +1,22 @@
 import dateFormat from 'date-fns/format'
 
-import { Carousel } from '../models/Carousel'
+import { Attendant } from '../models/Attendant'
 
-class CarouselController {
+class AttendantController {
     async index(ctx) {
         const query = ctx.query
 
-        //Attach logged in user
-        const user = new User(ctx.state.user)
-        query.userId = user.id
-
-        //Init a new note object
-        const note = new Note()
+        //Init a new attendant object
+        const attendant = new Attendant()
 
         //Let's check that the sort options were set. Sort can be empty
-        if (!query.order || !query.page || !query.limit) {
+        if (!query.pages || !query.pageNum) {
             ctx.throw(400, 'INVALID_ROUTE_OPTIONS')
         }
 
-        //Get paginated list of notes
+        //Get paginated list of attendants
         try {
-            let result = await note.all(query)
+            let result = await attendant.all(query)
             ctx.body = result
         } catch (error) {
             console.log(error)
@@ -28,43 +24,15 @@ class CarouselController {
         }
     }
 
-    async show(ctx) {
-        const params = ctx.params
-        if (!params.id) ctx.throw(400, 'INVALID_DATA')
-
-        //Initialize note
-        const note = new Note()
-
-        try {
-            //Find and show note
-            await note.find(params.id)
-            ctx.body = note
-        } catch (error) {
-            console.log(error)
-            ctx.throw(400, 'INVALID_DATA')
-        }
-    }
-
     async create(ctx) {
         const request = ctx.request.body
 
-        //Attach logged in user
-        const user = new User(ctx.state.user)
-        request.userId = user.id
-
-        //Add ip
-        request.ipAddress = ctx.ip
-
-        //Create a new note object using the request params
-        const note = new Note(request)
-
-        //Validate the newly created note
-        const validator = joi.validate(note, noteSchema)
-        if (validator.error) ctx.throw(400, validator.error.details[0].message)
+        //Create a new attendant object using the request params
+        const attendant = new Attendant(request)
 
         try {
-            let result = await note.store()
-            ctx.body = { message: 'SUCCESS', id: result }
+            let result = await attendant.store()
+            ctx.body = { id: result.id }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
@@ -75,59 +43,65 @@ class CarouselController {
         const params = ctx.params
         const request = ctx.request.body
 
-        //Make sure they've specified a note
+        //Make sure they've specified a attendant
         if (!params.id) ctx.throw(400, 'INVALID_DATA')
 
-        //Find and set that note
-        const note = new Note()
-        await note.find(params.id)
-        if (!note) ctx.throw(400, 'INVALID_DATA')
+        //Find and set that attendant
+        const attendant = new Attendant()
+        await attendant.find(params.id)
+        if (!attendant) ctx.throw(400, 'INVALID_DATA')
 
-        //Grab the user //If it's not their note - error out
+        // 用户类型 01-普通用户 02-管理员
         const user = new User(ctx.state.user)
-        if (note.userId !== user.id) ctx.throw(400, 'INVALID_DATA')
+        if ('02' !== user.type) ctx.throw(400, 'NO_PREVILEGE_TO_UPDATE_DATA')
 
         //Add the updated date value
-        note.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        attendant.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
 
-        //Add the ip
-        request.ipAddress = ctx.ip
-
-        //Replace the note data with the new updated note data
+        //Replace the attendant data with the new updated attendant data
         Object.keys(ctx.request.body).forEach(function(parameter, index) {
-            note[parameter] = request[parameter]
+            attendant[parameter] = request[parameter]
         })
 
         try {
-            await note.save()
-            ctx.body = { message: 'SUCCESS' }
+            await attendant.save()
+            ctx.body = { id: attendant.id }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
 
-    async delete(ctx) {
-        const params = ctx.params
-        if (!params.id) ctx.throw(400, 'INVALID_DATA')
-
-        //Find that note
-        const note = new Note()
-        await note.find(params.id)
-        if (!note) ctx.throw(400, 'INVALID_DATA')
-
-        //Grab the user //If it's not their note - error out
-        const user = new User(ctx.state.user)
-        if (note.userId !== user.id) ctx.throw(400, 'INVALID_DATA')
+    // 禁用附加项
+    async halt(ctx) {
+        const query = ctx.query
 
         try {
-            await note.destroy()
-            ctx.body = { message: 'SUCCESS' }
+            await db('t_hm101_attendants')
+                .update({status:'02'})
+                .where({ id: query.id, status: '01' })
         } catch (error) {
             console.log(error)
-            ctx.throw(400, 'INVALID_DATA')
+            throw new Error('ERROR')
         }
+        ctx.body = {id: query.id};
+    }
+
+    // 启用附加项
+    async awaken(ctx) {
+        const query = ctx.query
+
+        try {
+            await db('t_hm101_attendants')
+                .update({status:'01'})
+                .where({ id: query.id, status: '02' })
+        } catch (error) {
+            console.log(error)
+            throw new Error('ERROR')
+        }
+
+        ctx.body = {id: query.id};
     }
 }
 
-export default CarouselController
+export default AttendantController

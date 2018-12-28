@@ -6,27 +6,26 @@ class Note {
         if (!data) {
             return
         }
-
         this.id = data.id
-        this.userId = data.userId
-        this.title = data.title
-        this.content = data.content
-        this.ipAddress = data.ipAddress
+        this.productId = data.productId
+        this.desc = data.desc
+        this.picPath = data.picPath
+        this.ranks = data.ranks
+        this.name = data.name
+        this.nation = data.nation
+
+        this.operator = data.operator
+        this.operatorFlag = data.operatorFlag
+        this.updatedAt = data.updatedAt
+        this.createdAt = data.createdAt
     }
 
     async all(request) {
         try {
-            return await db('notes')
+            return await db('t_hm101_product_experts')
                 .select('*')
-                .where({ userId: request.userId })
-                .where(
-                    'title',
-                    'like',
-                    '%' + (request.sort ? request.sort : '') + '%'
-                )
-                .orderBy('createdAt', request.order)
-                .offset(+request.page * +request.limit)
-                .limit(+request.limit)
+                .where({ productId: request.productId })
+                .orderBy('createdAt', 'desc')
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
@@ -46,7 +45,7 @@ class Note {
 
     async store() {
         try {
-            return await db('notes').insert(this)
+            return await db('t_hm101_product_experts').insert(this)
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
@@ -55,7 +54,7 @@ class Note {
 
     async save(request) {
         try {
-            return await db('notes')
+            return await db('t_hm101_product_experts')
                 .update(this)
                 .where({ id: this.id })
         } catch (error) {
@@ -66,7 +65,7 @@ class Note {
 
     async destroy(request) {
         try {
-            return await db('notes')
+            return await db('t_hm101_product_experts')
                 .delete()
                 .where({ id: this.id })
         } catch (error) {
@@ -78,8 +77,8 @@ class Note {
 
 async function findById(id) {
     try {
-        let [noteData] = await db('notes')
-            .select('id', 'userId', 'title', 'content')
+        let [noteData] = await db('t_hm101_product_experts')
+            .select('*')
             .where({ id: id })
         return noteData
     } catch (error) {

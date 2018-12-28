@@ -6,21 +6,15 @@ class ChannelController {
     async index(ctx) {
         const query = ctx.query
 
-        //Attach logged in user
-        const user = new User(ctx.state.user)
-        query.userId = user.id
+        const channel = new Channel()
 
-        //Init a new note object
-        const note = new Note()
-
-        //Let's check that the sort options were set. Sort can be empty
-        if (!query.order || !query.page || !query.limit) {
+        if (!query.pages || !query.pageNum) {
             ctx.throw(400, 'INVALID_ROUTE_OPTIONS')
         }
 
-        //Get paginated list of notes
+        //Get paginated list of channels
         try {
-            let result = await note.all(query)
+            let result = await channel.all(query)
             ctx.body = result
         } catch (error) {
             console.log(error)
@@ -28,43 +22,14 @@ class ChannelController {
         }
     }
 
-    async show(ctx) {
-        const params = ctx.params
-        if (!params.id) ctx.throw(400, 'INVALID_DATA')
-
-        //Initialize note
-        const note = new Note()
-
-        try {
-            //Find and show note
-            await note.find(params.id)
-            ctx.body = note
-        } catch (error) {
-            console.log(error)
-            ctx.throw(400, 'INVALID_DATA')
-        }
-    }
-
     async create(ctx) {
         const request = ctx.request.body
 
-        //Attach logged in user
-        const user = new User(ctx.state.user)
-        request.userId = user.id
-
-        //Add ip
-        request.ipAddress = ctx.ip
-
-        //Create a new note object using the request params
-        const note = new Note(request)
-
-        //Validate the newly created note
-        const validator = joi.validate(note, noteSchema)
-        if (validator.error) ctx.throw(400, validator.error.details[0].message)
+        const channel = new Channel(request)
 
         try {
-            let result = await note.store()
-            ctx.body = { message: 'SUCCESS', id: result }
+            let result = await channel.store()
+            ctx.body = { id: result }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
@@ -75,58 +40,63 @@ class ChannelController {
         const params = ctx.params
         const request = ctx.request.body
 
-        //Make sure they've specified a note
         if (!params.id) ctx.throw(400, 'INVALID_DATA')
 
-        //Find and set that note
-        const note = new Note()
-        await note.find(params.id)
-        if (!note) ctx.throw(400, 'INVALID_DATA')
+        //Find and set that channel
+        const channel = new Channel()
+        await channel.find(params.id)
+        if (!channel) ctx.throw(400, 'INVALID_DATA')
 
-        //Grab the user //If it's not their note - error out
+        //验证管理员权限
         const user = new User(ctx.state.user)
-        if (note.userId !== user.id) ctx.throw(400, 'INVALID_DATA')
+        if ('02' !== user.id) ctx.throw(400, 'INVALID_DATA')
 
         //Add the updated date value
-        note.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        channel.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
 
-        //Add the ip
-        request.ipAddress = ctx.ip
-
-        //Replace the note data with the new updated note data
+        //Replace the channel data with the new updated channel data
         Object.keys(ctx.request.body).forEach(function(parameter, index) {
-            note[parameter] = request[parameter]
+            channel[parameter] = request[parameter]
         })
 
         try {
-            await note.save()
-            ctx.body = { message: 'SUCCESS' }
+            await channel.save()
+            ctx.body = { id: channel.id }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
 
-    async delete(ctx) {
-        const params = ctx.params
-        if (!params.id) ctx.throw(400, 'INVALID_DATA')
-
-        //Find that note
-        const note = new Note()
-        await note.find(params.id)
-        if (!note) ctx.throw(400, 'INVALID_DATA')
-
-        //Grab the user //If it's not their note - error out
-        const user = new User(ctx.state.user)
-        if (note.userId !== user.id) ctx.throw(400, 'INVALID_DATA')
+   // 禁用渠道
+    async halt(ctx) {
+        const query = ctx.query
 
         try {
-            await note.destroy()
-            ctx.body = { message: 'SUCCESS' }
+            await db('t_hm101_channels')
+                .update({status:'02'})
+                .where({ id: query.id, status: '01' })
         } catch (error) {
             console.log(error)
-            ctx.throw(400, 'INVALID_DATA')
+            throw new Error('ERROR')
         }
+        ctx.body = {id: query.id};
+    }
+
+    // 启用渠道
+    async awaken(ctx) {
+        const query = ctx.query
+
+        try {
+            await db('t_hm101_channels')
+                .update({status:'01'})
+                .where({ id: query.id, status: '02' })
+        } catch (error) {
+            console.log(error)
+            throw new Error('ERROR')
+        }
+
+        ctx.body = {id: query.id};
     }
 }
 

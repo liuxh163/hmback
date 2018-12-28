@@ -3,15 +3,14 @@ if (!process.env.NODE_ENV) {
     throw new Error('NODE_ENV not set')
 }
 exports.up = function(knex, Promise) {
+    knex.schema.dropTableIfExists('t_hm101_comments');
     return knex.schema.createTable('t_hm101_comments', function(table) {
         table.charset('utf8mb4')
         table.collate('utf8mb4_unicode_ci')
         //id主键
         table.increments('id').primary();
-        //话题Id
-        table.integer('topicId', 11).notNullable();
-        //评论队形类型 01-产品，02-服务人员，03-帖子，04-回复
-        table.string('targer', 2);
+        //评论对象类型 01-产品，02-服务人员，03-帖子，04-回复
+        table.string('target', 2);
         //评论对象编号
         table.integer('targetId', 11).notNullable();
         //评论内容

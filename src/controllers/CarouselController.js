@@ -6,21 +6,16 @@ class CarouselController {
     async index(ctx) {
         const query = ctx.query
 
-        //Attach logged in user
-        const user = new User(ctx.state.user)
-        query.userId = user.id
+        const carousel = new Carousel()
 
-        //Init a new note object
-        const note = new Note()
-
-        //Let's check that the sort options were set. Sort can be empty
-        if (!query.order || !query.page || !query.limit) {
+        //检查查询参数
+        if (!query.location) {
             ctx.throw(400, 'INVALID_ROUTE_OPTIONS')
         }
 
-        //Get paginated list of notes
+        //Get paginated list of carousels
         try {
-            let result = await note.all(query)
+            let result = await carousel.all(query)
             ctx.body = result
         } catch (error) {
             console.log(error)
@@ -28,43 +23,15 @@ class CarouselController {
         }
     }
 
-    async show(ctx) {
-        const params = ctx.params
-        if (!params.id) ctx.throw(400, 'INVALID_DATA')
-
-        //Initialize note
-        const note = new Note()
-
-        try {
-            //Find and show note
-            await note.find(params.id)
-            ctx.body = note
-        } catch (error) {
-            console.log(error)
-            ctx.throw(400, 'INVALID_DATA')
-        }
-    }
-
     async create(ctx) {
         const request = ctx.request.body
 
-        //Attach logged in user
-        const user = new User(ctx.state.user)
-        request.userId = user.id
-
-        //Add ip
-        request.ipAddress = ctx.ip
-
-        //Create a new note object using the request params
-        const note = new Note(request)
-
-        //Validate the newly created note
-        const validator = joi.validate(note, noteSchema)
-        if (validator.error) ctx.throw(400, validator.error.details[0].message)
+        //Create a new carousel object using the request params
+        const carousel = new Carousel(request)
 
         try {
-            let result = await note.store()
-            ctx.body = { message: 'SUCCESS', id: result }
+            let result = await carousel.store()
+            ctx.body = { id: result }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
@@ -75,32 +42,29 @@ class CarouselController {
         const params = ctx.params
         const request = ctx.request.body
 
-        //Make sure they've specified a note
+        //Make sure they've specified a carousel
         if (!params.id) ctx.throw(400, 'INVALID_DATA')
 
-        //Find and set that note
-        const note = new Note()
-        await note.find(params.id)
-        if (!note) ctx.throw(400, 'INVALID_DATA')
+        //Find and set that carousel
+        const carousel = new Carousel()
+        await carousel.find(params.id)
+        if (!carousel) ctx.throw(400, 'INVALID_DATA')
 
-        //Grab the user //If it's not their note - error out
+        //检查管理员权限
         const user = new User(ctx.state.user)
-        if (note.userId !== user.id) ctx.throw(400, 'INVALID_DATA')
+        if ('02' !== user.type) ctx.throw(400, 'INVALID_DATA')
 
         //Add the updated date value
-        note.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        carousel.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
 
-        //Add the ip
-        request.ipAddress = ctx.ip
-
-        //Replace the note data with the new updated note data
+        //Replace the carousel data with the new updated carousel data
         Object.keys(ctx.request.body).forEach(function(parameter, index) {
-            note[parameter] = request[parameter]
+            carousel[parameter] = request[parameter]
         })
 
         try {
-            await note.save()
-            ctx.body = { message: 'SUCCESS' }
+            await carousel.save()
+            ctx.body = { id: carousel.id }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
@@ -111,22 +75,52 @@ class CarouselController {
         const params = ctx.params
         if (!params.id) ctx.throw(400, 'INVALID_DATA')
 
-        //Find that note
-        const note = new Note()
-        await note.find(params.id)
-        if (!note) ctx.throw(400, 'INVALID_DATA')
-
-        //Grab the user //If it's not their note - error out
+        //Find that carousel
+        const carousel = new Carousel()
+        await carousel.find(params.id)
+        if (!carousel) ctx.throw(400, 'INVALID_DATA')
+        //检查管理员权限
         const user = new User(ctx.state.user)
-        if (note.userId !== user.id) ctx.throw(400, 'INVALID_DATA')
+        if ('02' !== user.type) ctx.throw(400, 'INVALID_DATA')
 
         try {
-            await note.destroy()
-            ctx.body = { message: 'SUCCESS' }
+            await carousel.destroy()
+            ctx.body = { id: params.id }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
         }
+    }
+
+   // 禁用轮播
+    async halt(ctx) {
+        const query = ctx.query
+
+        try {
+            await db('t_hm101_carousels')
+                .update({status:'02'})
+                .where({ id: query.id, status: '01' })
+        } catch (error) {
+            console.log(error)
+            throw new Error('ERROR')
+        }
+        ctx.body = {id: query.id};
+    }
+
+    // 启用轮播
+    async awaken(ctx) {
+        const query = ctx.query
+
+        try {
+            await db('t_hm101_carousels')
+                .update({status:'01'})
+                .where({ id: query.id, status: '02' })
+        } catch (error) {
+            console.log(error)
+            throw new Error('ERROR')
+        }
+
+        ctx.body = {id: query.id};
     }
 }
 

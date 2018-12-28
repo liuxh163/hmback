@@ -63,7 +63,7 @@ HOST: http://api.haima101.com
           "data": {}
       }
 
-### 查询用户信息 [GET /api/v1/users/{?sort=1,pages=1,pagenum=10}]
+### 查询用户信息 [GET /api/v1/users/{?sort=1,pages=1,pageNum=10}]
 管理员查询所有用户列表信息
 
 + Headers
@@ -72,7 +72,7 @@ HOST: http://api.haima101.com
 + Parameters
   + sort: `1` (string,optional) - 用户列表排序方式，选填。
   + pages: 1 (number) - 用户列表页数。
-  + pagenum: 10 (number) - 用户列表每页数量
+  + pageNum: 10 (number) - 用户列表每页数量
 
 + Response 200
 
@@ -104,7 +104,7 @@ HOST: http://api.haima101.com
           }
       }
 
-### 停用用户 [PUT /api/v1/user/:id/halt]
+### 停用用户 [PUT /api/v1/users/:id/halt]
 停用指定用户，处于停用状态的用户无法继续登录系统，用于后台管理。
 
 + Headers
@@ -123,7 +123,7 @@ HOST: http://api.haima101.com
           "data": {"id": "123"}
       }
 
-### 启用用户 [PUT /api/v1/user/:id/awaken]
+### 启用用户 [PUT /api/v1/users/:id/awaken]
 重新启用处于停用状态的指定用户，用于后台管理。
 
 + Headers
@@ -142,7 +142,7 @@ HOST: http://api.haima101.com
           "data": {"id": "123"}
       }
 
-### 验证短信 [POST /api/v1/user/sendSms]
+### 验证短信 [POST /api/v1/users/sendSms]
 用户注册或修改密码时短信验证。
 
 + Request (application/json)
@@ -161,7 +161,7 @@ HOST: http://api.haima101.com
           "data":{}
       }
 
-### 用户信息修改 [PUT /api/v1/user]
+### 用户信息修改 [PUT /api/v1/users]
 登陆后的用户修改自身信息。
 
 + Headers
@@ -191,6 +191,376 @@ HOST: http://api.haima101.com
           "errcode": "10001",
           "message": "操作成功",
           "data":{}
+      }
+
+# Group 论坛话题
+
+## 获取论坛话题 [GET /api/v1/forum/topics]
+海马社区目前只有2个话题，分别是‘发现’和‘说说’，发现以图片贴配以简单文字，说说为文字贴配图，本节内容主要包含话题的维护和查询相关接口内容。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {
+              "topics":[
+                  {
+                    "id": "topic1",
+                    "name":"发现",
+                    "desctription":""
+                  },
+                  {
+                    "id": "topic2",
+                    "name": "说说",
+                    "description":""
+                  }
+              ],
+          }
+      }
+
+### 创建话题 [POST /api/v1/forum/topics]
+创建新的话题
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Request (application/json)
+
+      {
+          "name":"发现",
+          "desc":""
+      }
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"name":"发现"}
+      }
+
+### 修改话题 [PUT /api/v1/forum/topics/:id]
+修改话题信息
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `1` (string) - 话题id。
+
++ Request (application/json)
+
+      {
+          "name":"发现",
+          "desc":""
+      }
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"name":"发现"}
+      }
+
+### 关闭话题 [PUT /api/v1/forum/topics/:id/halt]
+修改话题信息
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `1` (string) - 话题id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"name":"发现"}
+      }
+
+### 启用话题 [PUT /api/v1/forum/topics/:id/awaken]
+修改话题信息
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `1` (string) - 话题id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"name":"发现"}
+      }
+
+# Group 帖子
+
+### 查询帖子列表 [GET /api/v1/topics/:id/posts/{?sort=1,pages=1,pageNum=10}]
+获取指定话题下所有帖子
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `topic1` (string) - 话题唯一标识id。
+  + sort: `1` (string,optional) - 列表排序方式，选填。
+  + pages: 1 (number) - 用户列表页数。
+  + pageNum: 10 (number) - 用户列表每页数量
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": [
+              {
+                  "id": "post123",
+                  "title": "海马健康金，助力健康",
+                  "posterId": "user123",
+                  "posterName": "刘半仙",
+                  "content": "<span>海马健康金是一款。。。</span>",
+                  "location": "韩国，首尔",
+                  "comment_num": "300",
+                  "praise_num": "223",
+                  "view_num" "499"
+              },
+              {
+                  "id": "post123",
+                  ...
+              },
+              {
+                  "id": "post123",
+                  ...
+              }
+          ]
+      }
+
+### 发布帖子 [POST /api/v1/topics/:id/posts]
+新发布一个论坛帖子。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+    + id: `topic1` (string) - 话题唯一标识id。
+
++ Request (application/json)
+
+      {
+          "title": "海马健康金，助力健康",
+          "content": "<span>海马健康金是一款。。。</span>",
+          "location": "韩国，首尔"
+      }
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "post123"}
+      }
+
+### 获取帖子信息 [GET /api/v1/posts/:id]
+查询指定帖子的详细信息，每次查询阅读数加1
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+    + id: `post123` (string) - 海马论坛帖子唯一标识id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {
+              "id": "post123",
+              "title": "海马健康金，助力健康",
+              "posterId": "user123",
+              "posterName": "刘半仙",
+              "content": "<span>海马健康金是一款。。。</span>",
+              "location": "韩国，首尔",
+              "commentNum": "300",
+              "praiseNum": "223",
+              "views" "499"
+          }
+      }
+
+### 删除指定帖子 [DELETE /api/v1/posts/:id]
+删除指定帖子
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+    + id: `post123` (string) - 海马论坛帖子唯一标识id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "post123"}
+      }
+
+### 修改指定帖子信息 [PUT /api/v1/posts/:id]
+修改指定帖子信息
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+    + id: `post123` (string) - 海马论坛帖子唯一标识id。
+
++ Request (application/json)
+
+      {
+          "title": "海马健康金，助力健康",
+          "content": "<span>海马健康金是一款。。。</span>"
+      }
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "post123"}
+      }
+
+# Group 评论
+
+### 获取评论 [GET /api/v1/comments/{?target=01,targetId=123,pages=1,pageNum=10}]
+获取指定评论对象的所有评论列表。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + target: `01` (string) - 评论对象类型，01-产品，02-服务人员，03-帖子，04-回复。
+  + targetId: `product123` (string) - 评论对象唯一标识id。
+  + pages: 1 (number) - 用户列表页数。
+  + pageNum: 10 (number) - 用户列表每页数量
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": [
+              {
+                  "id": "comment123",
+                  "commenterId": "user123",
+                  "commenterName": "刘半仙",
+                  "content": "<span>海马健康金是一款。。。</span>"
+              },
+              {
+                  "id": "comment123",
+                  ...
+              },
+              {
+                  "id": "comment123",
+                  ...
+              }
+          ]
+      }
+
+### 发表评论 [POST /api/v1/comments]
+对产品、服务人员、帖子或者评论进行评论。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Request (application/json)
+
+      {
+          "target": "01",
+          "targetId": "product123",
+          "commenterId": "user123",
+          "content": "<span>海马健康金是一款。。。</span>"
+      }
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "comment123"}
+      }
+
+### 更新评论 [PUT /api/v1/comments/:id]
+发布者对评论内容进行更新。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `comment123` (string) - 评论唯一标识id。
+
++ Request (application/json)
+
+      {
+          "content": "<span>海马健康金是一款。。。</span>"
+      }
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "comment123"}
+      }
+
+### 撤回评论 [DELETE /api/v1/comments/:id]
+评论发布者撤回评论
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `comment123` (string) - 评论唯一标识id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "comment123"}
       }
 
 # Group 产品
@@ -350,73 +720,22 @@ HOST: http://api.haima101.com
 
   [产品列表][]
 
-# Group 翻译人员
+# Group 产品附加项
 
-## 翻译人员 [/api/v1/translators/{translator_id}]
-平台翻译人员包含文字翻译和陪同翻译2种，本节内容主要包含对翻译人员进行维护和查询的相关接口内容。
+### 新增附加项 [POST /api/v1/attendants]
+新增产品附加项信息，成功返回唯一标识Id
 
-+ Parameters
-    + translator_id: `translator123` (string) - 翻译人员唯一标识id。
-
-+ Model (application/json)
-
-    ```js
-    {
-        "success":true,
-        "status": "200",
-        "errcode": "10001",
-        "message": "操作成功",
-        "data": {
-            "id": "translator123",
-            "school": "东京早稻田大学中文系",
-            "picture_path":"/translators/01/fanyi123.png",
-            "introduction": "<span>XX近两年内层服务过300人次赴日旅游，翻译医学档案50次，均获得4星以上评价。。。</span>",
-            "service": "<span>XX主要提供医学档案类文字翻译服务，赴日就诊陪同翻译服务。。。</span>",
-            "liter_price": "3000.00 RMB/千字",
-            "follow_price": "300.00 RMB/小时",
-            "nation": "01",
-            "rank": 4.5,//星级
-            "comment_num": 23,//评论数
-            "praise_num": 160//点赞数
-        }
-    }
-    ```
-
-### 获取翻译信息 [GET]
-返回指定翻译的详细信息
-
-+ Response 200
-
-  [翻译人员][]
-
-### 删除指定翻译人员 [DELETE]
-翻译人员删除成功返回唯一标识Id
-
-+ Response 200
-
-      {
-          "success":true,
-          "status": "200",
-          "errcode": "10001",
-          "message": "操作成功",
-          "data": {"id": "translator123"}
-      }
-
-### 修改指定翻译人员信息 [PUT]
-产品信息修改成功返回唯一标识Id
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
 
 + Request (application/json)
 
       {
-          "id": "translator123",
-          "school": "东京早稻田大学中文系",
-          "picture_path":"/translators/01/fanyi123.png",
-          "introduction": "<span>XX近两年内层服务过300人次赴日旅游，翻译医学档案50次，均获得4星以上评价。。。</span>",
-          "service": "<span>XX主要提供医学档案类文字翻译服务，赴日就诊陪同翻译服务。。。</span>",
-          "liter_price": "3000.00",
-          "follow_price": "300.00",
-          "nation": "01",
-          "rank": 4
+          "price": "4500.00",
+          "name": "甲亢检查",
+          "desc": "<span>这是一个附加项，可以选的哦</span>",
+          "target": "01",
+          "status": "01"
       }
 
 + Response 200
@@ -426,75 +745,61 @@ HOST: http://api.haima101.com
           "status": "200",
           "errcode": "10001",
           "message": "操作成功",
-          "data": {"id": "translator123"}
+          "data": {"id": "attendant1"}
       }
 
-## 翻译列表 [/api/v1/translators/{?nation,limit,sort_type}]
-医疗产品集合包含多个同类型医疗产品。
+### 停用附加项 [PUT /api/v1/attendants/:id/halt]
+停用指定附加项。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
 
 + Parameters
-  + nation: `01` (string) - 翻译人员所属国家，01-日本，02-韩国，03-泰国。
-  + limit: 3 (number) - 翻译列表中翻译人员的数量。
-  + sort_type: `01` (string) - 产品排序类型，01-最新，02-最热，03-推荐
-
-+ Model (application/json)
-
-    ```js
-    {
-        "success":true,
-        "status": "200",
-        "errcode": "10001",
-        "message": "操作成功",
-        "data": {
-          "translators":[
-            {
-              "id": "translator123",
-              "school": "东京早稻田大学中文系",
-              "picture_path":"/translators/01/fanyi123.png",
-              "introduction": "<span>XX近两年内层服务过300人次赴日旅游，翻译医学档案50次，均获得4星以上评价。。。</span>",
-              "service": "<span>XX主要提供医学档案类文字翻译服务，赴日就诊陪同翻译服务。。。</span>",
-              "liter_price": "3000.00",
-              "follow_price": "300.00",
-              "nation": "01",
-              "rank": 4,
-              "comment_num": 23,//评论数
-              "praise_num": 160//点赞数
-            },
-            {
-              "id": "translator134",
-              ...
-            },
-            {
-              "id": "translator345",
-              ...
-            }
-          ]
-        }
-    }
-    ```
-
-### 获取翻译列表 [GET]
-返回指定国家指定数量的翻译人员列表信息
+  + id: `attendant1` (string) - 停用附加项id。
 
 + Response 200
 
-  [翻译列表][]
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "attendant1"}
+      }
 
-### 新增翻译人员 [POST]
-在应用中新增加一个翻译人员。
+### 启用附加项 [PUT /api/v1/attendants/:id/awaken]
+重新启用处于停用状态的指定附加项。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `attendant1` (string) - 附加项id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "attendant1"}
+      }
+
+### 修改附加项 [PUT /api/v1/attendants/:id]
+修改附加项信息，返回唯一标识Id
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
 
 + Request (application/json)
 
       {
-          "id": "translator123",
-          "school": "东京早稻田大学中文系",
-          "picture_path":"/translators/01/fanyi123.png",
-          "introduction": "<span>XX近两年内层服务过300人次赴日旅游，翻译医学档案50次，均获得4星以上评价。。。</span>",
-          "service": "<span>XX主要提供医学档案类文字翻译服务，赴日就诊陪同翻译服务。。。</span>",
-          "liter_price": "3000.00",
-          "follow_price": "300.00",
-          "nation": "01",
-          "rank": 4
+          "price": "4500.00",
+          "name": "甲亢检查",
+          "desc": "<span>这是一个附加项，可以选的哦</span>",
+          "target": "01",
+          "status": "01"
       }
 
 + Response 200
@@ -504,183 +809,14 @@ HOST: http://api.haima101.com
           "status": "200",
           "errcode": "10001",
           "message": "操作成功",
-          "data": {"id": "translator123"}
+          "data": {"id": "attendant1"}
       }
 
-# Group 海马金
+### 获取附加项列表 [GET /api/v1/attendants]
+返回附加项列表信息
 
-## 海马金融 [/api/v1/loans/{loan_id}]
-平台提供海外医疗金融产品，统称海马金融，简称海马金，本节内容主要包含海马金融产品的维护和查询相关接口内容。
-
-+ Parameters
-    + loan_id: `loan123` (string) - 海马金融产品唯一标识id。
-
-+ Model (application/json)
-
-    ```js
-    {
-        "success":true,
-        "status": "200",
-        "errcode": "10001",
-        "message": "操作成功",
-        "data": {
-            "id": "loan123",
-            "slogan": "海马健康金，助力健康",
-            "descrition": "<span>海马健康金是一款。。。</span>",
-            "period": "<span>海马健康金分12期偿还，每期末支付利息，最后。。。</span>",
-            "money": "30000.00 RMB",//产品金额
-            "profit": 0.0350//金融产品利率
-        }
-    }
-    ```
-
-### 获取海马金融产品信息 [GET]
-返回指定海马金融产品的详细信息
-
-+ Response 200
-
-  [海马金融][]
-
-### 删除指定海马金融产品 [DELETE]
-海马金融产品删除成功返回唯一标识Id
-
-+ Response 200
-
-      {
-          "success":true,
-          "status": "200",
-          "errcode": "10001",
-          "message": "操作成功",
-          "data": {"id": "loan123"}
-      }
-
-### 修改指定海马金融产品信息 [PUT]
-产品信息修改成功返回唯一标识Id
-
-+ Request (application/json)
-
-      {
-          "id": "translator123",
-          "slogan": "海马健康金，助力健康",
-          "descrition": "<span>海马健康金是一款。。。</span>",
-          "period": "<span>海马健康金分12期偿还，每期末支付利息，最后。。。</span>",
-          "money": "30000.00 RMB",//产品金额
-          "profit": 0.0350//金融产品利率
-      }
-
-+ Response 200
-
-      {
-          "success":true,
-          "status": "200",
-          "errcode": "10001",
-          "message": "操作成功",
-          "data": {"id": "loan123"}
-      }
-
-## 海马金融产品列表 [/api/v1/loans/{?limit,sort_type}]
-医疗产品列表包含多个金融产品。
-
-+ Parameters
-  + limit: 3 (number) - 海马金融产品列表中产品的数量。
-  + sort_type: `01` (string, optional) - 产品排序类型，01-最新，02-最热，03-推荐
-
-+ Model (application/json)
-
-    ```js
-    {
-        "success":true,
-        "status": "200",
-        "errcode": "10001",
-        "message": "操作成功",
-        "data": {
-          "loans":[
-            {
-              "id": "loan123",
-              "slogan": "海马健康金，助力健康",
-              "descrition": "<span>海马健康金是一款。。。</span>",
-              "period": "<span>海马健康金分12期偿还，每期末支付利息，最后。。。</span>",
-              "money": "30000.00 RMB",//产品金额
-              "profit": 0.0350//金融产品利率
-            },
-            {
-              "id": "loan134",
-              ...
-            },
-            {
-              "id": "loan345",
-              ...
-            }
-          ]
-        }
-    }
-    ```
-
-### 获取海马金融产品列表 [GET]
-返回指定数量的金融产品列表信息
-
-+ Response 200
-
-  [海马金融产品列表][]
-
-### 新增金融产品 [POST]
-在应用中新增加一个金融产品。
-
-+ Request (application/json)
-
-      {
-          "slogan": "海马健康金，助力健康",
-          "descrition": "<span>海马健康金是一款。。。</span>",
-          "period": "<span>海马健康金分12期偿还，每期末支付利息，最后。。。</span>",
-          "money": "30000.00 RMB",//产品金额
-          "profit": 0.0350//金融产品利率
-      }
-
-+ Response 200
-
-      {
-          "success":true,
-          "status": "200",
-          "errcode": "10001",
-          "message": "操作成功",
-          "data": {"id": "loan123"}
-      }
-
-# Group 论坛话题
-
-## 论坛话题 [/api/v1/forum/topics/{?topic_id}]
-海马社区目前只有2个话题，分别是‘发现’和‘说说’，发现属于普通论坛发帖，说说为用户亲历日记，本节内容主要包含话题的维护和查询相关接口内容。
-
-+ Model (application/json)
-
-    ```js
-    {
-        "success":true,
-        "status": "200",
-        "errcode": "10001",
-        "message": "操作成功",
-        "data": {
-            "id": "topic1",
-            "name": "发现",
-            "descrition": ""
-        }
-    }
-    ```
-
-### 获取话题信息 [GET]
-返回指定论坛话题信息
-
-+ Parameters
-    + topic_id: `loan123` (string, optional) - 海马社区论坛话题唯一标识id。
-
-+ Response 200
-
-  [论坛话题][]
-
-### 获取话题列表 [GET]
-返回指定数量的金融产品列表信息
-
-+ Request (application/json)
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
 
 + Response 200
 
@@ -690,87 +826,42 @@ HOST: http://api.haima101.com
           "errcode": "10001",
           "message": "操作成功",
           "data": {
-              "topics":[
+              "attendants":[
                   {
-                    "id": "topic1",
-                    "name":"发现",
-                    "desctription":""
+                    "id": "attendant1",
+                    "price": "4500.00",
+                    "name": "甲亢检查",
+                    "desc": "<span>这是一个附加项，可以选的哦</span>",
+                    "target": "01",
+                    "status": "01"
                   },
                   {
-                    "id": "topic2",
-                    "name": "说说",
-                    "description":""
+                    "id": "attendant2",
+                    ...
                   }
-              ],
+              ]
           }
       }
 
-# Group 帖子
+# Group 专家
 
-## 帖子 [/api/v1/forum/topics/{topic_id}/posts/{?post_id}]
-平台提供海外医疗金融产品，统称海马金融，简称海马金，本节内容主要包含海马金融产品的维护和查询相关接口内容。
+### 新增专家 [POST /api/v1/product/:id/experts]
+新增产品专家信息，成功返回唯一标识Id
 
-+ Parameters
-    + topic_id: `topic123` (string) - 海马社区论坛话题唯一标识id。
-
-+ Model (application/json)
-
-    ```js
-    {
-        "success":true,
-        "status": "200",
-        "errcode": "10001",
-        "message": "操作成功"
-        "data": {
-            "id": "loan123",
-            "topic_id": "topic1",
-            "title": "海马健康金，助力健康",
-            "content": "<span>海马健康金是一款。。。</span>",
-            "location": "<span>韩国，首尔</span>",
-            "comment_num": "300",
-            "praise_num": "223",
-            "view_num" "499"
-        }
-    }
-    ```
-
-### 获取帖子信息 [GET]
-返回指定帖子的详细信息
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
 
 + Parameters
-    + post_id: `post123` (string) - 海马论坛帖子唯一标识id。
-
-+ Response 200
-
-  [帖子][]
-
-### 删除指定帖子 [DELETE]
-海马金融产品删除成功返回唯一标识Id
-
-+ Parameters
-    + post_id: `post123` (string) - 海马论坛帖子唯一标识id。
-
-+ Response 200
-
-      {
-          "success":true,
-          "status": "200",
-          "errcode": "10001",
-          "message": "操作成功",
-          "data": {"id": "post123"}
-      }
-
-### 修改指定帖子信息 [PUT]
-帖子信息修改成功返回唯一标识Id
-
-+ Parameters
-    + post_id: `post123` (string) - 海马论坛帖子唯一标识id。
+  + productId: `product1` (string) - 产品唯一id。
 
 + Request (application/json)
 
       {
-          "title": "海马健康金，助力健康",
-          "content": "<span>海马健康金是一款。。。</span>"
+          "price": "4500.00",
+          "name": "甲亢检查",
+          "desc": "<span>这是一个附加项，可以选的哦</span>",
+          "target": "01",
+          "status": "01"
       }
 
 + Response 200
@@ -780,78 +871,17 @@ HOST: http://api.haima101.com
           "status": "200",
           "errcode": "10001",
           "message": "操作成功",
-          "data": {"id": "post123"}
+          "data": {"id": "attendant1"}
       }
 
-### 获取帖子列表 [GET]
-返回指定数量的金融产品列表信息
+### 获取专家列表 [GET /api/v1/product/:id/experts]
+返回指定产品下专家列表信息
 
-+ Response 200
-
-      {
-          "success":true,
-          "status": "200",
-          "errcode": "10001",
-          "message": "操作成功"
-          "data": {
-            "posts":[
-              {
-                "id": "post123",
-                "topic_id": "topic1",
-                "title": "海马健康金，助力健康",
-                "content": "<span>海马健康金是一款。。。</span>",
-                "location": "<span>韩国，首尔</span>",
-                "comment_num": "300",
-                "praise_num": "223",
-                "view_num" "499"
-              },
-              {
-                "id": "post134",
-                ...
-              },
-              {
-                "id": "post345",
-                ...
-              }
-            ]
-          }
-      }
-
-### 发布帖子 [POST]
-新发布一个论坛帖子。
-
-+ Request (application/json)
-
-      {
-          "topic_id": "topic1",
-          "title": "海马健康金，助力健康",
-          "content": "<span>海马健康金是一款。。。</span>",
-          "location": "<span>韩国，首尔</span>",
-          "location_x": 0.0350, //发布者位置坐标
-          "location_y": 0.0350 //发布者位置坐标
-      }
-
-+ Response 200
-
-      {
-          "success":true,
-          "status": "200",
-          "errcode": "10001",
-          "message": "操作成功",
-          "data": {"id": "post123"}
-      }
-
-comment# Group 帖子回复
-
-## 帖子回复 [/api/v1/forum/topics/{topic_id}/posts/{post_id}/replies/{?reply_id}]
-本节内容主要包含论坛帖子回复相关接口内容。
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
 
 + Parameters
-    + topic_id: `topic123` (string) - 海马社区论坛话题唯一标识id。
-    + post_id: `post123` (string) - 海马论坛帖子唯一标识id。
-
-### 获取帖子回复列表 [GET]
-返回指定帖子的回复列表信息
+  + productId: `product1` (string) - 产品唯一id。
 
 + Response 200
 
@@ -861,37 +891,31 @@ comment# Group 帖子回复
           "errcode": "10001",
           "message": "操作成功",
           "data": {
-            "replies": [
-              {
-                "id": "reply1231",
-                "reply_id": "reply123",
-                "content": "<span>海马健康金是一款。。。</span>",
-                "user": {
-                  "id": "user123",
-                  "name": "天涯沦落人",
-                  "icon_path": "/users/touxiang.png"
-                },
-                "reply_time": "2018-10-15 19:08:20"
-              },
-              {
-                "id": "reply123",
-                "reply_id": "",
-                ...
-              },
-              {
-                "id": "reply124",
-                "reply_id": "",
-                ...
-              }
-            ]
+              "attendants":[
+                  {
+                    "id": "attendant1",
+                    "price": "4500.00",
+                    "name": "甲亢检查",
+                    "desc": "<span>这是一个附加项，可以选的哦</span>",
+                    "target": "01",
+                    "status": "01"
+                  },
+                  {
+                    "id": "attendant2",
+                    ...
+                  }
+              ]
           }
       }
 
-### 撤回指定回复 [DELETE]
-回复撤回成功返回唯一标识Id
+### 删除专家 [DELETE /api/v1/experts/:id]
+删除指定专家。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
 
 + Parameters
-    + reply_id: `reply123` (string) - 社区论坛帖子回复唯一标识id。
+  + id: `expert1` (string) - 专家唯一id。
 
 + Response 200
 
@@ -900,18 +924,26 @@ comment# Group 帖子回复
           "status": "200",
           "errcode": "10001",
           "message": "操作成功",
-          "data": {"id": "reply123"}
+          "data": {"id": "expert1"}
       }
 
-### 回复帖子或评论 [POST]
-对论坛中的帖子或者评论进行回复。
+### 修改专家信息 [PUT /api/v1/experts/:id]
+修改专家信息，返回唯一标识Id
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `expert1` (string) - 专家唯一id。
 
 + Request (application/json)
 
       {
-          "reply_id": "reply123",//有即为对回复进行回复，空即为对帖子进行回复
-          "content": "<span>海马健康金是一款。。。</span>",
-          "user_id": "user123"
+          "price": "4500.00",
+          "name": "甲亢检查",
+          "desc": "<span>这是一个附加项，可以选的哦</span>",
+          "target": "01",
+          "status": "01"
       }
 
 + Response 200
@@ -921,141 +953,119 @@ comment# Group 帖子回复
           "status": "200",
           "errcode": "10001",
           "message": "操作成功",
-          "data": {"id": "reply123"}
+          "data": {"id": "expert1"}
       }
 
-# Group 轮播图
-轮播图显示在App首页、产品首页头部，实现图片组轮流播放，包括一张图片及相应宣传语。
+# Group 点赞
 
-## 轮播图组 [/api/v1/carousels/{location}]
-在应用的某一个位置显示一组轮播图，组内轮播图实现轮流播放。如果组内没有图片，则使用默认图片固定显示，如果组内只有一张图片，则固定显示该图片，只有图片大于1张时才进行轮播。
+### 获取点赞数 [GET /api//v1/thumbs/{?target=01,targetId=p11}]
+获取指定对象点赞数。
 
-+ Parameters
-	+ location: `01` (string) - 轮播图位置编码，01-APP首页，02-产品首页，03-翻译首页。
-
-+ Model (application/json)
-    ```js
-    {
-
-      "success":true,
-      "status": "200",
-      "errcode": "10001",
-      "message": "操作成功",
-      "data": {
-	        "carousels":[
-		        {
-		        	"description": "<span>精密体检带给您不一样的体验</span>",
-		        	"picture_path": "/carousels/01/picure123.png",
-		        	"targetType": "01",//01-产品，02-帖子，03-翻译，04-海马金,05-h5页面
-		        	"targetId": "abc123"
-		      	},
-		      	{
-		        	"description": "<span>造人天堂欢迎你来</span>",
-		        	"picture_path": "/carousels/01/picure123.png",
-		        	"targetType": "01",//01-产品，02-帖子，03-翻译，04-海马金,05-h5页面
-		        	"targetId": "adc124"
-		      	},
-		      	{
-		        	"description": "<span>想要体验每天都不一样的感觉吗</span>",
-		        	"picture_path": "/carousels/01/picure123.png",
-		        	"targetType": "01",//01-产品，02-帖子，03-翻译，04-海马金,05-h5页面
-		        	"targetId": "afc125"
-		      	}
-	        ]
-	    }//end of data
-    }
-    ```
-### 获取轮播图组 [GET]
-返回指定位置的轮播图组
-
-+ Response 200
-    [轮播图组][]
-
-## 轮播图 [/api/v1/carousels/{?location,carousel_id}]
-在应用的某一个位置显示一组轮播图，组内轮播图实现轮流播放。
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
 
 + Parameters
-	+ location: `01` (string) - 轮播图位置编码，01-APP首页，02-产品首页。
-	+ carousel_id: `abc123` (string) - 轮播图唯一标识Id。
-
-+ Model (application/json)
-    ```js
-    {
-        "success":true,
-        "status": "200",
-        "errcode": "10001",
-        "message": "操作成功",
-        "data": {
-	        	"description": "<span>精密体检带给您不一样的体验</span>",
-	        	"picture_path": "/carousels/01/picure123.png",
-	        	"targetType": "01",//01-产品，02-帖子，03-翻译，04-海马金,05-h5页面
-	        	"targetId": "abc123"
-		    }//end of data
-    }
-    ```
-
-### 删除一个轮播图 [DELETE]
-轮播图删除成功返回轮播图标识Id
+  + target: `01` (string) - 点赞对象类型。
+  + productId: `product1` (number) - 点赞对象Id。
 
 + Response 200
 
-	    {
+      {
           "success":true,
           "status": "200",
           "errcode": "10001",
           "message": "操作成功",
-          "data": {"carousel_id":"carousel123"}
-	    }
+          "data": {"count": "100"}
+      }
 
-### 创建轮播图 [POST]
-创建一个新轮播图，初始状态为暂停播放，需要手工设置播放状态。
+### 点赞/取消点赞 [PUT /api/v1/thumbs]
+点赞/取消点赞
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
 
 + Request (application/json)
 
-	    {
-	      	"description": "精密体检带给您不一样的体验",
-	      	"picture_path": "/carousels/01/picure123.png",
-	      	"location": "01", //01-APP首页，02-产品首页
-	      	"targetType": "01",//01-产品，02-帖子，03-翻译，04-海马金,05-h5页面
-	      	"targetId": "abc123"
-	    }
+      {
+          "target": "轮播图",
+          "productId": "我是一张轮播图"
+      }
 
-+ Response 201
++ Response 200
 
-    [轮播图][]
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "channel123"}
+      }
 
-## 轮播启停 [/api/v1/carousels/{carousel_id}/status]
-轮播图可以设置启用、停用状态。
+# Group 标签
+
+### 打标签 [POST /api/v1/tags]
+为指定对象打标签
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Request (application/json)
+
+      {
+          "target": "01",
+          "targetId": "product123",
+          "name": "精品",
+          "targerId": "admin1"
+      }
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "tag3"}
+      }
+
+### 查询标签 [GET /api/v1/tags/{?target=01,targetId=p11}]
+删除指定标签信息
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
 
 + Parameters
-    + carousel_id: `01` (string) - 轮播图标识id。
-
-+ Model (application/json)
-    ```js
-    {
-        "success":true,
-        "status": "200",
-        "errcode": "10001",
-        "message": "操作成功",
-        "data": {}
-    }
-    ```
-### 启用轮播图 [PUT]
-启用操作标识可用（未删除）的停用轮播图。
-
-*Note: 只有未删除的轮播图可以操作。
-       只有停用状态的轮播图才可以启用。*
+  + target: `01` (string) - 标签对象类型。
+  + targetId: `product1` (string) - 标签对象唯一id。
 
 + Response 200
 
-    [轮播启停][]
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "tag3"}
+      }
 
-### 停用轮播图 [DELETE]
-将启用状态的轮播图设置为停用。
+### 删除标签 [DELETE /api/v1/tags/:id]
+删除指定标签信息
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `tag1` (string) - 标签唯一id。
 
 + Response 200
 
-    [轮播启停][]
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "tag3"}
+      }
 
 # Group 渠道商
 
@@ -1193,3 +1203,447 @@ comment# Group 帖子回复
 + Response 200
 
   [渠道商列表][]
+
+# Group 轮播图
+轮播图显示在App首页、产品首页头部，实现图片组轮流播放，包括一张图片及相应宣传语。
+
+### 新增轮播图 [POST /api/v1/carousels]
+在应用的某一个位置显示一组轮播图，组内轮播图实现轮流播放。如果组内没有图片，则使用默认图片固定显示，如果组内只有一张图片，则固定显示该图片，只有图片大于1张时才进行轮播。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Request (application/json)
+
+      {
+          "name": "轮播图",
+          "desc": "我是一张轮播图",
+          "location": "01",
+          "productId": "product1",
+          "picPath": "/public/carousel/carous.png",
+          "target": "B123211",
+          "targetId": "B123211"
+      }
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "carousel3"}
+      }
+
+### 停用轮播图 [PUT /api/v1/carousels/:id/halt]
+停用指定轮播图。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `carousel3` (string) - 轮播id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "carousel3"}
+      }
+
+### 启用轮播图 [PUT /api/v1/carousels/:id/halt]
+重新启用处于停用状态的指定轮播图。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `carousel3` (string) - 轮播id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "carousel3"}
+      }
+
+### 删除轮播图 [DELETE /api/v1/carousels/:id]
+删除指定轮播图。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `carousel3` (string) - 轮播id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "carousel3"}
+      }
+
+### 修改轮播图 [PUT /api/v1/channels/:id]
+修改渠道商信息，返回唯一标识Id
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `carousel3` (string) - 轮播id。
+
++ Request (application/json)
+
+      {
+          "name": "轮播图",
+          "desc": "我是一张轮播图",
+          "location": "01",
+          "productId": "product1",
+          "picPath": "/public/carousel/carous.png",
+          "target": "B123211",
+          "targetId": "B123211"
+      }
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "carousel3"}
+      }
+
+### 获取轮播列表 [GET /api/v1/carousels/{?location=01,productId=p11}]
+返回渠道商列表信息
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + location: `05` (string) - 轮播图位置。
+  + productId: `product1` (number) - 产品轮播图对应的产品Id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {
+              "channels":[
+                  {
+                    "id": "carousel3",
+					          "name": "轮播图",
+					          "desc": "我是一张轮播图",
+					          "location": "01",
+					          "productId": "product1",
+					          "picPath": "/public/carousel/carous.png",
+					          "target": "B123211",
+					          "targetId": "B123211",
+					          "status": "01"
+                  },
+                  {
+                    "id": "carousel4",
+                    ...
+                  },
+                  {
+                    "id": "carousel5",
+                    ...
+                  }
+              ],
+          }
+      }
+
+# Group 渠道商
+
+### 新增渠道商 [POST /api/v1/channels]
+新增加渠道商
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Request (application/json)
+
+      {
+          "name": "中日友好",
+          "desc": "中日友好渠道推广",
+          "contact": "王五",
+          "telephone": "13323334567",
+          "bizCode": "B123211"
+      }
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "channel123"}
+      }
+
+### 停用渠道商 [PUT /api/v1/channels/:id/halt]
+停用指定渠道商。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `channel1` (string) - 渠道商id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "123"}
+      }
+
+### 启用渠道商 [PUT /api/v1/channels/:id/awaken]
+重新启用处于停用状态的指定渠道商。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `channel1` (string) - 渠道商id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "123"}
+      }
+
+### 修改渠道商 [PUT /api/v1/channels/:id]
+修改渠道商信息，返回唯一标识Id
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `channel1` (string) - 渠道商id。
+
++ Request (application/json)
+
+      {
+          "name": "中日友好",
+          "desc": "中日友好渠道推广",
+          "contact": "王五",
+          "telephone": "13323334567",
+          "bizCode": "B123211"
+      }
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "channel123"}
+      }
+
+### 获取渠道商列表 [GET /api/v1/channels/{?pages=1,pageNum}]
+返回渠道商列表信息
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + pages: 1 (number) - 用户列表页数。
+  + pageNum: 10 (number) - 用户列表每页数量
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {
+              "channels":[
+                  {
+                    "id": "channel123",
+                    "name":"发现",
+                    "desc":"",
+                    "contact":"联系我",
+                    "telephone":"13838384646",
+                    "bizCode":"B123123",
+                  },
+                  {
+                    "id": "channel345",
+                    ...
+                  },
+                  {
+                    "id": "channel456",
+                    ...
+                  }
+              ],
+          }
+      }
+
+# Group 服务人员
+
+### 翻译人员 [GET /api//v1/servants/{?type=01,nation=01,pages=1,pageNum=10}]
+服务人员包含翻译和地接，根据类型和国籍查询列表。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + type: `01` (string) - 服务人员类型，01-翻译 02-地接，00-全部。
+  + nation: `01` (string,optional) - 服务人员所属国家，01-日本 02-韩国 03-泰国。
+  + pages: 1 (number) - 列表页数。
+  + pageNum: 10 (number) - 列表每页数量
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {
+              "servants":[
+                  {
+                    "id": "servant123",
+                    "name":"佐藤君",
+                    "desc":"佐藤君是一名专业翻译",
+                    "picPath":"/public/servants/zuoteng.png",
+                    "type":"翻译",
+                    "nation":"日本",
+                    "service":"文字翻译",
+                    "introH5":"<span>日本XXXXX</span>",
+                    "literPrice":"500/千字",
+                    "followPrice":"5000/小时",
+                    "recepPrice":"1000/次"
+                  },
+                  {
+                    "id": "servant345",
+                    ...
+                  },
+                  {
+                    "id": "servant456",
+                    ...
+                  }
+              ],
+          }
+      }
+
+
+### 新增服务人员 [POST /api/v1/servants]
+新增服务人员
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Request (application/json)
+
+      {
+          "name":"佐藤君",
+          "desc":"佐藤君是一名专业翻译",
+          "picPath":"/public/servants/zuoteng.png",
+          "type":"翻译",
+          "nation":"日本",
+          "service":"文字翻译",
+          "introH5":"<span>日本XXXXX</span>",
+          "literPrice":"500/千字",
+          "followPrice":"5000/小时",
+          "recepPrice":"1000/次"
+      }
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "servant123"}
+      }
+
+### 停用服务人员 [PUT /api/v1/servants/:id/halt]
+停用指定渠道商。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `servant123` (string) - 服务人员id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "servant123"}
+      }
+
+### 启用服务人员 [PUT /api/v1/servants/:id/awaken]
+重新启用服务人员。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `servant123` (string) - 服务人员id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "servant123"}
+      }
+
+### 修改服务人员 [PUT /api/v1/servants/:id]
+修改服务人员信息，返回唯一标识Id
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Request (application/json)
+
+      {
+          "name":"佐藤君",
+          "desc":"佐藤君是一名专业翻译",
+          "picPath":"/public/servants/zuoteng.png",
+          "type":"翻译",
+          "nation":"日本",
+          "service":"文字翻译",
+          "introH5":"<span>日本XXXXX</span>",
+          "literPrice":"500/千字",
+          "followPrice":"5000/小时",
+          "recepPrice":"1000/次"
+      }
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "servant123"}
+      }

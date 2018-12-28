@@ -1,6 +1,6 @@
 import db from '../db/db'
 
-class Channel {
+class Attendant {
     constructor(data) {
         if (!data) {
             return
@@ -8,29 +8,15 @@ class Channel {
         this.id = data.id
         this.name = data.name
         this.desc = data.desc
-        this.channelNum = data.channelNum
-        this.contact = data.contact
-        this.telephone = data.telephone
-        this.bizCode = data.bizCode
+        this.price = data.price
+        this.target = data.target
+        this.status = data.status
+        this.type = data.type
 
         this.operator = data.operator
         this.operatorFlag = data.operatorFlag
         this.updatedAt = data.updatedAt
         this.createdAt = data.createdAt
-    }
-
-    async all(request) {
-        try {
-            return await db('t_hm101_channels')
-                .select('*')
-                .where({ userId: request.userId })
-                .orderBy('updatedAt', 'desc')
-                .offset(+request.pages * +request.pageNum)
-                .limit(+request.pageNum)
-        } catch (error) {
-            console.log(error)
-            throw new Error('ERROR')
-        }
     }
 
     async find(id) {
@@ -46,7 +32,7 @@ class Channel {
 
     async store() {
         try {
-            return await db('t_hm101_channels').insert(this)
+            return await db('t_hm101_attendants').insert(this)
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
@@ -55,7 +41,7 @@ class Channel {
 
     async save(request) {
         try {
-            return await db('t_hm101_channels')
+            return await db('t_hm101_attendants')
                 .update(this)
                 .where({ id: this.id })
         } catch (error) {
@@ -68,14 +54,14 @@ class Channel {
 
 async function findById(id) {
     try {
-        let [channelData] = await db('t_hm101_channels')
+        let [contentData] = await db('t_hm101_attendants')
             .select('*')
             .where({ id: id })
-        return channelData
+        return contentData
     } catch (error) {
         console.log(error)
         throw new Error('ERROR')
     }
 }
 
-export { Channel, findById }
+export { Attendant, findById }

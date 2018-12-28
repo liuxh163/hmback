@@ -3,6 +3,7 @@ if (!process.env.NODE_ENV) {
     throw new Error('NODE_ENV not set')
 }
 exports.up = function(knex, Promise) {
+    knex.schema.dropTableIfExists('t_hm101_channels');
     return knex.schema.createTable('t_hm101_channels', function(table) {
         table.charset('utf8mb4')
         table.collate('utf8mb4_unicode_ci')
@@ -20,6 +21,8 @@ exports.up = function(knex, Promise) {
         table.string('telephone', 16).notNullable();
         //渠道企业代码
         table.string('bizCode', 20).unique();
+        //渠道状态 01-启用  02-停用
+        table.string('status', 2).notNullable().defaultTo('01');
 
         // 记录操作人id
         table.string('operator').notNullable();

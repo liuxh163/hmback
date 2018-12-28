@@ -1,32 +1,33 @@
 import db from '../db/db'
 import rand from 'randexp'
 
-class Note {
+class Carousel {
     constructor(data) {
         if (!data) {
             return
         }
-
         this.id = data.id
-        this.userId = data.userId
-        this.title = data.title
-        this.content = data.content
-        this.ipAddress = data.ipAddress
+        this.name = data.name
+        this.desc = data.desc
+        this.location = data.location
+        this.productId = data.productId
+        this.picPath = data.picPath
+        this.target = data.target
+        this.targetId = data.targetId
+        this.status = data.status
+
+        this.operator = data.operator
+        this.operatorFlag = data.operatorFlag
+        this.updatedAt = data.updatedAt
+        this.createdAt = data.createdAt
     }
 
     async all(request) {
         try {
-            return await db('notes')
+            return await db('t_hm101_carousels')
                 .select('*')
-                .where({ userId: request.userId })
-                .where(
-                    'title',
-                    'like',
-                    '%' + (request.sort ? request.sort : '') + '%'
-                )
-                .orderBy('createdAt', request.order)
-                .offset(+request.page * +request.limit)
-                .limit(+request.limit)
+                .where({ location: request.location, productId: request.productId })
+                .orderBy('updatedAt', 'desc')
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
@@ -46,7 +47,7 @@ class Note {
 
     async store() {
         try {
-            return await db('notes').insert(this)
+            return await db('t_hm101_carousels').insert(this)
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
@@ -55,7 +56,7 @@ class Note {
 
     async save(request) {
         try {
-            return await db('notes')
+            return await db('t_hm101_carousels')
                 .update(this)
                 .where({ id: this.id })
         } catch (error) {
@@ -66,7 +67,7 @@ class Note {
 
     async destroy(request) {
         try {
-            return await db('notes')
+            return await db('t_hm101_carousels')
                 .delete()
                 .where({ id: this.id })
         } catch (error) {
@@ -78,14 +79,14 @@ class Note {
 
 async function findById(id) {
     try {
-        let [noteData] = await db('notes')
-            .select('id', 'userId', 'title', 'content')
+        let [carouselData] = await db('t_hm101_carousels')
+            .select('*')
             .where({ id: id })
-        return noteData
+        return carouselData
     } catch (error) {
         console.log(error)
         throw new Error('ERROR')
     }
 }
 
-export { Note, findById }
+export { Carousel, findById }

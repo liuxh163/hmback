@@ -1,59 +1,27 @@
 import dateFormat from 'date-fns/format'
 
 import { User } from '../models/User'
-import { Note } from '../models/Note'
+import { Comment } from '../models/Comment'
+import { H5content } from '../models/H5content'
 
-const noteSchema = joi.object({
-    id: joi.number().integer(),
-    userId: joi
-        .number()
-        .integer()
-        .required(),
-    title: joi.string().required(),
-    content: joi.string().required(),
-    ipAddress: joi.string(),
-})
-
-class NoteController {
+class CommentController {
     async index(ctx) {
         const query = ctx.query
 
-        //Attach logged in user
-        const user = new User(ctx.state.user)
-        query.userId = user.id
+        const comment = new Comment()
 
-        //Init a new note object
-        const note = new Note()
-
-        //Let's check that the sort options were set. Sort can be empty
-        if (!query.order || !query.page || !query.limit) {
+        //检查查询参数
+        if (!query.pages || !query.pageNum) {
             ctx.throw(400, 'INVALID_ROUTE_OPTIONS')
         }
 
-        //Get paginated list of notes
+        //获取分页列表
         try {
-            let result = await note.all(query)
+            let result = await comment.all(query)
             ctx.body = result
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA' + error)
-        }
-    }
-
-    async show(ctx) {
-        const params = ctx.params
-        if (!params.id) ctx.throw(400, 'INVALID_DATA')
-
-        //Initialize note
-        const note = new Note()
-
-        try {
-            //Find and show note
-            await note.find(params.id)
-            ctx.body = note
-        } catch (error) {
-            console.log(error)
-            ctx.throw(400, 'INVALID_DATA')
         }
     }
 
@@ -62,21 +30,19 @@ class NoteController {
 
         //Attach logged in user
         const user = new User(ctx.state.user)
-        request.userId = user.id
+        request.commenterId = user.id
 
-        //Add ip
-        request.ipAddress = ctx.ip
+        const comment = new Comment(request)
 
-        //Create a new note object using the request params
-        const note = new Note(request)
-
-        //Validate the newly created note
-        const validator = joi.validate(note, noteSchema)
-        if (validator.error) ctx.throw(400, validator.error.details[0].message)
+        // 插入h5内容
+        const h5Content = new H5content();
+        h5Content.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss');
+        h5Content.content = request.content;
+        await h5Content.store();
 
         try {
-            let result = await note.store()
-            ctx.body = { message: 'SUCCESS', id: result }
+            let result = await comment.store()
+            ctx.body = { id: result.id }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
@@ -90,29 +56,35 @@ class NoteController {
         //Make sure they've specified a note
         if (!params.id) ctx.throw(400, 'INVALID_DATA')
 
-        //Find and set that note
-        const note = new Note()
-        await note.find(params.id)
-        if (!note) ctx.throw(400, 'INVALID_DATA')
+        //Find and set that comment
+        const comment = new Comment()
+        await comment.find(params.id)
+        if (!comment) ctx.throw(400, 'INVALID_DATA')
 
-        //Grab the user //If it's not their note - error out
+        // 更新h5内容
+        const h5Content = new H5content();
+        await h5Content.find(comment.contentH5Id);
+        if (!content) ctx.throw(400, 'INVALID_DATA');
+        h5Content.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss');
+        h5Content.content = request.content;
+        await h5Content.save();
+
+
+        //检查是否当前评论人
         const user = new User(ctx.state.user)
-        if (note.userId !== user.id) ctx.throw(400, 'INVALID_DATA')
+        if (comment.commenterId !== user.id) ctx.throw(400, 'INVALID_DATA')
 
         //Add the updated date value
-        note.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        comment.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
 
-        //Add the ip
-        request.ipAddress = ctx.ip
-
-        //Replace the note data with the new updated note data
+        //Replace the comment data with the new updated comment data
         Object.keys(ctx.request.body).forEach(function(parameter, index) {
-            note[parameter] = request[parameter]
+            comment[parameter] = request[parameter]
         })
 
         try {
-            await note.save()
-            ctx.body = { message: 'SUCCESS' }
+            await comment.save()
+            ctx.body = { id: result.id }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
@@ -123,18 +95,18 @@ class NoteController {
         const params = ctx.params
         if (!params.id) ctx.throw(400, 'INVALID_DATA')
 
-        //Find that note
-        const note = new Note()
-        await note.find(params.id)
-        if (!note) ctx.throw(400, 'INVALID_DATA')
+        //Find that comment
+        const comment = new Comment()
+        await comment.find(params.id)
+        if (!comment) ctx.throw(400, 'INVALID_DATA')
 
-        //Grab the user //If it's not their note - error out
+        //检查是否当前评论人
         const user = new User(ctx.state.user)
-        if (note.userId !== user.id) ctx.throw(400, 'INVALID_DATA')
+        if (comment.commenterId !== user.id) ctx.throw(400, 'INVALID_DATA')
 
         try {
-            await note.destroy()
-            ctx.body = { message: 'SUCCESS' }
+            await comment.destroy()
+            ctx.body = { id: params.id }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
@@ -142,4 +114,4 @@ class NoteController {
     }
 }
 
-export default NoteController
+export default CommentController

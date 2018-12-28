@@ -12,6 +12,11 @@ class User {
         this.slogan = data.slogan;
         this.idNumber = data.idNumber;
         this.type = data.type;
+
+        this.operator = data.operator
+        this.operatorFlag = data.operatorFlag
+        this.updatedAt = data.updatedAt
+        this.createdAt = data.createdAt
     }
 }
 

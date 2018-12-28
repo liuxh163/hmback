@@ -1,32 +1,36 @@
 import Router from 'koa-router'
-import jwt from '../middleware/jwt'
-import logger from '../logs/log'
+import RdsToken from '../middleware/rdsToken'
 
 import CarouselController from '../controllers/CarouselController'
 
 const router = new Router()
-const jwtMiddleware = jwt({ secret: process.env.JWT_SECRET })
+const tokenMw = RdsToken()
 
 const carouselController = new CarouselController()
-
-router.get('/api/v1/carousels', jwtMiddleware, async (ctx, next) => {
+// 查询轮播图
+router.get('/v1/carousels/{?location=01,productId=p11}', tokenMw, async (ctx, next) => {
     await carouselController.index(ctx)
 })
-
-router.post('/api/v1/carousels', jwtMiddleware, async (ctx, next) => {
+// 新建轮播图
+router.post('/v1/carousels', tokenMw, async (ctx, next) => {
     await carouselController.create(ctx)
 })
 
-router.get('/api/v1/carousels/:id', jwtMiddleware, async (ctx, next) => {
-    await carouselController.show(ctx)
-})
-
-router.put('/api/v1/carousels/:id', jwtMiddleware, async (ctx, next) => {
+// 更新轮播图
+router.put('/v1/carousels/:id', tokenMw, async (ctx, next) => {
     await carouselController.update(ctx)
 })
-
-router.delete('/api/v1/carousels/:id', jwtMiddleware, async (ctx, next) => {
-    await controller.delete(ctx)
+// 停用轮播图
+router.put('/v1/carousels/:id/halt', tokenMw, async (ctx, next) => {
+    await carouselController.halt(ctx)
+})
+// 启用轮播图
+router.put('/v1/carousels/:id/awaken', tokenMw, async (ctx, next) => {
+    await carouselController.awaken(ctx)
+})
+// 删除轮播图
+router.delete('/v1/carousels/:id', tokenMw, async (ctx, next) => {
+    await carouselController.delete(ctx)
 })
 
 export default router

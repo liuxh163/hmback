@@ -1,61 +1,22 @@
 # Group 专家
 
-## 渠道商 [/api/v1/experts/{?channel_id}]
-平台渠道管理相关接口内容。
+### 新增专家 [POST /api/v1/product/:id/experts]
+新增产品专家信息，成功返回唯一标识Id
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
 
 + Parameters
-    + channel_id: `channel123` (string) - 渠道唯一标识id。
-
-+ Model (application/json)
-
-    ```js
-    {
-        "success":true,
-        "status": "200",
-        "errcode": "10001",
-        "message": "操作成功",
-        "data": {
-            "id": "user123",
-            "code": "B130001",
-            "name": "赵四",
-            "advertise": "<span>这是一个包含渠道二维码的推广宣传页面</span>",
-            "logo_path": "/users/touxiang.png",
-            "description": "numberOne渠道"
-        }
-    }
-    ```
-
-### 获取渠道商信息 [GET]
-返回指定渠道商详细信息
-
-+ Response 200
-
-  [渠道商][]
-
-### 删除指定渠道商 [DELETE]
-渠道商删除成功返回唯一标识Id
-
-+ Response 200
-
-      {
-          "success":true,
-          "status": "200",
-          "errcode": "10001",
-          "message": "操作成功",
-          "data": {"id": "channel123"}
-      }
-
-### 修改渠道商信息 [PUT]
-渠道商信息修改成功返回唯一标识Id
+  + productId: `product1` (string) - 产品唯一id。
 
 + Request (application/json)
 
       {
-          "code": "B130001",
-          "name": "赵四",
-          "advertise": "<span>这是一个包含渠道二维码的推广宣传页面</span>",
-          "logo_path": "/users/touxiang.png",
-          "description": "numberOne渠道"
+          "price": "4500.00",
+          "name": "甲亢检查",
+          "desc": "<span>这是一个附加项，可以选的哦</span>",
+          "target": "01",
+          "status": "01"
       }
 
 + Response 200
@@ -65,20 +26,79 @@
           "status": "200",
           "errcode": "10001",
           "message": "操作成功",
-          "data": {"id": "channel123"}
+          "data": {"id": "attendant1"}
       }
 
-### 新增渠道商 [POST]
-新增渠道商信息，成功返回唯一标识Id
+### 获取专家列表 [GET /api/v1/product/:id/experts]
+返回指定产品下专家列表信息
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + productId: `product1` (string) - 产品唯一id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {
+              "attendants":[
+                  {
+                    "id": "attendant1",
+                    "price": "4500.00",
+                    "name": "甲亢检查",
+                    "desc": "<span>这是一个附加项，可以选的哦</span>",
+                    "target": "01",
+                    "status": "01"
+                  },
+                  {
+                    "id": "attendant2",
+                    ...
+                  }
+              ]
+          }
+      }
+
+### 删除专家 [DELETE /api/v1/experts/:id]
+删除指定专家。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `expert1` (string) - 专家唯一id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "expert1"}
+      }
+
+### 修改专家信息 [PUT /api/v1/experts/:id]
+修改专家信息，返回唯一标识Id
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `expert1` (string) - 专家唯一id。
 
 + Request (application/json)
 
       {
-          "code": "B130001",
-          "name": "赵四",
-          "advertise": "<span>这是一个包含渠道二维码的推广宣传页面</span>",
-          "logo_path": "/users/touxiang.png",
-          "description": "numberOne渠道"
+          "price": "4500.00",
+          "name": "甲亢检查",
+          "desc": "<span>这是一个附加项，可以选的哦</span>",
+          "target": "01",
+          "status": "01"
       }
 
 + Response 200
@@ -88,49 +108,5 @@
           "status": "200",
           "errcode": "10001",
           "message": "操作成功",
-          "data": {"id": "channel123"}
+          "data": {"id": "expert1"}
       }
-
-## 渠道商列表 [/api/v1/channels/{?limit}]
-渠道商列表包含多个渠道信息，只有管理员用户可以查询渠道商列表信息。
-
-+ Parameters
-  + limit: 3 (number) - 列表中渠道商的数量。
-
-+ Model (application/json)
-
-    ```js
-    {
-        "success":true,
-        "status": "200",
-        "errcode": "10001",
-        "message": "操作成功",
-        "data": {
-          "users":[
-            {
-              "id": "channel123",
-              "code": "B130001",
-              "name": "赵四",
-              "advertise": "<span>这是一个包含渠道二维码的推广宣传页面</span>",
-              "logo_path": "/users/touxiang.png",
-              "description": "numberOne渠道"
-            },
-            {
-              "id": "channel134",
-              ...
-            },
-            {
-              "id": "channel345",
-              ...
-            }
-          ]
-        }
-    }
-    ```
-
-### 获取渠道商列表 [GET]
-返回指定数量渠道商列表信息
-
-+ Response 200
-
-  [渠道商列表][]

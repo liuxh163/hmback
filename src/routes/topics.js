@@ -1,6 +1,5 @@
 import Router from 'koa-router'
 import RdsToken from '../middleware/rdsToken'
-import logger from '../logs/log'
 
 import TopicController from '../controllers/TopicController'
 

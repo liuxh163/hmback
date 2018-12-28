@@ -3,6 +3,7 @@ if (!process.env.NODE_ENV) {
     throw new Error('NODE_ENV not set')
 }
 exports.up = function(knex, Promise) {
+    knex.schema.dropTableIfExists('t_hm101_servants');
     return knex.schema.createTable('t_hm101_servants', function(table) {
         table.charset('utf8mb4')
         table.collate('utf8mb4_unicode_ci')
@@ -11,7 +12,7 @@ exports.up = function(knex, Promise) {
         //服务人员姓名
         table.string('name', 20).notNullable();
         //服务人员简介
-        table.string('intro', 128);
+        table.string('desc', 128);
         //服务人员图片位置
         table.string('picPath', 96).notNullable();
         //服务人员类型 01-翻译  02-地接
@@ -21,7 +22,15 @@ exports.up = function(knex, Promise) {
         //服务人员国籍
         table.string('nation', 20);
         //服务内容 01-文字翻译，02-陪同翻译，03-文字翻译及陪同翻译，04-地面接待
-        table.string('content', 2);
+        table.string('service', 2);
+        //服务人员介绍页面内容
+        table.integer('introH5Id', 11).notNullable();
+        //文翻单价
+        table.decimal('literPrice', 8, 2);
+        //文翻单价
+        table.decimal('followPrice', 8, 2);
+        //地接价格
+        table.decimal('recepPrice', 8, 2);
 
         // 记录操作人id
         table.string('operator').notNullable();

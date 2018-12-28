@@ -3,6 +3,7 @@ if (!process.env.NODE_ENV) {
     throw new Error('NODE_ENV not set')
 }
 exports.up = function(knex, Promise) {
+		knex.schema.dropTableIfExists('t_hm101_tags');
     return knex.schema.createTable('t_hm101_tags', function(table) {
         table.charset('utf8mb4')
         table.collate('utf8mb4_unicode_ci')
@@ -14,6 +15,8 @@ exports.up = function(knex, Promise) {
         table.integer('targetId', 11);
         //标签名称
         table.string('name', 20);
+        //标签人
+        table.string('tagerId', 11);
 
         // 记录操作人id
         table.string('operator').notNullable();

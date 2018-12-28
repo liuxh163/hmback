@@ -1,32 +1,38 @@
 import db from '../db/db'
 import rand from 'randexp'
 
-class Note {
+class Servant {
     constructor(data) {
         if (!data) {
             return
         }
-
         this.id = data.id
-        this.userId = data.userId
-        this.title = data.title
-        this.content = data.content
-        this.ipAddress = data.ipAddress
+        this.name = data.name
+        this.intro = data.intro
+        this.picPaht = data.picPaht
+        this.type = data.type
+        this.status = data.status
+        this.nation = data.nation
+        this.service = data.service
+        this.introH5Id = data.introH5Id
+        this.literPrice = data.literPrice
+        this.followPrice = data.followPrice
+        this.recepPrice = data.recepPrice
+
+        this.operator = data.operator
+        this.operatorFlag = data.operatorFlag
+        this.updatedAt = data.updatedAt
+        this.createdAt = data.createdAt
     }
 
     async all(request) {
         try {
-            return await db('notes')
+            return await db('t_hm101_servants')
                 .select('*')
-                .where({ userId: request.userId })
-                .where(
-                    'title',
-                    'like',
-                    '%' + (request.sort ? request.sort : '') + '%'
-                )
-                .orderBy('createdAt', request.order)
-                .offset(+request.page * +request.limit)
-                .limit(+request.limit)
+                .where({ type: request.type, nation: request.nation })
+                .orderBy('updatedAt', 'desc')
+                .offset(+request.pages * +request.pageNum)
+                .limit(+request.pageNum)
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
@@ -46,7 +52,7 @@ class Note {
 
     async store() {
         try {
-            return await db('notes').insert(this)
+            return await db('t_hm101_servants').insert(this)
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
@@ -55,7 +61,7 @@ class Note {
 
     async save(request) {
         try {
-            return await db('notes')
+            return await db('t_hm101_servants')
                 .update(this)
                 .where({ id: this.id })
         } catch (error) {
@@ -66,7 +72,7 @@ class Note {
 
     async destroy(request) {
         try {
-            return await db('notes')
+            return await db('t_hm101_servants')
                 .delete()
                 .where({ id: this.id })
         } catch (error) {
@@ -78,14 +84,14 @@ class Note {
 
 async function findById(id) {
     try {
-        let [noteData] = await db('notes')
-            .select('id', 'userId', 'title', 'content')
+        let [servantData] = await db('t_hm101_servants')
+            .select('*')
             .where({ id: id })
-        return noteData
+        return servantData
     } catch (error) {
         console.log(error)
         throw new Error('ERROR')
     }
 }
 
-export { Note, findById }
+export { Servant, findById }

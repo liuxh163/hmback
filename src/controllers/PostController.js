@@ -7,21 +7,16 @@ class PostController {
     async index(ctx) {
         const query = ctx.query
 
-        //Attach logged in user
-        const user = new User(ctx.state.user)
-        query.userId = user.id
+        const post = new Post()
 
-        //Init a new note object
-        const note = new Note()
-
-        //Let's check that the sort options were set. Sort can be empty
-        if (!query.order || !query.page || !query.limit) {
+        //检查查询参数
+        if (!query.sort || !query.pages || !query.pageNum) {
             ctx.throw(400, 'INVALID_ROUTE_OPTIONS')
         }
 
-        //Get paginated list of notes
+        //Get paginated list of posts
         try {
-            let result = await note.all(query)
+            let result = await post.all(query)
             ctx.body = result
         } catch (error) {
             console.log(error)
@@ -33,13 +28,13 @@ class PostController {
         const params = ctx.params
         if (!params.id) ctx.throw(400, 'INVALID_DATA')
 
-        //Initialize note
-        const note = new Note()
+        //Initialize post
+        const post = new Post()
 
         try {
-            //Find and show note
-            await note.find(params.id)
-            ctx.body = note
+            //Find and show post
+            await post.find(params.id)
+            ctx.body = post
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
@@ -51,21 +46,17 @@ class PostController {
 
         //Attach logged in user
         const user = new User(ctx.state.user)
-        request.userId = user.id
+        request.posterId = user.id
 
         //Add ip
         request.ipAddress = ctx.ip
 
-        //Create a new note object using the request params
-        const note = new Note(request)
-
-        //Validate the newly created note
-        const validator = joi.validate(note, noteSchema)
-        if (validator.error) ctx.throw(400, validator.error.details[0].message)
+        //Create a new post object using the request params
+        const post = new Post(request)
 
         try {
-            let result = await note.store()
-            ctx.body = { message: 'SUCCESS', id: result }
+            let result = await post.store()
+            ctx.body = { id: result }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
@@ -76,31 +67,28 @@ class PostController {
         const params = ctx.params
         const request = ctx.request.body
 
-        //Make sure they've specified a note
+        //Make sure they've specified a post
         if (!params.id) ctx.throw(400, 'INVALID_DATA')
 
-        //Find and set that note
-        const note = new Note()
-        await note.find(params.id)
-        if (!note) ctx.throw(400, 'INVALID_DATA')
+        //Find and set that post
+        const post = new Post()
+        await post.find(params.id)
+        if (!post) ctx.throw(400, 'INVALID_DATA')
 
-        //Grab the user //If it's not their note - error out
+        //判断操作用户是否发帖人，不是发帖人不允许更新
         const user = new User(ctx.state.user)
-        if (note.userId !== user.id) ctx.throw(400, 'INVALID_DATA')
+        if (post.posterId !== user.id) ctx.throw(400, 'INVALID_OPERATOR')
 
         //Add the updated date value
-        note.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        post.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
 
-        //Add the ip
-        request.ipAddress = ctx.ip
-
-        //Replace the note data with the new updated note data
+        //Replace the post data with the new updated post data
         Object.keys(ctx.request.body).forEach(function(parameter, index) {
-            note[parameter] = request[parameter]
+            post[parameter] = request[parameter]
         })
 
         try {
-            await note.save()
+            await post.save()
             ctx.body = { message: 'SUCCESS' }
         } catch (error) {
             console.log(error)
@@ -112,17 +100,17 @@ class PostController {
         const params = ctx.params
         if (!params.id) ctx.throw(400, 'INVALID_DATA')
 
-        //Find that note
-        const note = new Note()
-        await note.find(params.id)
-        if (!note) ctx.throw(400, 'INVALID_DATA')
+        //Find that post
+        const post = new Post()
+        await post.find(params.id)
+        if (!post) ctx.throw(400, 'INVALID_DATA')
 
-        //Grab the user //If it's not their note - error out
+        //判断操作用户是否发帖人，不是发帖人不允许删除
         const user = new User(ctx.state.user)
-        if (note.userId !== user.id) ctx.throw(400, 'INVALID_DATA')
+        if (post.posterId !== user.id) ctx.throw(400, 'INVALID_POSTER')
 
         try {
-            await note.destroy()
+            await post.destroy()
             ctx.body = { message: 'SUCCESS' }
         } catch (error) {
             console.log(error)

@@ -18,21 +18,6 @@ class TopicController {
         }
     }
 
-    async show(ctx) {
-        const params = ctx.params
-        if (!params.id) ctx.throw(400, 'INVALID_DATA')
-
-        const topic = new Topic()
-
-        try {
-            await topic.find(params.id)
-            ctx.body = topic
-        } catch (error) {
-            console.log(error)
-            ctx.throw(400, 'INVALID_DATA')
-        }
-    }
-
     async create(ctx) {
         const request = ctx.request.body
 
@@ -51,19 +36,19 @@ class TopicController {
         const params = ctx.params
         const request = ctx.request.body
 
-        //Make sure they've specified a note
+        //Make sure they've specified a topic
         if (!params.id) ctx.throw(400, 'INVALID_DATA')
 
-        //Find and set that note
+        //Find and set that topic
         const topic = new Topic()
         await topic.find(params.id)
         if (!topic) ctx.throw(400, 'INVALID_DATA')
 
         //Add the updated date value
-        note.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        topic.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
 
 
-        //Replace the note data with the new updated note data
+        //Replace the topic data with the new updated topic data
         Object.keys(ctx.request.body).forEach(function(parameter, index) {
             topic[parameter] = request[parameter]
         })
@@ -76,23 +61,35 @@ class TopicController {
             ctx.throw(400, 'INVALID_DATA')
         }
     }
-
-    async delete(ctx) {
-        const params = ctx.params
-        if (!params.id) ctx.throw(400, 'INVALID_DATA')
-
-        //Find that note
-        const topic = new Topic()
-        await topic.find(params.id)
-        if (!topic) ctx.throw(400, 'INVALID_DATA')
+    // 禁用话题
+    async halt(ctx) {
+        const query = ctx.query
 
         try {
-            await topic.destroy()
-            ctx.body = { message: 'SUCCESS' }
+            await db('t_hm101_topics')
+                .update({status:'02'})
+                .where({ id: query.id, status: '01' })
         } catch (error) {
             console.log(error)
-            ctx.throw(400, 'INVALID_DATA')
+            throw new Error('ERROR')
         }
+        ctx.body = {id: query.id};
+    }
+
+    // 启用话题
+    async awaken(ctx) {
+        const query = ctx.query
+
+        try {
+            await db('t_hm101_topics')
+                .update({status:'01'})
+                .where({ id: query.id, status: '02' })
+        } catch (error) {
+            console.log(error)
+            throw new Error('ERROR')
+        }
+
+        ctx.body = {id: query.id};
     }
 }
 

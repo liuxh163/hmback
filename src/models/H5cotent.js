@@ -1,29 +1,18 @@
 import db from '../db/db'
 
-class Topic {
+class H5content {
     constructor(data) {
         if (!data) {
             return
         }
         this.id = data.id
-        this.name = data.name
         this.desc = data.desc
-        this.status = data.status
+        this.content = data.content
 
         this.operator = data.operator
         this.operatorFlag = data.operatorFlag
         this.updatedAt = data.updatedAt
         this.createdAt = data.createdAt
-    }
-
-    async all(request) {
-        try {
-            return await db('t_hm101_topics')
-                .select('id', 'name', 'desc', 'status')
-        } catch (error) {
-            console.log(error)
-            throw new Error('ERROR')
-        }
     }
 
     async find(id) {
@@ -39,35 +28,37 @@ class Topic {
 
     async store() {
         try {
-            return await db('t_hm101_topics').insert(this)
+            return await db('contentData').insert(this)
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
         }
     }
 
-    async save(request) {
-        try {
-            return await db('t_hm101_topics')
-                .update(this)
-                .where({ id: this.id })
-        } catch (error) {
-            console.log(error)
-            throw new Error('ERROR')
-        }
-    }
 }
 
 async function findById(id) {
     try {
-        let [topicData] = await db('t_hm101_topics')
-            .select('id', 'name', 'description')
+        let [contentData] = await db('t_hm101_htmls')
+            .select('id', 'desc', 'content')
             .where({ id: id })
-        return topicData
+        return contentData
     } catch (error) {
         console.log(error)
         throw new Error('ERROR')
     }
 }
 
-export { Topic, findById }
+async function findContentById(id) {
+    try {
+        let contentData = await db('t_hm101_htmls')
+            .select('content')
+            .where({ id: id })
+        return contentData
+    } catch (error) {
+        console.log(error)
+        throw new Error('ERROR')
+    }
+}
+
+export { H5content, findById }

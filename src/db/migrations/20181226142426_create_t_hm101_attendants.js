@@ -3,6 +3,7 @@ if (!process.env.NODE_ENV) {
     throw new Error('NODE_ENV not set')
 }
 exports.up = function(knex, Promise) {
+    knex.schema.dropTableIfExists('t_hm101_attendants');
     return knex.schema.createTable('t_hm101_attendants', function(table) {
         table.charset('utf8mb4')
         table.collate('utf8mb4_unicode_ci')
@@ -14,7 +15,7 @@ exports.up = function(knex, Promise) {
         table.string('desc',256);
         //附加项金额
         table.decimal('price', 8, 2).notNullable();
-        //附加项使用对象性别 01-成人男 02-成人女 03-儿童男  04-儿童女
+        //附加项使用对象 01-成人男 02-成人女 03-儿童男  04-儿童女
         table.string('target', 2);
         //附加项分类
         table.string('type', 4);

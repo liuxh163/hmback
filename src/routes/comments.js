@@ -1,32 +1,27 @@
 import Router from 'koa-router'
-import jwt from '../middleware/jwt'
-import logger from '../logs/log'
+import RdsToken from '../middleware/rdsToken'
 
 import CommentController from '../controllers/CommentController'
 
 const router = new Router()
-const jwtMiddleware = jwt({ secret: process.env.JWT_SECRET })
+const tokenMw = RdsToken()
 
 const commentController = new CommentController()
-
-router.get('/api/v1/topics/:id/posts/:id/comments', jwtMiddleware, async (ctx, next) => {
+// 获取评论列表
+router.get('/v1/comments/{?target=01,targetId=123,pages=1,pageNum=10}', tokenMw, async (ctx, next) => {
     await commentController.index(ctx)
 })
-
-router.post('/api/v1/topics/:id/posts/:id/comments', jwtMiddleware, async (ctx, next) => {
+// 发表评论
+router.post('/v1/comments', tokenMw, async (ctx, next) => {
     await commentController.create(ctx)
 })
-
-router.get('/api/v1/topics/:id/posts/:id/comments/:id', jwtMiddleware, async (ctx, next) => {
-    await commentController.show(ctx)
-})
-
-router.put('/api/v1/topics/:id/posts/:id/comments/:id', jwtMiddleware, async (ctx, next) => {
-    await commentController.update(ctx)
-})
-
-router.delete('/api/v1/topics/:id/posts/:id/comments/:id', jwtMiddleware, async (ctx, next) => {
+// 删除评论
+router.delete('/v1/comments/:id', tokenMw, async (ctx, next) => {
     await commentController.delete(ctx)
+})
+// 更新评论
+router.put('/v1/comments/:id', tokenMw, async (ctx, next) => {
+    await commentController.update(ctx)
 })
 
 export default router

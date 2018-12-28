@@ -1,7 +1,7 @@
 import db from '../db/db'
 import rand from 'randexp'
 
-class Note {
+class Post {
     constructor(data) {
         if (!data) {
             return
@@ -14,16 +14,21 @@ class Note {
         this.posterId = data.posterId
         this.views = data.views
         this.location = data.location
+
+        this.operator = data.operator
+        this.operatorFlag = data.operatorFlag
+        this.updatedAt = data.updatedAt
+        this.createdAt = data.createdAt
     }
 
     async all(request) {
         try {
             return await db('t_hm101_posts')
-                .select('*')
+                .select('id', 'topicId', 'title', 'contentH5Id', 'posterId', 'views', 'location')
                 .where({ topicId: request.topicId })
-                .orderBy('updatedAt', request.order)
-                .offset(+request.pages * +request.pagenum)
-                .limit(+request.pagenum)
+                .orderBy('updatedAt', 'desc')
+                .offset(+request.pages * +request.pageNum)
+                .limit(+request.pageNum)
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
@@ -33,7 +38,10 @@ class Note {
     async find(id) {
         try {
             let result = await findById(id)
-            if (!result) return {}
+            if (!result) {
+                await views(id)//更新帖子查看数
+                return {}
+            }
             this.constructor(result)
         } catch (error) {
             console.log(error)
@@ -75,14 +83,28 @@ class Note {
 
 async function findById(id) {
     try {
-        let [noteData] = await db('t_hm101_posts')
+        let [postData] = await db('t_hm101_posts')
             .select('id', 'topicId', 'title', 'contentH5Id', 'posterId', 'views', 'location')
             .where({ id: id })
-        return noteData
+        return postData
     } catch (error) {
         console.log(error)
         throw new Error('ERROR')
     }
 }
 
-export { Note, findById }
+async function views(id) {
+    try {
+        // let views = await db('t_hm101_posts')
+        //     .select('views')
+        //     .where({ id: id })
+        return await db('t_hm101_posts')
+            .update({views:views+1})
+            .where({ id: id })
+    } catch (error) {
+        console.log(error)
+        throw new Error('ERROR')
+    }
+}
+
+export { Post, findById }

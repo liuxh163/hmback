@@ -57,7 +57,7 @@
           "data": {}
       }
 
-### 查询用户信息 [GET /api/v1/users/{?sort=1,pages=1,pagenum=10}]
+### 查询用户信息 [GET /api/v1/users/{?sort=1,pages=1,pageNum=10}]
 管理员查询所有用户列表信息
 
 + Headers
@@ -66,7 +66,7 @@
 + Parameters
   + sort: `1` (string,optional) - 用户列表排序方式，选填。
   + pages: 1 (number) - 用户列表页数。
-  + pagenum: 10 (number) - 用户列表每页数量
+  + pageNum: 10 (number) - 用户列表每页数量
 
 + Response 200
 

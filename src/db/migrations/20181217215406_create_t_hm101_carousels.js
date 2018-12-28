@@ -3,13 +3,16 @@ if (!process.env.NODE_ENV) {
     throw new Error('NODE_ENV not set')
 }
 exports.up = function(knex, Promise) {
+    knex.schema.dropTableIfExists('t_hm101_carousels');
     return knex.schema.createTable('t_hm101_carousels', function(table) {
         table.charset('utf8mb4')
         table.collate('utf8mb4_unicode_ci')
         //id主键
         table.increments('id').primary();
-        //轮播图位置 01-首页，02-日本产品，03-韩国产品，04-泰国产品，05-具体产品
+        //轮播图位置 01-首页，02-日本，03-韩国，04-泰国，05-具体产品
         table.string('location', 2).notNullable();
+        //轮播图产品Id
+        table.string('productId', 11);
         //轮播图名称
         table.string('name', 20);
         //轮播图描述
@@ -19,7 +22,7 @@ exports.up = function(knex, Promise) {
         //链接目标类型 01-产品 02-静态页员
         table.string('target', 2);
         //链接目标Id
-				table.string('targetId');
+		table.string('targetId');
         //启停用状态 01-启用  02-停用
         table.string('status',2).notNullable().defaultTo('01');
 

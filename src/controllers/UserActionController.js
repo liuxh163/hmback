@@ -178,8 +178,8 @@ class UserController {
         //发送短信
         // smsClient.sendSMS({
         //     PhoneNumbers: request.telephone,
-        //     SignName: '织育测评',
-        //     TemplateCode: 'SMS_150571075',
+        //     SignName: '海马医疗',
+        //     TemplateCode: 'SMS_153880263',
         //     TemplateParam: '{"code":\'verify\'}'
         // }).then(function (res) {
         //     let {Code}=res

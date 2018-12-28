@@ -1,17 +1,14 @@
 import db from '../db/db'
 
-class Channel {
+class Tag {
     constructor(data) {
         if (!data) {
             return
         }
         this.id = data.id
+        this.target = data.target
+        this.targetId = data.targetId
         this.name = data.name
-        this.desc = data.desc
-        this.channelNum = data.channelNum
-        this.contact = data.contact
-        this.telephone = data.telephone
-        this.bizCode = data.bizCode
 
         this.operator = data.operator
         this.operatorFlag = data.operatorFlag
@@ -21,23 +18,10 @@ class Channel {
 
     async all(request) {
         try {
-            return await db('t_hm101_channels')
+            return await db('t_hm101_tags')
                 .select('*')
-                .where({ userId: request.userId })
+                .where({ target: request.target, targetId:request.targetId })
                 .orderBy('updatedAt', 'desc')
-                .offset(+request.pages * +request.pageNum)
-                .limit(+request.pageNum)
-        } catch (error) {
-            console.log(error)
-            throw new Error('ERROR')
-        }
-    }
-
-    async find(id) {
-        try {
-            let result = await findById(id)
-            if (!result) return {}
-            this.constructor(result)
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
@@ -46,36 +30,35 @@ class Channel {
 
     async store() {
         try {
-            return await db('t_hm101_channels').insert(this)
+            return await db('t_hm101_tags').insert(this)
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
         }
     }
 
-    async save(request) {
+    async destroy(request) {
         try {
-            return await db('t_hm101_channels')
-                .update(this)
+            return await db('t_hm101_tags')
+                .delete()
                 .where({ id: this.id })
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
         }
     }
-
 }
 
 async function findById(id) {
     try {
-        let [channelData] = await db('t_hm101_channels')
+        let [tagData] = await db('t_hm101_tags')
             .select('*')
             .where({ id: id })
-        return channelData
+        return tagData
     } catch (error) {
         console.log(error)
         throw new Error('ERROR')
     }
 }
 
-export { Channel, findById }
+export { Tag, findById }

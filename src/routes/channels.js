@@ -1,32 +1,32 @@
 import Router from 'koa-router'
-import jwt from '../middleware/jwt'
-import logger from '../logs/log'
+import RdsToken from '../middleware/rdsToken'
 
 import ChannelController from '../controllers/ChannelController'
 
 const router = new Router()
-const jwtMiddleware = jwt({ secret: process.env.JWT_SECRET })
+const tokenMw = RdsToken()
 
 const channelController = new ChannelController()
-
-router.get('/api/v1/channels', jwtMiddleware, async (ctx, next) => {
+// 获取所有厂商渠道
+router.get('/api/v1/channels', tokenMw, async (ctx, next) => {
     await channelController.index(ctx)
 })
-
-router.post('/api/v1/channels', jwtMiddleware, async (ctx, next) => {
+// 新增厂商渠道
+router.post('/api/v1/channels', tokenMw, async (ctx, next) => {
     await channelController.create(ctx)
 })
-
-router.get('/api/v1/channels/:id', jwtMiddleware, async (ctx, next) => {
-    await channelController.show(ctx)
-})
-
-router.put('/api/v1/channels/:id', jwtMiddleware, async (ctx, next) => {
+// 修改渠道信息
+router.put('/api/v1/channels/:id', tokenMw, async (ctx, next) => {
     await channelController.update(ctx)
 })
 
-router.delete('/api/v1/channels/:id', jwtMiddleware, async (ctx, next) => {
-    await channelController.delete(ctx)
+// 停用渠道信息
+router.put('/v1/channels/:id/halt', tokenMw, async (ctx, next) => {
+    await attendantController.halt(ctx)
+})
+// 启用渠道信息
+router.put('/v1/channels/:id/awaken', tokenMw, async (ctx, next) => {
+    await attendantController.awaken(ctx)
 })
 
 export default router

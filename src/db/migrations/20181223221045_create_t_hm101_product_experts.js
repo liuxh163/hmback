@@ -3,6 +3,7 @@ if (!process.env.NODE_ENV) {
     throw new Error('NODE_ENV not set')
 }
 exports.up = function(knex, Promise) {
+    knex.schema.dropTableIfExists('t_hm101_product_experts');
     return knex.schema.createTable('t_hm101_product_experts', function(table) {
         table.charset('utf8mb4')
         table.collate('utf8mb4_unicode_ci')

@@ -1,29 +1,19 @@
 import db from '../db/db'
 
-class Topic {
+class HMFile {
     constructor(data) {
         if (!data) {
             return
         }
         this.id = data.id
         this.name = data.name
-        this.desc = data.desc
-        this.status = data.status
+        this.type = data.type
+        this.path = data.path
 
         this.operator = data.operator
         this.operatorFlag = data.operatorFlag
         this.updatedAt = data.updatedAt
         this.createdAt = data.createdAt
-    }
-
-    async all(request) {
-        try {
-            return await db('t_hm101_topics')
-                .select('id', 'name', 'desc', 'status')
-        } catch (error) {
-            console.log(error)
-            throw new Error('ERROR')
-        }
     }
 
     async find(id) {
@@ -39,35 +29,25 @@ class Topic {
 
     async store() {
         try {
-            return await db('t_hm101_topics').insert(this)
+            return await db('t_hm101_files').insert(this)
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
         }
     }
 
-    async save(request) {
-        try {
-            return await db('t_hm101_topics')
-                .update(this)
-                .where({ id: this.id })
-        } catch (error) {
-            console.log(error)
-            throw new Error('ERROR')
-        }
-    }
 }
 
 async function findById(id) {
     try {
-        let [topicData] = await db('t_hm101_topics')
-            .select('id', 'name', 'description')
+        let [fileData] = await db('t_hm101_files')
+            .select('id', 'name', 'type', 'path')
             .where({ id: id })
-        return topicData
+        return fileData
     } catch (error) {
         console.log(error)
         throw new Error('ERROR')
     }
 }
 
-export { Topic, findById }
+export { HMFile, findById }
