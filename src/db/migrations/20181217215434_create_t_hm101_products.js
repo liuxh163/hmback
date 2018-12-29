@@ -9,10 +9,10 @@ exports.up = function(knex, Promise) {
         table.collate('utf8mb4_unicode_ci')
         //id主键
         table.increments('id').primary();
-        //页首轮播图id
-        table.integer('carouselId', 11).notNullable();
         //产品描述
         table.string('desc', 128);
+        //产品所属国家
+        table.string('nation', 2);
         //产品浏览次数
         table.integer('views', 8).notNullable().defaultTo(0);
 
@@ -29,7 +29,7 @@ exports.up = function(knex, Promise) {
         //医院页面id
         table.integer('hospitalH5Id', 11);
         //基础项页面Id
-        table.integer('priceH5Id', 11);
+        table.integer('itemH5Id', 11);
 
         //产品成人单价
         table.decimal('adultPrice', 8, 2).notNullable();

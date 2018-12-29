@@ -7,11 +7,11 @@ const router = new Router()
 const tokenMw = RdsToken()
 
 const channelController = new ChannelController()
-// 获取所有厂商渠道
+// 获取所有渠道
 router.get('/api/v1/channels', tokenMw, async (ctx, next) => {
     await channelController.index(ctx)
 })
-// 新增厂商渠道
+// 新增渠道
 router.post('/api/v1/channels', tokenMw, async (ctx, next) => {
     await channelController.create(ctx)
 })
@@ -21,11 +21,11 @@ router.put('/api/v1/channels/:id', tokenMw, async (ctx, next) => {
 })
 
 // 停用渠道信息
-router.put('/v1/channels/:id/halt', tokenMw, async (ctx, next) => {
+router.put('/api/v1/channels/:id/halt', tokenMw, async (ctx, next) => {
     await attendantController.halt(ctx)
 })
 // 启用渠道信息
-router.put('/v1/channels/:id/awaken', tokenMw, async (ctx, next) => {
+router.put('/api/v1/channels/:id/awaken', tokenMw, async (ctx, next) => {
     await attendantController.awaken(ctx)
 })
 

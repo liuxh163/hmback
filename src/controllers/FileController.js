@@ -1,133 +1,79 @@
-import dateFormat from 'date-fns/format'
+if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
+require('dotenv').config();
 
-import { Carousel } from '../models/Carousel'
+const AliOss = require('ali-oss');
+const UUID = require('uuid');
+const Path= require('path');
+const fs = require('fs');
 
-class CarouselController {
-    async index(ctx) {
-        const query = ctx.query
+const accessKeyId = process.env.ALI_ACCESSKEYID
+const secretAccessKey = process.env.ALI_SECRETACCESSKEY
+const region = process.env.FILE_REGION
+const bucket = process.env.FILE_BUKET
+/**
+ * 现在region是外网，部署后最好换成内网
+ */
+let client = new AliOss({
+    region: region,
+    //云账号AccessKey有所有API访问权限，建议遵循阿里云安全最佳实践，部署在服务端使用RAM子账号或STS，部署在客户端使用STS。
+    accessKeyId: accessKeyId,
+    accessKeySecret: secretAccessKey,
+    bucket: bucket
 
-        //Attach logged in user
-        const user = new User(ctx.state.user)
-        query.userId = user.id
+  });
+class FileController{
+    /**
+     *  阿里的上传
+     * 标准MULTIPARTDATA ,名字叫做filex，因为叫files的时候koa-body会变得很怪异
+     *  如果需要，可以将多文件上传做并行，目前串行
+     */
+    async upload_alioss(ctx){
+       try{
+            let results = [];
 
-        //Init a new note object
-        const note = new Note()
-
-        //Let's check that the sort options were set. Sort can be empty
-        if (!query.order || !query.page || !query.limit) {
-            ctx.throw(400, 'INVALID_ROUTE_OPTIONS')
-        }
-
-        //Get paginated list of notes
-        try {
-            let result = await note.all(query)
-            ctx.body = result
-        } catch (error) {
+            console.log(Object.prototype.toString(ctx.request.files.filex))
+            if( Array.isArray(ctx.request.files.filex)){
+                for(let i = 0 ; i < ctx.request.files.filex.length ; ++i ){
+                    let file =  ctx.request.files.filex[i];
+                    let result =await this.upload_alioss_file(file);
+                    results.push(result);
+                }
+            }else{
+                let file = ctx.request.files.filex;
+                let result =await this.upload_alioss_file(file);
+                results.push(result);
+            }
+            ctx.body = results
+        }catch(error){
             console.log(error)
-            ctx.throw(400, 'INVALID_DATA' + error)
+            ctx.throw(400, error)
         }
+
     }
 
-    async show(ctx) {
-        const params = ctx.params
-        if (!params.id) ctx.throw(400, 'INVALID_DATA')
-
-        //Initialize note
-        const note = new Note()
-
-        try {
-            //Find and show note
-            await note.find(params.id)
-            ctx.body = note
-        } catch (error) {
-            console.log(error)
-            ctx.throw(400, 'INVALID_DATA')
+    async upload_alioss_file(file){
+        let result = {};
+        try{
+            let key = UUID.v1()+Path.extname(file.name);
+            let stream = fs.createReadStream(file.path);
+            let ali_result = await client.putStream(key, stream);
+            result={
+                name:file.name,
+                code:0,
+                message:"",
+                fileID:ali_result.name,
+                url:ali_result.url
+            }
+        }catch(e){
+            //失败
+            console.log("catch exception:"+e.message+" code:"+e.code)
+            result = {
+                name:file.name,
+                code:1,
+                message:e.message
+            };
         }
-    }
-
-    async create(ctx) {
-        const request = ctx.request.body
-
-        //Attach logged in user
-        const user = new User(ctx.state.user)
-        request.userId = user.id
-
-        //Add ip
-        request.ipAddress = ctx.ip
-
-        //Create a new note object using the request params
-        const note = new Note(request)
-
-        //Validate the newly created note
-        const validator = joi.validate(note, noteSchema)
-        if (validator.error) ctx.throw(400, validator.error.details[0].message)
-
-        try {
-            let result = await note.store()
-            ctx.body = { message: 'SUCCESS', id: result }
-        } catch (error) {
-            console.log(error)
-            ctx.throw(400, 'INVALID_DATA')
-        }
-    }
-
-    async update(ctx) {
-        const params = ctx.params
-        const request = ctx.request.body
-
-        //Make sure they've specified a note
-        if (!params.id) ctx.throw(400, 'INVALID_DATA')
-
-        //Find and set that note
-        const note = new Note()
-        await note.find(params.id)
-        if (!note) ctx.throw(400, 'INVALID_DATA')
-
-        //Grab the user //If it's not their note - error out
-        const user = new User(ctx.state.user)
-        if (note.userId !== user.id) ctx.throw(400, 'INVALID_DATA')
-
-        //Add the updated date value
-        note.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
-
-        //Add the ip
-        request.ipAddress = ctx.ip
-
-        //Replace the note data with the new updated note data
-        Object.keys(ctx.request.body).forEach(function(parameter, index) {
-            note[parameter] = request[parameter]
-        })
-
-        try {
-            await note.save()
-            ctx.body = { message: 'SUCCESS' }
-        } catch (error) {
-            console.log(error)
-            ctx.throw(400, 'INVALID_DATA')
-        }
-    }
-
-    async delete(ctx) {
-        const params = ctx.params
-        if (!params.id) ctx.throw(400, 'INVALID_DATA')
-
-        //Find that note
-        const note = new Note()
-        await note.find(params.id)
-        if (!note) ctx.throw(400, 'INVALID_DATA')
-
-        //Grab the user //If it's not their note - error out
-        const user = new User(ctx.state.user)
-        if (note.userId !== user.id) ctx.throw(400, 'INVALID_DATA')
-
-        try {
-            await note.destroy()
-            ctx.body = { message: 'SUCCESS' }
-        } catch (error) {
-            console.log(error)
-            ctx.throw(400, 'INVALID_DATA')
-        }
+        return result;
     }
 }
-
-export default CarouselController
+export default FileController;

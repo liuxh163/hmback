@@ -5,7 +5,6 @@ class Comment {
         if (!data) {
             return
         }
-
         this.id = data.id
         this.target = data.target
         this.targetId = data.targetId
@@ -21,7 +20,7 @@ class Comment {
 
     async all(request) {
         try {
-            return await db(a:'t_hm101_comments',b:"t_hm101_htmls")
+            return await db({a:'t_hm101_comments',b:"t_hm101_htmls"})
                 .select('a.*','b.content')
                 .where({ target: request.target, targetId: request.targetId })
                 .whereRaw('?? = ??', ['a.contentH5Id', 'b.id'])

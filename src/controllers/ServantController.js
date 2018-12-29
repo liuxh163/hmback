@@ -35,7 +35,7 @@ class ServantController {
         try {
             //Find and show servant
             await servant.find(params.id)
-            ctx.body = { id: servant.id }servant
+            ctx.body = { id: servant.id }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')

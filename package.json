@@ -17,6 +17,7 @@
   "dependencies": {
     "@alicloud/sms-sdk": "^1.1.6",
     "@sendgrid/mail": "6.2.1",
+    "ali-oss": "^6.0.2",
     "axios": "^0.18.0",
     "bcrypt": "^2.0.1",
     "date-fns": "^1.29.0",
@@ -30,6 +31,7 @@
     "kcors": "^2.2.1",
     "knex": "^0.14.6",
     "koa": "^2.5.1",
+    "koa-body": "^4.0.6",
     "koa-bodyparser": "^4.2.1",
     "koa-json-error": "^3.1.2",
     "koa-ratelimit": "^4.1.1",

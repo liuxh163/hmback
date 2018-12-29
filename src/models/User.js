@@ -5,13 +5,20 @@ class User {
         if (!data) {
             return
         }
-
         this.id = data.id;
         this.loginid = data.loginid;
         this.telephone = data.telephone;
         this.slogan = data.slogan;
         this.idNumber = data.idNumber;
         this.type = data.type;
+        this.iconPath = data.iconPath;
+        this.openId = data.openId;
+        this.email = data.email;
+        this.realName = data.realName;
+        this.password = data.password;
+        this.userName = data.userName;
+        this.source = data.source;
+        this.status = data.status
 
         this.operator = data.operator
         this.operatorFlag = data.operatorFlag

@@ -26,9 +26,9 @@ exports.up = function(knex, Promise) {
         //活动变量值，用于替换内容中的{$变量}
         table.decimal('var2Value', 8, 2);
         //活动起始时间
-        table.dateTime('startTime', 20);
+        table.dateTime('startTime');
         //活动结束时间
-        table.dateTime('endTime', 8, 2);
+        table.dateTime('endTime');
 
         // 记录操作人id
         table.string('operator').notNullable();

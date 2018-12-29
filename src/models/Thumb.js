@@ -31,7 +31,7 @@ class Thumb {
         try {
             return await db('t_hm101_thumbups')
                 .select('*')
-                .where({ target: request.target, targetId:request.targetId ,linkerId = request.likerId})
+                .where({ target: request.target, targetId:request.targetId ,linkerId:request.likerId})
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')

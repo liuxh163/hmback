@@ -16,10 +16,15 @@ import topicsRouter from './routes/topics'
 import postsRouter from './routes/posts'
 import productsRouter from './routes/products'
 import commentsRouter from './routes/comments'
-import loansRouter from './routes/loans'
 import channelsRouter from './routes/channels'
 import carouselsRouter from './routes/carousels'
 import servantsRouter from './routes/servants'
+import attendantsRouter from './routes/attendants'
+import expertsRouter from './routes/experts'
+import operationsRouter from './routes/operations'
+import tagsRouter from './routes/tags'
+import thumbsRouter from './routes/thubms'
+import filesRouter from './routes/files'
 
 //Initialize app
 const app = new Koa()
@@ -112,6 +117,9 @@ app.use(servantsRouter.allowedMethods())
 //渠道资源路由
 app.use(channelsRouter.routes())
 app.use(channelsRouter.allowedMethods())
+//文件路由
+app.use(filesRouter.routes())
+app.use(filesRouter.allowedMethods())
 
 
 export default app

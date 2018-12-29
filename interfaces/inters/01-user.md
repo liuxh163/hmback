@@ -165,7 +165,6 @@
 
       {
           "telephone": "13378965431",
-          "password": "qwQs1w4",//最少6位数字、字母大小写组成的密码
           "realName": "赵四",
           "telephone": "13378965431",
           "iconPath": "/users/touxiang.png",

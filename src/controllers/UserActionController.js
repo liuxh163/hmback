@@ -1,17 +1,12 @@
 import db from '../db/db'
 import rand from 'randexp'
-import dateFormat from 'date-fns/format'
-import dateAddMinutes from 'date-fns/add_minutes'
-import dateAddMonths from 'date-fns/add_months'
-import dateCompareAsc from 'date-fns/compare_asc'
-
 
 if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
 require('dotenv').config();
 
 const SMSClient = require('@alicloud/sms-sdk')
-const accessKeyId = process.env.SMS_ACCESSKEYID
-const secretAccessKey = process.env.SMS_SECRETACCESSKEY
+const accessKeyId = process.env.ALI_ACCESSKEYID
+const secretAccessKey = process.env.ALI_SECRETACCESSKEY
 
 const UUID = require('uuid');
 
@@ -30,17 +25,18 @@ class UserController {
         // };
 
         if(await this.checkSmsCode(ctx)){
-            //获取用户ip地址 TODO: 使用反向代理时无法获取IP地址
-            request.ipAddress = ctx.request.ip
             //生成新用户登录账户
-            request.loginId = new rand(/[a-Z][1-9]{9}/).gen();
+            request.loginId = new rand(/[a-zA-Z0-9]{9}/).gen();
+            request.ipAddress = ctx.request.ip
+            delete request.smscode
+            console.log(Object.keys(request))
             //注册新用户成功，写入数据库
             try {
                 var [result] = await db('t_hm101_users')
                     .insert(request)
                     .returning('telephone');
                 //设置返回值
-                ctx.body = { telephone: result }
+                ctx.body = { id: result }
             } catch (error) {
                 ctx.throw(400, 'INVALID_DATA_IN_INSERT')
             }
@@ -65,7 +61,6 @@ class UserController {
                     })
                     .select('telephone','loginId','type');
             };
-            console.log(userData.loginId)
         }else{
             ctx.throw(404, 'INVALID_LOGIN_DATA');
         };
@@ -155,13 +150,14 @@ class UserController {
 
     //发送短信验证码
     async sendSms(ctx) {
+        console.log("now in send sms ing...")
         const request = ctx.request.body
         //检查新注册用户手机号是否重复
         var [result] = await db('t_hm101_users')
             .where({
                 telephone: request.telephone,
             }).count('id as id');
-        if (!result.id) {
+        if (result.id) {
             ctx.throw(400, 'INVALID_TELEPHONE_NUMBER')
         };
         let verify = new rand(/[1-9]{6}/).gen();
@@ -169,11 +165,11 @@ class UserController {
         //初始化sms_client
         // let smsClient = new SMSClient({accessKeyId,secretAccessKey});
 
-        let sms = '{"smscode":\"'+verify+'\"}'
+        let sms = {smscode:verify}
 
-        ctx.redisdb.set(request.telephone,sms,'EX',process.env.SMS_EXPIRATION_TIME)
+        ctx.redisdb.set(request.telephone,JSON.stringify(sms),'EX',process.env.SMS_EXPIRATION_TIME)
 
-        ctx.body = result
+        ctx.body = sms
 
         //发送短信
         // smsClient.sendSMS({

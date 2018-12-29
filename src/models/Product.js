@@ -1,32 +1,40 @@
 import db from '../db/db'
-import rand from 'randexp'
 
-class Note {
+class Product {
     constructor(data) {
         if (!data) {
             return
         }
-
         this.id = data.id
-        this.userId = data.userId
-        this.title = data.title
-        this.content = data.content
-        this.ipAddress = data.ipAddress
+        this.desc = data.desc
+        this.nation = data.nation
+        this.views = data.views
+        this.featureH5Id = data.featureH5Id
+        this.detailH5Id = data.detailH5Id
+        this.routineH5Id = data.routineH5Id
+        this.feeH5Id = data.feeH5Id
+        this.noticeH5Id = data.noticeH5Id
+        this.hospitalH5Id = data.hospitalH5Id
+        this.itemH5Id = data.itemH5Id
+        this.adultPrice = data.adultPrice
+        this.companyPrice = data.companyPrice
+        this.childPrice = data.childPrice
+        this.status = data.status
+
+        this.operator = data.operator
+        this.operatorFlag = data.operatorFlag
+        this.updatedAt = data.updatedAt
+        this.createdAt = data.createdAt
     }
 
     async all(request) {
         try {
-            return await db('notes')
+            return await db('t_hm101_products')
                 .select('*')
-                .where({ userId: request.userId })
-                .where(
-                    'title',
-                    'like',
-                    '%' + (request.sort ? request.sort : '') + '%'
-                )
-                .orderBy('createdAt', request.order)
-                .offset(+request.page * +request.limit)
-                .limit(+request.limit)
+                .where({ nation: request.nation })
+                .orderBy('updatedAt', 'desc')
+                .offset(+request.pages * +request.pageNum)
+                .limit(+request.pageNum)
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
@@ -46,7 +54,7 @@ class Note {
 
     async store() {
         try {
-            return await db('notes').insert(this)
+            return await db('t_hm101_products').insert(this)
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
@@ -55,19 +63,8 @@ class Note {
 
     async save(request) {
         try {
-            return await db('notes')
+            return await db('t_hm101_products')
                 .update(this)
-                .where({ id: this.id })
-        } catch (error) {
-            console.log(error)
-            throw new Error('ERROR')
-        }
-    }
-
-    async destroy(request) {
-        try {
-            return await db('notes')
-                .delete()
                 .where({ id: this.id })
         } catch (error) {
             console.log(error)
@@ -78,14 +75,14 @@ class Note {
 
 async function findById(id) {
     try {
-        let [noteData] = await db('notes')
-            .select('id', 'userId', 'title', 'content')
+        let [productData] = await db('t_hm101_products')
+            .select('*')
             .where({ id: id })
-        return noteData
+        return productData
     } catch (error) {
         console.log(error)
         throw new Error('ERROR')
     }
 }
 
-export { Note, findById }
+export { Product, findById }

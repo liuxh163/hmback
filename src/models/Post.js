@@ -6,7 +6,6 @@ class Post {
         if (!data) {
             return
         }
-
         this.id = data.id
         this.topicId = data.topicId
         this.title = data.title
