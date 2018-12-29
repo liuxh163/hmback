@@ -1,7 +1,7 @@
 import dateFormat from 'date-fns/format'
 
 import { Servant } from '../models/Servant'
-
+import { User } from '../models/User'
 
 class ServantController {
     async index(ctx) {

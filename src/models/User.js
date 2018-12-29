@@ -6,7 +6,7 @@ class User {
             return
         }
         this.id = data.id;
-        this.loginid = data.loginid;
+        this.loginId = data.loginId;
         this.telephone = data.telephone;
         this.slogan = data.slogan;
         this.idNumber = data.idNumber;
@@ -18,21 +18,67 @@ class User {
         this.password = data.password;
         this.userName = data.userName;
         this.source = data.source;
-        this.status = data.status
+        this.status = data.statusß;
+        this.ipAddress = data.ipAddress;
+        this.address = data.address;
+        this.loginCount = data.loginCount
 
         this.operator = data.operator
-        this.operatorFlag = data.operatorFlag
+        this.operateFlag = data.operateFlag
         this.updatedAt = data.updatedAt
         this.createdAt = data.createdAt
+    }
+
+    async all(request) {
+        try {
+            return await db('t_hm101_users')
+                .select('*')
+                .orderBy('updatedAt', 'desc')
+                .offset(--request.page * +request.number)
+                .limit(+request.number)
+        } catch (error) {
+            console.log(error)
+            throw new Error('ERROR')
+        }
+    }
+
+    async find(id) {
+        try {
+            let result = await findById(id)
+            if (!result) return {}
+
+            this.constructor(result)
+        } catch (error) {
+            console.log(error)
+            throw new Error('ERROR')
+        }
+    }
+    async store() {
+        try {
+            return await db('t_hm101_users').insert(this)
+        } catch (error) {
+            console.log(error)
+            throw new Error('ERROR')
+        }
+    }
+    async save(request) {
+        try {
+            return await db('t_hm101_users')
+                .update(this)
+                .where({ id: this.id })
+        } catch (error) {
+            console.log(error)
+            throw new Error('ERROR')
+        }
     }
 }
 
 async function findById(id) {
     try {
-        const [userData] = db('users')
-            .select('id', 'loginId', 'telephone','slogan', 'idNumber', 'type')
-            .where({ loginId: id })
-        return userData
+        const [result] = await db('t_hm101_users')
+            .select('*')
+            .where({ id: id })
+        return result
     } catch (error) {
         console.log(error)
         throw new Error('ERROR')

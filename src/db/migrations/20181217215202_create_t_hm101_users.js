@@ -47,11 +47,10 @@ exports.up = function(knex, Promise) {
         // 用户邮寄地址
         table.string('address', 100);
         // 用户记录创建时间和更新时间
-        table.datetime('some_time', 6).defaultTo(knex.fn.now(6))
-            // .datetime('updatedAt',6)
-            // .defaultTo(knex.fn.now(6))
-        table
-            .timestamp('createdAt')
+        table.dateTime('updatedAt')
+            .notNullable();
+        table.timestamp('createdAt')
+            .notNullable()
             .defaultTo(knex.raw('CURRENT_TIMESTAMP'));
     })
 };

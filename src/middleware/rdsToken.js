@@ -8,9 +8,8 @@ module.exports = (opts = {}) => {
         try {
             await ctx.redisdb.get(token).then(function (result){
                 if(result){
-                    // ctx.state.user = JSON.parse(result)
-                    ctx.state.user = result
-                    console.log("set state user:"+ctx.state.user)
+                    ctx.state.user = JSON.parse(result)
+                    // ctx.state.user = result
                 }
             })
 
@@ -29,7 +28,6 @@ module.exports = (opts = {}) => {
     }
 
     function getToken(ctx) {
-        console.log("token is"+ctx.header.hmtoken)
         if (!ctx.header || !ctx.header.hmtoken) {
             return
         }

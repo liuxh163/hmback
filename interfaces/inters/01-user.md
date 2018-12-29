@@ -57,16 +57,15 @@
           "data": {}
       }
 
-### 查询用户信息 [GET /api/v1/users/{?sort=1,pages=1,pageNum=10}]
+### 查询用户信息 [GET /api/v1/users]
 管理员查询所有用户列表信息
 
 + Headers
   hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
 
 + Parameters
-  + sort: `1` (string,optional) - 用户列表排序方式，选填。
-  + pages: 1 (number) - 用户列表页数。
-  + pageNum: 10 (number) - 用户列表每页数量
+  + page: 1 (number) - 列表页数。
+  + number: 10 (number) - 列表每页数量
 
 + Response 200
 
@@ -155,23 +154,24 @@
           "data":{}
       }
 
-### 用户信息修改 [PUT /api/v1/users]
+### 用户信息修改 [PUT /api/v1/users/:id]
 登陆后的用户修改自身信息。
 
 + Headers
   hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `1` (string) - 用户id。
 
 + Request (application/json)
 
       {
           "telephone": "13378965431",
           "realName": "赵四",
-          "telephone": "13378965431",
           "iconPath": "/users/touxiang.png",
           "slogan": "海马健康金，助力健康",
           "idNumber": "1XXXXXXXXXXXXXXX",
           "email": "test@test.com",
-          "password": "UWEhsyy1",
           "address": "北京市海淀区学院路99号大中电器3层，100089",
           "username": "赵三两"
       }

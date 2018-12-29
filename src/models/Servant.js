@@ -31,8 +31,8 @@ class Servant {
                 .select('*')
                 .where({ type: request.type, nation: request.nation })
                 .orderBy('updatedAt', 'desc')
-                .offset(+request.pages * +request.pageNum)
-                .limit(+request.pageNum)
+                .offset(+request.page * +request.number)
+                .limit(+request.number)
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')

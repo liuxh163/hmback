@@ -45,12 +45,10 @@ exports.up = function(knex, Promise) {
         // 记录操作标志
         table.string('operateFlag').defaultTo('A')
             .notNullable();
-        // 用户记录创建时间和更新时间
-        table
-            .dateTime('updatedAt')
+        // 记录创建时间和更新时间
+        table.dateTime('updatedAt')
             .notNullable();
-        table
-            .timestamp('createdAt')
+        table.timestamp('createdAt')
             .notNullable()
             .defaultTo(knex.raw('CURRENT_TIMESTAMP'));
     })
