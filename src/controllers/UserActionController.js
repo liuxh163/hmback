@@ -15,111 +15,113 @@ const UUID = require('uuid');
 
 class UserController {
     constructor() {}
-    //用户注册操作
-    async signup(ctx) {
-        const request = ctx.request.body
-        //检查新注册用户手机号是否重复
-        var [result] = await db('t_hm101_users')
-            .where({
-                telephone: request.telephone,
-            }).count('id as id');
-        if (result.id) {
-            ctx.throw(400, 'DUPLICATE_TELEPHONE_NUMBER')
-        };
 
-        if(await this.checkSmsCode(ctx)){
-            //生成新用户登录账户
-            request.loginId = new rand(/[a-zA-Z0-9]{9}/).gen();
+    //用户登录/注册操作
+    async login(ctx) {
+        const request = ctx.request.body;
+        // 检查请求参数是否有手机号
+        if (!request.telephone)
+            ctx.throw(401, 'INVALID_REQUEST_PARAMS')
+        // 检查短信验证码是否正确
+        if(!await this.checkSmsCode(ctx))
+            ctx.throw(401, 'WRONG_SMS_CODE')
+        var user = new User()
+        await user.findPhone(request.telephone)
+        if (!user.telephone){
+            console.log("create new user by "+request.telephone)
+            // 用户不存在则创建新用户
+            request.loginId = new rand(/[0-9]{9}/).gen();
             request.ipAddress = ctx.request.ip
             request.type = '01';
             delete request.smscode
             console.log(Object.keys(request))
-            var user = new User(request)
+            user = new User(request)
             try {
-                let result = await user.store()
-                ctx.body = { id: result[0] }
+                await user.store()
             } catch (error) {
-                console.log(error)
                 ctx.throw(400, 'INVALID_DATA_IN_INSERT')
             }
-        }else{
-            ctx.body = { message: 'sms code verify error'}
         }
-    };//end of sign up
+        // 如果已有用户则根据手机号判断用户是否已经登录
+        var logined;
+        try {
+            await ctx.redisdb.get('login-'+request.telephone).then(function (result){
+                // 用户已经登录
+                if(result){logined = result}
+            })
 
-    //用户登录操作
-    async login(ctx) {
-        const request = ctx.request.body;
-
-        var [userData] = [];
-        // 通过手机号登录
-        if (request.telephone) {
-            //TODO: 手机短信验证
-            if(await this.checkSmsCode(ctx)){
-                //通过手机号获取用户信息
-                [userData] = await db('t_hm101_users')
-                    .where({
-                        telephone: request.telephone,
-                    })
-                    .select('*');
-            };
-        }else{
-            ctx.throw(404, 'INVALID_LOGIN_DATA');
-        };
-        //没有所请求的用户
-        if (!userData) {
-            ctx.throw(401, 'INVALID_CREDENTIALS')
+        } catch (error) {
+            ctx.throw(401, 'AUTHENTICATION_ERROR')
         }
-
-        //基于时间戳生成用户token
-        const token = UUID.v1();
-        ctx.redisdb.set(token, JSON.stringify(userData), 'EX', process.env.TOKEN_EXPIRATION_TIME);
-
-        ctx.body = {
-            accessToken: token,
-            telephone: userData.telephone,
-            loginid: userData.loginId
+        if(logined){
+            // token续期
+            ctx.redisdb.expire('login-'+request.telephone, process.env.TOKEN_EXPIRATION_TIME)
+            ctx.redisdb.expire(logined, process.env.TOKEN_EXPIRATION_TIME)
+            // 返回用户token
+            ctx.body = {accessToken: logined}
+        }else{
+            //已有用户但未登录，则基于时间戳生成新token
+            var token = UUID.v1();
+            // 设置redis双向绑定
+            ctx.redisdb.set(token, JSON.stringify(user), 'EX', process.env.TOKEN_EXPIRATION_TIME);
+            ctx.redisdb.set('login-'+request.telephone, token, 'EX', process.env.TOKEN_EXPIRATION_TIME);
+            // 返回用户token
+            ctx.body = {accessToken: token}
         }
     }
 
     // 禁用用户
     async halt(ctx) {
-        const query = ctx.query
+        const params = ctx.params
         //获取当前用户
-        var curUser = ctx.state.user
+        const curUser = ctx.state.user
+        if ('02' !== curUser.type) ctx.throw(400, 'INVALID_PREVILEGE');
+
+        const user = new User()
+        await user.find(params.id)
+        if (!user) ctx.throw(400, 'INVALID_USER_DATA')
+
+        //Add the updated date value
+        user.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        user.operateFlag = 'U'
+        user.operator = curUser.id
+        // 设置启用状态
+        user.status = '02'
         try {
-            await db('t_hm101_users')
-                .update({status:'02'})
-                .where({ id: curUser.id, status: '01' })
+            await user.save()
+            ctx.body = { id: user.id }
         } catch (error) {
             console.log(error)
-            throw new Error('ERROR')
+            ctx.throw(400, 'INVALID_DATA')
         }
-        // 用户登录状态改成无效
-        if(ctx.header.hmtoken){
-            ctx.redisdb.del(ctx.header.hmtoken)
-        }
-        ctx.body = {id: curUser.id};
+        // TODO:用户登录缓存状态改成无效
     }
 
     // 启用用户
     async awaken(ctx) {
-        const query = ctx.query
+        const params = ctx.params
 
         //获取当前用户
-        var curUser = ctx.state.user
+        const curUser = ctx.state.user
+        if ('02' !== curUser.type) ctx.throw(400, 'INVALID_PREVILEGE');
 
+        const user = new User()
+        await user.find(params.id)
+        if (!user) ctx.throw(400, 'INVALID_USER_DATA')
+
+        //Add the updated date value
+        user.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        user.operateFlag = 'U'
+        user.operator = curUser.id
+        // 设置启用状态
+        user.status = '01'
         try {
-            await db('t_hm101_users')
-                .update({status:'01'})
-                .where({ id: curUser.id, status: '02' })
-
+            await user.save()
+            ctx.body = { id: user.id }
         } catch (error) {
             console.log(error)
-            throw new Error('ERROR')
+            ctx.throw(400, 'INVALID_DATA')
         }
-
-        ctx.body = {id: curUser.id};
     }
 
     //用户登出操作
@@ -157,16 +159,14 @@ class UserController {
 
     //发送短信验证码
     async sendSms(ctx) {
-        console.log("now in send sms ing...")
         const request = ctx.request.body
         //检查新注册用户手机号是否重复
-        var [result] = await db('t_hm101_users')
-            .where({
-                telephone: request.telephone,
-            }).count('id as id');
-        if (result.id) {
-            ctx.throw(400, 'INVALID_TELEPHONE_NUMBER')
-        };
+        // var [result] = await db('t_hm101_users')
+        //     .where({telephone: request.telephone})
+        //     .count('id as id');
+        // if (result.id) {
+        //     ctx.throw(400, 'INVALID_TELEPHONE_NUMBER')
+        // };
         let verify = new rand(/[1-9]{6}/).gen();
 
         //初始化sms_client

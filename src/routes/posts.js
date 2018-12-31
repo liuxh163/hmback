@@ -8,7 +8,7 @@ const tokenMw = RdsToken()
 
 const postController = new PostController()
 // 获取指定话题下所有帖子
-router.get('/api/v1/topics/:id/posts/{?sort=1,pages=1,pageNum=10}', tokenMw, async (ctx, next) => {
+router.get('/api/v1/topics/:id/posts', tokenMw, async (ctx, next) => {
     await postController.index(ctx)
 })
 // 在指定话题下发帖

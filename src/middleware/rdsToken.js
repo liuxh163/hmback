@@ -1,3 +1,5 @@
+if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
+require('dotenv').config();
 
 module.exports = (opts = {}) => {
 
@@ -14,6 +16,8 @@ module.exports = (opts = {}) => {
             })
 
             if(ctx.state.user){
+                // token访问后续期
+                ctx.redisdb.expire(token, process.env.TOKEN_EXPIRATION_TIME)
                 return next()
             }
         } catch (error) {

@@ -4,7 +4,7 @@
             "name": "koa-api",
             "script": "app.js",
             "instances": 2,
-            "exec_mode": "cluster",
+            "exec_mode": "cluster"
         }
     ]
 }

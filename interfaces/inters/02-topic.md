@@ -1,6 +1,6 @@
 # Group 论坛话题
 
-## 获取论坛话题 [GET /api/v1/forum/topics]
+## 获取论坛话题 [GET /api/v1/topics]
 海马社区目前只有2个话题，分别是‘发现’和‘说说’，发现以图片贴配以简单文字，说说为文字贴配图，本节内容主要包含话题的维护和查询相关接口内容。
 
 + Headers
@@ -29,7 +29,7 @@
           }
       }
 
-### 创建话题 [POST /api/v1/forum/topics]
+### 创建话题 [POST /api/v1/topics]
 创建新的话题
 
 + Headers
@@ -39,7 +39,7 @@
 
       {
           "name":"发现",
-          "desc":""
+          "desc":"这是发现板块"
       }
 
 + Response 200
@@ -52,7 +52,7 @@
           "data": {"name":"发现"}
       }
 
-### 修改话题 [PUT /api/v1/forum/topics/:id]
+### 修改话题 [PUT /api/v1/topics/:id]
 修改话题信息
 
 + Headers
@@ -65,7 +65,7 @@
 
       {
           "name":"发现",
-          "desc":""
+          "desc":"这是发现者的天地"
       }
 
 + Response 200
@@ -78,7 +78,7 @@
           "data": {"name":"发现"}
       }
 
-### 关闭话题 [PUT /api/v1/forum/topics/:id/halt]
+### 关闭话题 [PUT /api/v1/topics/:id/halt]
 修改话题信息
 
 + Headers
@@ -97,7 +97,7 @@
           "data": {"name":"发现"}
       }
 
-### 启用话题 [PUT /api/v1/forum/topics/:id/awaken]
+### 启用话题 [PUT /api/v1/topics/:id/awaken]
 修改话题信息
 
 + Headers

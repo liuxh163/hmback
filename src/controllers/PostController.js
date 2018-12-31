@@ -1,23 +1,26 @@
 import dateFormat from 'date-fns/format'
 
-import { Topic } from '../models/Topic'
+import { User } from '../models/User'
 import { Post } from '../models/Post'
 
 class PostController {
     async index(ctx) {
         const query = ctx.query
+        const params = ctx.params
+
+        query.topicId = params.id
 
         const post = new Post()
 
         //检查查询参数
-        if (!query.sort || !query.pages || !query.pageNum) {
+        if (!query.sort || !query.page || !query.number) {
             ctx.throw(400, 'INVALID_ROUTE_OPTIONS')
         }
 
         //Get paginated list of posts
         try {
             let result = await post.all(query)
-            ctx.body = result
+            ctx.body = {posts:result}
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA' + error)
@@ -40,29 +43,33 @@ class PostController {
             ctx.throw(400, 'INVALID_DATA')
         }
     }
-
+    /**
+     * 发帖
+     * @param  {[type]} ctx [description]
+     * @return {[type]}     [description]
+     */
     async create(ctx) {
         const request = ctx.request.body
-
+        const params = ctx.params
+        request.topicId = params.id;
         //Attach logged in user
         const user = new User(ctx.state.user)
         request.posterId = user.id
 
-        //Add ip
-        request.ipAddress = ctx.ip
-
-        //Create a new post object using the request params
-        const post = new Post(request)
-
+        var post = new Post(request)
         try {
             let result = await post.store()
-            ctx.body = { id: result }
+            ctx.body = { id: result[0] }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
-
+    /**
+     * 修改帖子内容
+     * @param  {[type]} ctx [description]
+     * @return {[type]}     [description]
+     */
     async update(ctx) {
         const params = ctx.params
         const request = ctx.request.body
@@ -103,15 +110,20 @@ class PostController {
         //Find that post
         const post = new Post()
         await post.find(params.id)
-        if (!post) ctx.throw(400, 'INVALID_DATA')
+        if (!post.id) ctx.throw(400, 'INVALID_DATA');
 
+        // console.log("post object "+Object.keys(post))
+        // // 遍历打印对象内容
+        // Object.keys(post).forEach(function(param,index){
+        //     console.log("post attr "+param+" is "+post[param])
+        // })
         //判断操作用户是否发帖人，不是发帖人不允许删除
         const user = new User(ctx.state.user)
-        if (post.posterId !== user.id) ctx.throw(400, 'INVALID_POSTER')
+        if (post.posterId !== user.id) ctx.throw(400, 'INVALID_POSTER');
 
         try {
             await post.destroy()
-            ctx.body = { message: 'SUCCESS' }
+            ctx.body = { id: params.id }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')

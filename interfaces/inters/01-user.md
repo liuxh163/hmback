@@ -1,7 +1,7 @@
 # Group 用户
 
-### 用户注册 [POST /api/v1/user/signup]
-用户使用手机号和短信验证码进行注册，注册成功直接登录系统
+### 用户登录/注册 [PUT /api/v1/user/login]
+用户使用手机号码及短信验证码进行登录，如果手机号码不存在，则注册成新用户并登录。
 
 + Request (application/json)
 
@@ -19,27 +19,6 @@
           "message": "操作成功",
           "data": {"accessToken": "dba3a540-0794-11e9-9b81-999da2f6363a"}
       }
-
-### 用户登录 [PUT /api/v1/user/login]
-用户使用手机号码及短信验证码进行登录。
-
-+ Request (application/json)
-
-      {
-          "telephone": "13378965431",
-          "smscode": "123456"
-      }
-
-+ Response 200
-
-      {
-          "success":true,
-          "status": "200",
-          "errcode": "10001",
-          "message": "操作成功",
-          "data": {"accessToken": "dba3a540-0794-11e9-9b81-999da2f6363a"}
-      }
-
 
 ### 用户登出 [PUT /api/v1/user/logout]
 用户登出系统，主要用于管理员退出登录

@@ -46,13 +46,24 @@ class User {
         try {
             let result = await findById(id)
             if (!result) return {}
-
             this.constructor(result)
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
         }
     }
+
+    async findPhone(telephone) {
+        try {
+            let result = await findByPhone(telephone)
+            if (!result) return {}
+            this.constructor(result)
+        } catch (error) {
+            console.log(error)
+            throw new Error('ERROR')
+        }
+    }
+
     async store() {
         try {
             return await db('t_hm101_users').insert(this)
@@ -84,5 +95,15 @@ async function findById(id) {
         throw new Error('ERROR')
     }
 }
-
-export { User, findById }
+async function findByPhone(telephone) {
+    try {
+        const [result] = await db('t_hm101_users')
+            .select('id','telephone','userName','type')
+            .where({ telephone: telephone, status: '01' })
+        return result
+    } catch (error) {
+        console.log(error)
+        throw new Error('ERROR')
+    }
+}
+export { User, findById, findByPhone }

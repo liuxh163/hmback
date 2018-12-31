@@ -12,10 +12,7 @@ router.get('/', async (ctx, next, opt) => {
 
 // 初始化用户控制器
 const userActionController = new UserActionController()
-// 用户注册
-router.post('/api/v1/user/signup', async (ctx, next) => {
-    await userActionController.signup(ctx)
-})
+
 // 用户登录
 router.put('/api/v1/user/login', async (ctx, next) => {
     await userActionController.login(ctx)

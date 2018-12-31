@@ -18,7 +18,7 @@ exports.up = function(knex, Promise) {
         //发帖人
         table.integer('posterId', 11).notNullable();
         //浏览次数
-        table.integer('views', 8).notNullable().defaultTo(0);
+        table.integer('viewNum', 8).notNullable().defaultTo(0);
         //发帖位置
         table.string('location', 20);
 

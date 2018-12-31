@@ -63,16 +63,15 @@ HOST: http://api.haima101.com
           "data": {}
       }
 
-### 查询用户信息 [GET /api/v1/users/{?sort=1,pages=1,pageNum=10}]
+### 查询用户信息 [GET /api/v1/users/{?page=1,number}]
 管理员查询所有用户列表信息
 
 + Headers
   hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
 
 + Parameters
-  + sort: `1` (string,optional) - 用户列表排序方式，选填。
-  + pages: 1 (number) - 用户列表页数。
-  + pageNum: 10 (number) - 用户列表每页数量
+  + page: 1 (number) - 列表页数。
+  + number: 10 (number) - 列表每页数量
 
 + Response 200
 
@@ -161,24 +160,24 @@ HOST: http://api.haima101.com
           "data":{}
       }
 
-### 用户信息修改 [PUT /api/v1/users]
+### 用户信息修改 [PUT /api/v1/users/:id]
 登陆后的用户修改自身信息。
 
 + Headers
   hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
 
++ Parameters
+  + id: `1` (string) - 用户id。
+
 + Request (application/json)
 
       {
           "telephone": "13378965431",
-          "password": "qwQs1w4",//最少6位数字、字母大小写组成的密码
           "realName": "赵四",
-          "telephone": "13378965431",
           "iconPath": "/users/touxiang.png",
           "slogan": "海马健康金，助力健康",
           "idNumber": "1XXXXXXXXXXXXXXX",
           "email": "test@test.com",
-          "password": "UWEhsyy1",
           "address": "北京市海淀区学院路99号大中电器3层，100089",
           "username": "赵三两"
       }
@@ -195,7 +194,7 @@ HOST: http://api.haima101.com
 
 # Group 论坛话题
 
-## 获取论坛话题 [GET /api/v1/forum/topics]
+## 获取论坛话题 [GET /api/v1/topics]
 海马社区目前只有2个话题，分别是‘发现’和‘说说’，发现以图片贴配以简单文字，说说为文字贴配图，本节内容主要包含话题的维护和查询相关接口内容。
 
 + Headers
@@ -224,7 +223,7 @@ HOST: http://api.haima101.com
           }
       }
 
-### 创建话题 [POST /api/v1/forum/topics]
+### 创建话题 [POST /api/v1/topics]
 创建新的话题
 
 + Headers
@@ -234,7 +233,7 @@ HOST: http://api.haima101.com
 
       {
           "name":"发现",
-          "desc":""
+          "desc":"这是发现板块"
       }
 
 + Response 200
@@ -247,7 +246,7 @@ HOST: http://api.haima101.com
           "data": {"name":"发现"}
       }
 
-### 修改话题 [PUT /api/v1/forum/topics/:id]
+### 修改话题 [PUT /api/v1/topics/:id]
 修改话题信息
 
 + Headers
@@ -273,7 +272,7 @@ HOST: http://api.haima101.com
           "data": {"name":"发现"}
       }
 
-### 关闭话题 [PUT /api/v1/forum/topics/:id/halt]
+### 关闭话题 [PUT /api/v1/topics/:id/halt]
 修改话题信息
 
 + Headers
@@ -292,7 +291,7 @@ HOST: http://api.haima101.com
           "data": {"name":"发现"}
       }
 
-### 启用话题 [PUT /api/v1/forum/topics/:id/awaken]
+### 启用话题 [PUT /api/v1/topics/:id/awaken]
 修改话题信息
 
 + Headers
@@ -565,160 +564,352 @@ HOST: http://api.haima101.com
 
 # Group 产品
 
-## 产品 [/api/v1/products/{?product_id}]
-医疗产品包含简介、国家、套餐、金额等信息，本节提供医疗产品相关接口说明。
+### 新增产品 [POST /api/v1/products]
+新增加产品
 
-+ Parameters
-    + product_id: `abc321` (string) - 医疗产品唯一标识id。
-
-+ Model (application/json)
-
-    ```js
-    {
-        "success":true,
-        "status": "200"
-        "errcode": "10001",
-        "message": "操作成功",
-        "data": {
-            "id": "abc123",
-            "slogan": "东京健康舒适性",
-            "cover_path":"/products/01/picureyiyuan123.png",
-            "introduction": "<span>它是医疗产品简介的H5内容描述。。。</span>",
-            "content": "<span>它是产品详情的H5页面内容。。。</span>",
-            "attendant": "<span>它是产品服务人员H5页面内容。。。</span>",
-            "lodging": "<span>它是产品住宿安排H5页面内容。。。</span>",
-            "location_x":123.345,
-            "location_y":234.456,
-            "comment_num": 23,//评论数
-            "praise_num": 160//点赞数
-        }
-    }
-    ```
-
-### 获取产品信息 [GET]
-返回指定的产品信息
-
-+ Response 200
-
-  [产品][]
-
-### 删除指定产品 [DELETE]
-产品删除成功返回唯一标识Id
-
-+ Response 200
-
-	    {
-          "success":true,
-          "status": "200",
-          "errcode": "10001",
-          "message": "操作成功",
-          "data": {"id": "abc123"}
-	    }
-
-### 修改指定产品信息 [PUT]
-产品信息修改成功返回唯一标识Id
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
 
 + Request (application/json)
 
-	    {
-	      	"id": "abc123",
-					"slogan": "东京健康舒适性",
-		      "cover_path":"/products/01/picureyiyuan123.png",
-		      "introduction": "<span>它是医疗产品简介的H5内容描述。。。</span>",
-		      "content": "<span>它是产品详情的H5页面内容。。。</span>",
-		      "attendant": "<span>它是产品服务人员H5页面内容。。。</span>",
-		      "lodging": "<span>它是产品住宿安排H5页面内容。。。</span>",
-		      "location_x":123.345,
-		      "location_y":234.456
-	    }
+      {
+          "desc": "中日友好",
+          "nation": "01",
+          "featureH5": "<span>产品亮点</span>",
+          "detailH5": "<span>产品介绍</span>",
+          "routineH5": "<span>产品行程</span>",
+          "feeH5": "<span>产品费用</span>",
+          "noticeH5": "<span>预定须知</span>",
+          "hospitalH5": "<span>医院简介</span>",
+          "itemH5": "<span>基础项内容</span>",
+          "adultPrice": "16800",
+          "companyPrice": "5000",
+          "childPrice": "3000"
+      }
 
 + Response 200
 
-	    {
+      {
           "success":true,
           "status": "200",
           "errcode": "10001",
           "message": "操作成功",
-          "data": {"id": "abc123"}
-	    }
+          "data": {"id": "product3"}
+      }
 
-### 创建产品 [POST]
-创建一个新产品。
+### 删除产品 [DELETE /api/v1/products/:id]
+删除指定产品
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+    + id: `product123` (string) - 产品唯一标识id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "product3"}
+      }
+
+### 获取产品信息 [GET /api/v1/products/:id]
+查询指定产品的详细信息，每次查询阅读数加1
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+    + id: `product123` (string) - 海马论坛帖子唯一标识id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {
+              "id": "product123",
+              "desc": "中日友好",
+              "nation": "01",
+              "featureH5": "<span>产品亮点</span>",
+              "detailH5": "<span>产品介绍</span>",
+              "routineH5": "<span>产品行程</span>",
+              "feeH5": "<span>产品费用</span>",
+              "noticeH5": "<span>预定须知</span>",
+              "hospitalH5": "<span>医院简介</span>",
+              "itemH5": "<span>基础项内容</span>",
+              "adultPrice": "16800",
+              "companyPrice": "5000",
+              "childPrice": "3000",
+              "commentNum": "300",
+              "praiseNum": "223",
+              "views" "499"
+          }
+      }
+
+### 产品下架 [PUT /api/v1/products/:id/halt]
+停用指定产品。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `product123` (string) - 产品id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "product123"}
+      }
+
+### 产品上架 [PUT /api/v1/products/:id/awaken]
+重新启用处于停用状态的指定产品。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `product123` (string) - 产品id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "product123"}
+      }
+
+### 修改产品信息 [PUT /api/v1/products/:id]
+修改产品信息，返回唯一标识Id
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + id: `channel1` (string) - 渠道商id。
 
 + Request (application/json)
 
-	    {
-	      	"nation": "01",
-					"slogan": "东京健康舒适性",
-		      "cover_path":"/products/01/picureyiyuan123.png",
-		      "introduction": "<span>它是医疗产品简介的H5内容描述。。。</span>",
-		      "content": "<span>它是产品详情的H5页面内容。。。</span>",
-		      "attendant": "<span>它是产品服务人员H5页面内容。。。</span>",
-		      "lodging": "<span>它是产品住宿安排H5页面内容。。。</span>",
-		      "location_x":123.345,
-		      "location_y":234.456
-	    }
+      {
+          "desc": "中日友好",
+          "nation": "01",
+          "featureH5": "<span>产品亮点</span>",
+          "detailH5": "<span>产品介绍</span>",
+          "routineH5": "<span>产品行程</span>",
+          "feeH5": "<span>产品费用</span>",
+          "noticeH5": "<span>预定须知</span>",
+          "hospitalH5": "<span>医院简介</span>",
+          "itemH5": "<span>基础项内容</span>",
+          "adultPrice": "16800",
+          "companyPrice": "5000",
+          "childPrice": "3000"
+      }
 
 + Response 200
 
-	    {
+      {
           "success":true,
           "status": "200",
           "errcode": "10001",
           "message": "操作成功",
-          "data": {"id": "abc123"}
-	    }
+          "data": {"id": "product123"}
+      }
 
-## 产品列表 [/api/v1/products/{?nation,limit,sort_type}]
-医疗产品列表包含多个同类型医疗产品。
+### 获取产品列表 [GET /api/v1/products/{?sort=1,nation=01,pages=1,pageNum=10}]
+返回产品列表信息
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
 
 + Parameters
-	+ nation: `01` (string) - 产品所属国家，01-日本，02-韩国，03-泰国。
-  + limit: 3 (number) - 医疗产品集合中产品数量。
-  + sort_type: `01` (string) - 产品排序类型，01-最新，02-最热，03-推荐
-
-+ Model (application/json)
-
-    ```js
-    {
-        "success":true,
-        "status": "200",
-        "errcode": "10001",
-        "message": "操作成功",
-        "data": {
-        	"products":[
-        		{
-        			"id": "abc123",
-	            "slogan": "东京健康舒适性",
-	            "cover_path":"/products/01/picureyiyuan123.png",
-	            "introduction": "<span>它是医疗产品简介的H5内容描述。。。</span>",
-	            "content": "<span>它是产品详情的H5页面内容。。。</span>",
-	            "attendant": "<span>它是产品服务人员H5页面内容。。。</span>",
-	            "lodging": "<span>它是产品住宿安排H5页面内容。。。</span>",
-	            "location_x":123.345,
-	            "location_y":234.456,
-	            "comment_num": 23,//评论数
-	            "praise_num": 160//点赞数
-        		},
-        		{
-        			"id": "abc134",
-        			...
-        		},
-        		{
-        			"id": "abc345",
-        			...
-        		}
-        	]
-        }
-    }
-    ```
-
-### 获取产品列表 [GET]
-返回指定的产品信息
+  + sort: `1` (string) - 产品排序方式，1最新2最热3推荐。
+  + nation: `01` (string) - 产品所属国家
+  + pages: 1 (number) - 列表页数。
+  + pageNum: 10 (number) - 列表每页数量
 
 + Response 200
 
-  [产品列表][]
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {
+              "products":[
+                  {
+                    "id": "product123",
+                    "desc": "中日友好",
+                    "nation": "01",
+                    "featureH5": "<span>产品亮点</span>",
+                    "detailH5": "<span>产品介绍</span>",
+                    "routineH5": "<span>产品行程</span>",
+                    "feeH5": "<span>产品费用</span>",
+                    "noticeH5": "<span>预定须知</span>",
+                    "hospitalH5": "<span>医院简介</span>",
+                    "itemH5": "<span>基础项内容</span>",
+                    "adultPrice": "16800",
+                    "companyPrice": "5000",
+                    "childPrice": "3000"
+                  },
+                  {
+                    "id": "product123",
+                    ...
+                  },
+                  {
+                    "id": "product123",
+                    ...
+                  }
+              ],
+          }
+      }
+
+# Group 运营活动
+
+### 新增运营 [POST /api/v1/products/:id/operations]
+新增加运营活动
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+    + id: `product123` (string) - 产品唯一标识id。
+
++ Request (application/json)
+
+      {
+          "target": "01",
+          "targetId": "product1",
+          "name": "分期",
+          "content": "产品支持{period}期分期，{firstPay}就走",
+          "var1Name": "period",
+          "var1Value": "12",
+          "var2Name": "firstPay",
+          "var2Value": "3000",
+          "startTime": "2018-10-10 12:00:00",
+          "endTime": "2018-11-10 12:00:00"
+      }
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "operation1"}
+      }
+
+### 删除运营 [DELETE /api/v1/operations/:id]
+删除指定运营
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+    + id: `operation1` (string) - 运营唯一标识id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "product3"}
+      }
+
+### 修改运营 [PUT /api/v1/operations/:id]
+修改运营信息，返回唯一标识Id
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+    + id: `operation1` (string) - 运营唯一标识id。
+
++ Request (application/json)
+
+      {
+          "target": "01",
+          "targetId": "product1",
+          "name": "分期",
+          "content": "产品支持{period}期分期，{firstPay}就走",
+          "var1Name": "period",
+          "var1Value": "12",
+          "var2Name": "firstPay",
+          "var2Value": "3000",
+          "startTime": "2018-10-10 12:00:00",
+          "endTime": "2018-11-10 12:00:00"
+      }
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "operation1"}
+      }
+
+### 获取产品列表 [GET /api/v1/products/{?sort=1,nation=01,pages=1,pageNum=10}]
+返回产品列表信息
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + sort: `1` (string) - 产品排序方式，1最新2最热3推荐。
+  + nation: `01` (string) - 产品所属国家
+  + pages: 1 (number) - 列表页数。
+  + pageNum: 10 (number) - 列表每页数量
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {
+              "products":[
+                  {
+                    "id": "product123",
+                    "desc": "中日友好",
+                    "nation": "01",
+                    "featureH5": "<span>产品亮点</span>",
+                    "detailH5": "<span>产品介绍</span>",
+                    "routineH5": "<span>产品行程</span>",
+                    "feeH5": "<span>产品费用</span>",
+                    "noticeH5": "<span>预定须知</span>",
+                    "hospitalH5": "<span>医院简介</span>",
+                    "itemH5": "<span>基础项内容</span>",
+                    "adultPrice": "16800",
+                    "companyPrice": "5000",
+                    "childPrice": "3000"
+                  },
+                  {
+                    "id": "product123",
+                    ...
+                  },
+                  {
+                    "id": "product123",
+                    ...
+                  }
+              ],
+          }
+      }
 
 # Group 产品附加项
 
@@ -954,51 +1145,6 @@ HOST: http://api.haima101.com
           "errcode": "10001",
           "message": "操作成功",
           "data": {"id": "expert1"}
-      }
-
-# Group 点赞
-
-### 获取点赞数 [GET /api//v1/thumbs/{?target=01,targetId=p11}]
-获取指定对象点赞数。
-
-+ Headers
-  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
-
-+ Parameters
-  + target: `01` (string) - 点赞对象类型。
-  + productId: `product1` (number) - 点赞对象Id。
-
-+ Response 200
-
-      {
-          "success":true,
-          "status": "200",
-          "errcode": "10001",
-          "message": "操作成功",
-          "data": {"count": "100"}
-      }
-
-### 点赞/取消点赞 [PUT /api/v1/thumbs]
-点赞/取消点赞
-
-+ Headers
-  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
-
-+ Request (application/json)
-
-      {
-          "target": "轮播图",
-          "productId": "我是一张轮播图"
-      }
-
-+ Response 200
-
-      {
-          "success":true,
-          "status": "200",
-          "errcode": "10001",
-          "message": "操作成功",
-          "data": {"id": "channel123"}
       }
 
 # Group 标签
@@ -1646,4 +1792,49 @@ HOST: http://api.haima101.com
           "errcode": "10001",
           "message": "操作成功",
           "data": {"id": "servant123"}
+      }
+
+# Group 点赞
+
+### 获取点赞数 [GET /api//v1/thumbs/{?target=01,targetId=p11}]
+获取指定对象点赞数。
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Parameters
+  + target: `01` (string) - 点赞对象类型。
+  + productId: `product1` (number) - 点赞对象Id。
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"count": "100"}
+      }
+
+### 点赞/取消点赞 [PUT /api/v1/thumbs]
+点赞/取消点赞
+
++ Headers
+  hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
+
++ Request (application/json)
+
+      {
+          "target": "轮播图",
+          "productId": "我是一张轮播图"
+      }
+
++ Response 200
+
+      {
+          "success":true,
+          "status": "200",
+          "errcode": "10001",
+          "message": "操作成功",
+          "data": {"id": "channel123"}
       }
