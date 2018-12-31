@@ -29,7 +29,6 @@ class PostController {
 
     async show(ctx) {
         const params = ctx.params
-
         if (!params.id) ctx.throw(400, 'INVALID_DATA')
 
         //Initialize post

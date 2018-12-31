@@ -67,7 +67,7 @@ class TopicController {
         //Replace the topic data with the new updated topic data
         Object.keys(request).forEach(function(parameter, index) {
             topic[parameter] = request[parameter]
-            console.log("param is include "+parameter)
+            // console.log("param is include "+parameter)
         })
 
         try {

@@ -9,9 +9,10 @@ class Tag {
         this.target = data.target
         this.targetId = data.targetId
         this.name = data.name
+        this.tagerId = data.tagerId
 
         this.operator = data.operator
-        this.operatorFlag = data.operatorFlag
+        this.operateFlag = data.operateFlag
         this.updatedAt = data.updatedAt
         this.createdAt = data.createdAt
     }
@@ -27,7 +28,16 @@ class Tag {
             throw new Error('ERROR')
         }
     }
-
+    async find(id) {
+        try {
+            let result = await findById(id)
+            if (!result) return {}
+            this.constructor(result)
+        } catch (error) {
+            console.log(error)
+            throw new Error('ERROR')
+        }
+    }
     async store() {
         try {
             return await db('t_hm101_tags').insert(this)
@@ -37,10 +47,12 @@ class Tag {
         }
     }
 
-    async destroy(request) {
+    async destroy() {
         try {
             return await db('t_hm101_tags')
-                .delete()
+                .update({operateFlag: 'D',
+                    updatedAt:this.updatedAt,
+                    operator:this.operator})
                 .where({ id: this.id })
         } catch (error) {
             console.log(error)

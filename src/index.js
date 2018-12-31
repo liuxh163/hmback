@@ -120,6 +120,8 @@ app.use(channelsRouter.allowedMethods())
 //文件路由
 app.use(filesRouter.routes())
 app.use(filesRouter.allowedMethods())
-
+//标签路由
+app.use(tagsRouter.routes())
+app.use(tagsRouter.allowedMethods())
 
 export default app

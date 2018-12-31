@@ -16,7 +16,7 @@ exports.up = function(knex, Promise) {
         //标签名称
         table.string('name', 20);
         //标签人
-        table.string('tagerId', 11);
+        table.integer('tagerId', 11);
 
         // 记录操作人id
         table.string('operator').notNullable();

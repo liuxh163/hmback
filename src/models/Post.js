@@ -60,7 +60,6 @@ class Post {
     async find(id) {
         try {
             let result = await findById(id)
-            console.log("check out post id :"+result.id)
             if (result) {
                 // 增加并获取查看数
                 let viewNum = ++result.views
@@ -137,12 +136,12 @@ class Post {
         content.operator = post.posterId
         delete post.content
         // 遍历打印对象内容
-        Object.keys(content).forEach(function(param,index){
-            console.log("content attr "+param+" is "+content[param])
-        })
-        Object.keys(post).forEach(function(param,index){
-            console.log("post attr "+param+" is "+post[param])
-        })
+        // Object.keys(content).forEach(function(param,index){
+        //     console.log("content attr "+param+" is "+content[param])
+        // })
+        // Object.keys(post).forEach(function(param,index){
+        //     console.log("post attr "+param+" is "+post[param])
+        // })
 
         // 使用事务插入帖子信息及内容信息表
         return await db.transaction(function(trx) {
@@ -190,10 +189,10 @@ class Post {
  */
 async function findById(id) {
     try {
-        let [result] = await db.select('a.*','b.content').from('t_hm101_posts as a')
-            .leftJoin('t_hm101_htmls as b','a.contentH5Id', 'b.id')
-            .where({ 'a.id': id});
-
+        let [result] = await db.select('a.*','b.content')
+                    .from('t_hm101_posts as a')
+                    .leftJoin('t_hm101_htmls as b','a.contentH5Id', 'b.id')
+                    .where({ 'a.id': id});
         // Object.keys(result).forEach(function(param,index){
         //     console.log("return post attr "+param+" is "+result[param])
         // })

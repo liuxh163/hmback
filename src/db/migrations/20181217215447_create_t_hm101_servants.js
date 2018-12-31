@@ -31,6 +31,8 @@ exports.up = function(knex, Promise) {
         table.decimal('followPrice', 8, 2);
         //地接价格
         table.decimal('recepPrice', 8, 2);
+        //浏览次数
+        table.integer('viewNum', 8).notNullable().defaultTo(0);
 
         // 记录操作人id
         table.string('operator').notNullable();

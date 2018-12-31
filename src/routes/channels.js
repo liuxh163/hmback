@@ -22,11 +22,11 @@ router.put('/api/v1/channels/:id', tokenMw, async (ctx, next) => {
 
 // 停用渠道信息
 router.put('/api/v1/channels/:id/halt', tokenMw, async (ctx, next) => {
-    await attendantController.halt(ctx)
+    await channelController.halt(ctx)
 })
 // 启用渠道信息
 router.put('/api/v1/channels/:id/awaken', tokenMw, async (ctx, next) => {
-    await attendantController.awaken(ctx)
+    await channelController.awaken(ctx)
 })
 
 export default router

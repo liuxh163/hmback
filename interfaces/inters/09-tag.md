@@ -1,18 +1,19 @@
 # Group 标签
 
-### 打标签 [POST /api/v1/tags]
+### 打标签 [POST /api/v1/tags/{?target=01,targetId=p11}]
 为指定对象打标签
 
 + Headers
   hmtoken: "dba3a540-0794-11e9-9b81-999da2f6363a"
 
++ Parameters
+  + target: `01` (string) - 标签对象类型。
+  + targetId: `product1` (string) - 标签对象唯一id。
+
 + Request (application/json)
 
       {
-          "target": "01",
-          "targetId": "product123",
-          "name": "精品",
-          "targerId": "admin1"
+          "name": "精品"
       }
 
 + Response 200

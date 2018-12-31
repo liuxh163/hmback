@@ -19,7 +19,7 @@ class Operation {
         this.endTime = data.endTime
 
         this.operator = data.operator
-        this.operatorFlag = data.operatorFlag
+        this.operateFlag = data.operateFlag
         this.updatedAt = data.updatedAt
         this.createdAt = data.createdAt
     }

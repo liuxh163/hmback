@@ -13,7 +13,7 @@ async function outHandler(ctx, next) {
     // ctx.redisdb.expire('dd114f80-05a6-11e9-bf02-7780a1cd7342', 1000)
 
     var result
-    if(ctx.body.name){
+    if('200'!=ctx.status){
         result = {
             success: false,
             status: ctx.status,

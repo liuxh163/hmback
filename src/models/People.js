@@ -12,6 +12,11 @@ class Note {
         this.title = data.title
         this.content = data.content
         this.ipAddress = data.ipAddress
+
+        this.operator = data.operator
+        this.operateFlag = data.operateFlag
+        this.updatedAt = data.updatedAt
+        this.createdAt = data.createdAt
     }
 
     async all(request) {

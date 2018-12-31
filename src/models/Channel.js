@@ -14,7 +14,7 @@ class Channel {
         this.bizCode = data.bizCode
 
         this.operator = data.operator
-        this.operatorFlag = data.operatorFlag
+        this.operateFlag = data.operateFlag
         this.updatedAt = data.updatedAt
         this.createdAt = data.createdAt
     }
@@ -23,10 +23,9 @@ class Channel {
         try {
             return await db('t_hm101_channels')
                 .select('*')
-                .where({ userId: request.userId })
                 .orderBy('updatedAt', 'desc')
-                .offset(+request.pages * +request.pageNum)
-                .limit(+request.pageNum)
+                .offset(--request.page * +request.number)
+                .limit(+request.number)
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')

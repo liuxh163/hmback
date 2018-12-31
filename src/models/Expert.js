@@ -15,7 +15,7 @@ class Note {
         this.nation = data.nation
 
         this.operator = data.operator
-        this.operatorFlag = data.operatorFlag
+        this.operateFlag = data.operateFlag
         this.updatedAt = data.updatedAt
         this.createdAt = data.createdAt
     }
