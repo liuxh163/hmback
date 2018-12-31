@@ -10,6 +10,7 @@ class Post {
         this.topicId = data.topicId
         this.title = data.title
         this.content = data.content
+        this.contentH5Id = data.contentH5Id
         this.posterId = data.posterId
         this.views = data.views
         this.thumbNum = data.thumbNum
@@ -75,6 +76,9 @@ class Post {
             }else{
                 return {}
             }
+            // Object.keys(result).forEach(function(param,index){
+            //     console.log("find result attr "+param+" is "+result[param])
+            // })
             this.constructor(result)
         } catch (error) {
             console.log(error)
@@ -123,14 +127,45 @@ class Post {
      * @return {[type]}         [description]
      */
     async save(request) {
-        try {
-            return await db('t_hm101_posts')
-                .update(this)
-                .where({ id: this.id })
-        } catch (error) {
-            console.log(error)
-            throw new Error('ERROR')
-        }
+        var post = this
+        // 插入post表时去掉数据中非字段项
+        delete post.commentNum
+        delete post.thumbNum
+        var content = {content:post.content}
+        content.updatedAt = post.updatedAt
+        content.operateFlag = post.operateFlag
+        content.operator = post.posterId
+        delete post.content
+        // 遍历打印对象内容
+        Object.keys(content).forEach(function(param,index){
+            console.log("content attr "+param+" is "+content[param])
+        })
+        Object.keys(post).forEach(function(param,index){
+            console.log("post attr "+param+" is "+post[param])
+        })
+
+        // 使用事务插入帖子信息及内容信息表
+        return await db.transaction(function(trx) {
+          return db('t_hm101_htmls').update(content)
+            .transacting(trx)
+            .where({id: post.contentH5Id})
+            .then(function(ids) {
+                console.log("content id is :"+ids[0])
+                return db('t_hm101_posts')
+                    .update(post)
+                    .transacting(trx)
+                    .where({id: post.id});
+            })
+            .then(trx.commit)
+            .catch(trx.rollback);
+        })
+        .then(function(inserts) {
+            return inserts;
+        })
+        .catch(function(error) {
+            console.log("error is---"+error)
+          throw new Error('ERROR')
+        });
     }
     /**
      * 删除指定的帖子
@@ -160,7 +195,7 @@ async function findById(id) {
             .where({ 'a.id': id});
 
         // Object.keys(result).forEach(function(param,index){
-        //     console.log("post attr "+param+" is "+result[param])
+        //     console.log("return post attr "+param+" is "+result[param])
         // })
         return result
     } catch (error) {

@@ -93,7 +93,7 @@
               "content": "<span>海马健康金是一款。。。</span>",
               "location": "韩国，首尔",
               "commentNum": "300",
-              "praiseNum": "223",
+              "thumbNum": "223",
               "views" "499"
           }
       }
@@ -129,8 +129,14 @@
 + Request (application/json)
 
       {
-          "title": "海马健康金，助力健康",
-          "content": "<span>海马健康金是一款。。。</span>"
+          "title": "海马金",
+          "posterId": "user123",
+          "posterName": "刘半仙",
+          "content": "<span>海马健康金是一款。。。</span>",
+          "location": "日本，大阪",
+          "commentNum": "300",
+          "thumbNum": "223",
+          "views" "499"
       }
 
 + Response 200

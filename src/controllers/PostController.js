@@ -29,6 +29,7 @@ class PostController {
 
     async show(ctx) {
         const params = ctx.params
+
         if (!params.id) ctx.throw(400, 'INVALID_DATA')
 
         //Initialize post
@@ -83,20 +84,26 @@ class PostController {
         if (!post) ctx.throw(400, 'INVALID_DATA')
 
         //判断操作用户是否发帖人，不是发帖人不允许更新
-        const user = new User(ctx.state.user)
-        if (post.posterId !== user.id) ctx.throw(400, 'INVALID_OPERATOR')
-
+        const curUser = new User(ctx.state.user)
+        if (post.posterId !== curUser.id) ctx.throw(400, 'INVALID_OPERATOR')
+        // Object.keys(post).forEach(function(param,index){
+        //     console.log("controller1 post attr "+param+" is "+post[param])
+        // })
         //Add the updated date value
         post.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        post.operateFlag = 'U'
+        post.operator = curUser.id
 
         //Replace the post data with the new updated post data
         Object.keys(ctx.request.body).forEach(function(parameter, index) {
             post[parameter] = request[parameter]
         })
-
+        // Object.keys(post).forEach(function(param,index){
+        //     console.log("controller2 post attr "+param+" is "+post[param])
+        // })
         try {
             await post.save()
-            ctx.body = { message: 'SUCCESS' }
+            ctx.body = { id: post.id }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
