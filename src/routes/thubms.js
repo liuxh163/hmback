@@ -11,9 +11,5 @@ const thumbController = new ThumbController()
 router.put('/api/v1/thumbs', tokenMw, async (ctx, next) => {
     await thumbController.toggle(ctx)
 })
-// 获取点赞数
-router.get('/api/v1/thumbs/{?target=01,targetId=p11}', tokenMw, async (ctx, next) => {
-    await thumbController.count(ctx)
-})
 
 export default router

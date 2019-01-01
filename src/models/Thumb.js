@@ -9,6 +9,7 @@ class Thumb {
         this.target = data.target
         this.targetId = data.targetId
         this.likerId = data.likerId
+        this.status = data.status
 
         this.operator = data.operator
         this.operateFlag = data.operateFlag
@@ -16,22 +17,17 @@ class Thumb {
         this.createdAt = data.createdAt
     }
 
-    async count(request) {
-        try {
-            return await db('t_hm101_thumbups')
-                .where({ target: request.target, targetId:request.targetId })
-                .count('1')
-        } catch (error) {
-            console.log(error)
-            throw new Error('ERROR')
-        }
-    }
-
     async find(request) {
         try {
-            return await db('t_hm101_thumbups')
+            let result = await db('t_hm101_thumbs')
                 .select('*')
-                .where({ target: request.target, targetId:request.targetId ,linkerId:request.likerId})
+                .where({ target: request.target, targetId:request.targetId ,likerId:request.likerId})
+                .orderBy('updatedAt', 'desc');
+            // Object.keys(result[0]).forEach(function(param,index){
+            //     console.log("result  attr "+param+" is "+result[0][param])
+            // })
+            if (!result) return {}
+            this.constructor(result[0])
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
@@ -40,17 +36,18 @@ class Thumb {
 
     async store() {
         try {
-            return await db('t_hm101_thumbups').insert(this)
+            return await db('t_hm101_thumbs')
+                .insert(this)
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
         }
     }
 
-    async destroy(request) {
+    async save(request) {
         try {
-            return await db('t_hm101_thumbups')
-                .delete()
+            return await db('t_hm101_thumbs')
+                .update(this)
                 .where({ id: this.id })
         } catch (error) {
             console.log(error)

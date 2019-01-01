@@ -123,5 +123,7 @@ app.use(filesRouter.allowedMethods())
 //标签路由
 app.use(tagsRouter.routes())
 app.use(tagsRouter.allowedMethods())
-
+//点赞路由
+app.use(thumbsRouter.routes())
+app.use(thumbsRouter.allowedMethods())
 export default app

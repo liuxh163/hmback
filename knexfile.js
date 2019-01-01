@@ -26,7 +26,7 @@ module.exports = {
     },
     development: {
         client: 'mysql',
-        debug: false,
+        debug: true,
         connection: {
             host: process.env.DB_HOST,
             port: process.env.DB_PORT,

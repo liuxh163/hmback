@@ -2,17 +2,21 @@ import dateFormat from 'date-fns/format'
 
 import { User } from '../models/User'
 import { Comment } from '../models/Comment'
-import { H5content } from '../models/H5content'
 
 class CommentController {
+    /**
+     * 查询指定对象的评论，支持分页
+     * @param  {[type]} ctx [description]
+     * @return {[type]}     [description]
+     */
     async index(ctx) {
         const query = ctx.query
 
         const comment = new Comment()
 
         //检查查询参数
-        if (!query.pages || !query.pageNum) {
-            ctx.throw(400, 'INVALID_ROUTE_OPTIONS')
+        if (!query.target || !query.targetId || !query.page || !query.number) {
+            ctx.throw(400, 'INVALID_COMMENT_OPTIONS')
         }
 
         //获取分页列表
@@ -24,25 +28,31 @@ class CommentController {
             ctx.throw(400, 'INVALID_DATA' + error)
         }
     }
-
+    /**
+     * 针对特定对象发表评论
+     * @param  {[type]} ctx [description]
+     * @return {[type]}     [description]
+     */
     async create(ctx) {
+        const query = ctx.query
         const request = ctx.request.body
 
         //Attach logged in user
-        const user = new User(ctx.state.user)
-        request.commenterId = user.id
+        const curUser = new User(ctx.state.user)
+        request.commenterId = curUser.id
+        request.operator = curUser.id
 
         const comment = new Comment(request)
 
-        // 插入h5内容
-        const h5Content = new H5content();
-        h5Content.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss');
-        h5Content.content = request.content;
-        await h5Content.store();
+        comment.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss');
+        //Replace the servant data with the new updated servant data
+        Object.keys(query).forEach(function(parameter, index) {
+            comment[parameter] = query[parameter]
+        })
 
         try {
             let result = await comment.store()
-            ctx.body = { id: result.id }
+            ctx.body = { id: result[0] }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
@@ -59,32 +69,28 @@ class CommentController {
         //Find and set that comment
         const comment = new Comment()
         await comment.find(params.id)
-        if (!comment) ctx.throw(400, 'INVALID_DATA')
-
-        // 更新h5内容
-        const h5Content = new H5content();
-        await h5Content.find(comment.contentH5Id);
-        if (!content) ctx.throw(400, 'INVALID_DATA');
-        h5Content.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss');
-        h5Content.content = request.content;
-        await h5Content.save();
-
+        if (!comment) ctx.throw(400, 'INVALID_COMMENT_DATA')
 
         //检查是否当前评论人
-        const user = new User(ctx.state.user)
-        if (comment.commenterId !== user.id) ctx.throw(400, 'INVALID_DATA')
+        const curUser = new User(ctx.state.user)
+        if (comment.commenterId !== curUser.id) ctx.throw(400, 'INVALID_OPERATOR')
 
         //Add the updated date value
         comment.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        comment.operateFlag = 'U'
+        comment.operator = curUser.id
 
         //Replace the comment data with the new updated comment data
-        Object.keys(ctx.request.body).forEach(function(parameter, index) {
+        Object.keys(request).forEach(function(parameter, index) {
             comment[parameter] = request[parameter]
         })
 
+        // Object.keys(comment).forEach(function(param,index){
+        //     console.log("controller update attr "+param+" is "+comment[param])
+        // })
         try {
             await comment.save()
-            ctx.body = { id: result.id }
+            ctx.body = { id: comment.id }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
@@ -101,8 +107,8 @@ class CommentController {
         if (!comment) ctx.throw(400, 'INVALID_DATA')
 
         //检查是否当前评论人
-        const user = new User(ctx.state.user)
-        if (comment.commenterId !== user.id) ctx.throw(400, 'INVALID_DATA')
+        const curUser = new User(ctx.state.user)
+        if (comment.commenterId !== curUser.id) ctx.throw(400, 'INVALID_DATA')
 
         try {
             await comment.destroy()

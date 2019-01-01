@@ -8,7 +8,7 @@ const tokenMw = RdsToken()
 
 const commentController = new CommentController()
 // 获取评论列表
-router.get('/api/v1/comments/{?target=01,targetId=123,pages=1,pageNum=10}', tokenMw, async (ctx, next) => {
+router.get('/api/v1/comments', tokenMw, async (ctx, next) => {
     await commentController.index(ctx)
 })
 // 发表评论

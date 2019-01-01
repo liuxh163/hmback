@@ -16,8 +16,11 @@ module.exports = (opts = {}) => {
             })
 
             if(ctx.state.user){
+                var expiration = process.env.TOKEN_EXPIRATION_TIME
+
                 // token访问后续期
-                ctx.redisdb.expire(token, process.env.TOKEN_EXPIRATION_TIME)
+                ctx.redisdb.expire(token, expiration)
+                ctx.redisdb.expire('login-'+ctx.state.user.telephone, expiration)
                 return next()
             }
         } catch (error) {

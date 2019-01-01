@@ -3,8 +3,8 @@ if (!process.env.NODE_ENV) {
     throw new Error('NODE_ENV not set')
 }
 exports.up = function(knex, Promise) {
-    knex.schema.dropTableIfExists('t_hm101_thumbups');
-    return knex.schema.createTable('t_hm101_thumbups', function(table) {
+    knex.schema.dropTableIfExists('t_hm101_thumbs');
+    return knex.schema.createTable('t_hm101_thumbs', function(table) {
         table.charset('utf8mb4')
         table.collate('utf8mb4_unicode_ci')
         //id主键
@@ -15,6 +15,8 @@ exports.up = function(knex, Promise) {
         table.integer('targetId', 11);
         //点赞用户
         table.integer('likerId', 11);
+        //点赞状态 01-点赞，02-取消
+        table.string('status',2).notNullable().defaultTo('01');
 
         // 记录操作人id
         table.string('operator').notNullable();
@@ -33,6 +35,6 @@ exports.up = function(knex, Promise) {
 exports.down = function(knex, Promise) {
     // 生产环境下不做表删除操作
     if (process.env.NODE_ENV !== 'production') {
-        return knex.schema.dropTableIfExists('t_hm101_thumbups')
+        return knex.schema.dropTableIfExists('t_hm101_thumbs')
     }
 };

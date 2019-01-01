@@ -43,9 +43,9 @@ class ServantController {
         try {
             //Find and show servant
             await servant.find(params.id)
-            Object.keys(servant).forEach(function(param,index){
-                console.log("controller show attr "+param+" is "+servant[param])
-            })
+            // Object.keys(servant).forEach(function(param,index){
+            //     console.log("controller show attr "+param+" is "+servant[param])
+            // })
             ctx.body = servant
         } catch (error) {
             console.log(error)

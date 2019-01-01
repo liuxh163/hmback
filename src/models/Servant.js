@@ -31,7 +31,7 @@ class Servant {
 
     async all(request) {
         try {
-            return await db.select('a.*','b.content as intro')
+            let result = await db.select('a.*','b.content as intro')
                 .from('t_hm101_servants as a')
                 .leftJoin('t_hm101_htmls as b','a.introH5Id', 'b.id')
                 .where({ type: request.type, nation: request.nation })
@@ -49,6 +49,7 @@ class Servant {
                 let commentNum = await getComments(result[i].id)
                 result[i].commentNum = commentNum[0].count;
             }
+            return result;
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
@@ -172,7 +173,11 @@ class Servant {
         }
     }
 }
-
+/**
+ * 根据id查找指定服务人员
+ * @param  {[type]} id [description]
+ * @return {[type]}    [description]
+ */
 async function findById(id) {
     try {
         let [servantData] = await db.select('a.*','b.content as intro')
