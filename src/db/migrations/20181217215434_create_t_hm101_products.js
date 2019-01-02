@@ -32,13 +32,15 @@ exports.up = function(knex, Promise) {
         table.integer('itemH5Id', 11);
 
         //产品成人单价
-        table.decimal('adultPrice', 8, 2).notNullable();
+        table.decimal('adultPrice', 8, 2).notNullable().defaultTo(0.00);
+        //产品成人女性单价
+        table.decimal('womenPrice', 8, 2).notNullable().defaultTo(0.00);
         //产品随行单价
-        table.decimal('companyPrice', 8, 2).notNullable();
+        table.decimal('companyPrice', 8, 2).notNullable().defaultTo(0.00);
         //产品儿童单价
-        table.decimal('childPrice', 8, 2).notNullable();
+        table.decimal('childPrice', 8, 2).notNullable().defaultTo(0.00);
         //启停用状态 01-启用  02-停用
-        table.string('status',2).notNullable().defaultTo('01');
+        table.string('status',2).notNullable().defaultTo('02');
 
         // 记录操作人id
         table.string('operator').notNullable();

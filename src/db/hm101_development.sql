@@ -11,7 +11,7 @@
  Target Server Version : 50552
  File Encoding         : utf-8
 
- Date: 01/02/2019 16:50:51 PM
+ Date: 01/02/2019 17:04:55 PM
 */
 
 SET NAMES utf8mb4;
@@ -323,10 +323,11 @@ CREATE TABLE `t_hm101_products` (
   `noticeH5Id` int(11) DEFAULT NULL,
   `hospitalH5Id` int(11) DEFAULT NULL,
   `itemH5Id` int(11) DEFAULT NULL,
-  `adultPrice` decimal(8,2) NOT NULL,
-  `companyPrice` decimal(8,2) NOT NULL,
-  `childPrice` decimal(8,2) NOT NULL,
-  `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '01',
+  `adultPrice` decimal(8,2) NOT NULL DEFAULT '0.00',
+  `womenPrice` decimal(8,2) NOT NULL DEFAULT '0.00',
+  `companyPrice` decimal(8,2) NOT NULL DEFAULT '0.00',
+  `childPrice` decimal(8,2) NOT NULL DEFAULT '0.00',
+  `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '02',
   `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
   `updatedAt` datetime NOT NULL,

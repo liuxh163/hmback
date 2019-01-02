@@ -23,6 +23,7 @@ class Product {
         this.hospital = data.hospital
         this.item = data.item
         this.adultPrice = data.adultPrice
+        this.womenPrice = data.womenPrice
         this.companyPrice = data.companyPrice
         this.childPrice = data.childPrice
         this.status = data.status
