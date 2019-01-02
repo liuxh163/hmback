@@ -6,12 +6,19 @@ class Note {
         if (!data) {
             return
         }
-
         this.id = data.id
-        this.userId = data.userId
-        this.title = data.title
-        this.content = data.content
-        this.ipAddress = data.ipAddress
+        this.number = data.number
+        this.target = data.target
+        this.targetId = data.targetId
+        this.price = data.price
+        this.payedMoney = data.payedMoney
+        this.buyerId = data.buyerId
+        this.contact = data.contact
+        this.telephone = data.telephone
+        this.status = data.status
+        this.peoples = data.peoples
+        this.attendants = data.attendants
+        this.period = data.period
 
         this.operator = data.operator
         this.operateFlag = data.operateFlag

@@ -25,6 +25,7 @@ import operationsRouter from './routes/operations'
 import tagsRouter from './routes/tags'
 import thumbsRouter from './routes/thubms'
 import filesRouter from './routes/files'
+import ordersRouter from './routes/orders'
 
 //Initialize app
 const app = new Koa()
@@ -129,6 +130,8 @@ app.use(thumbsRouter.allowedMethods())
 //附加项路由
 app.use(attendantsRouter.routes())
 app.use(attendantsRouter.allowedMethods())
-
+//订单路由
+app.use(orderRouter.routes())
+app.use(orderRouter.allowedMethods())
 
 export default app
