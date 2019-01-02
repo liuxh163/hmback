@@ -1,0 +1,2562 @@
+{
+	"info": {
+		"_postman_id": "f27430b3-c4b6-4843-a0ed-42284a4d2551",
+		"name": "hm101",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "\b用户",
+			"item": [
+				{
+					"name": "用户登录",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"telephone\": \"13378965431\",\n    \"smscode\": \"879778\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/user/login",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "发送验证码",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"telephone\": \"13378965433\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/users/sendSms",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"sendSms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "管理员登出",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "be5ce1d0-0b78-11e9-8b6a-b1efd05343de",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/user/logout",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "启用",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/users/:id/awaken",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								":id",
+								"awaken"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "停用",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "2db771c0-0bd4-11e9-ba6f-cd8cfff9c69e",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/users/:id/halt",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								":id",
+								"halt"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "修改信息",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "64dc7970-0b84-11e9-acc4-a19013813bee"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"realName\": \"赵四\",\n  \"iconPath\": \"/users/touxiang.png\",\n  \"slogan\": \"海马健康金，助力健康\",\n  \"idNumber\": \"1XXXXXXXXXXXXXXX\",\n  \"email\": \"test@test.com\",\n  \"address\": \"北京市海淀区学院路99号大中电器3层，100089\",\n  \"username\": \"赵三两\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/users/:id",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "查询用户列表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "64dc7970-0b84-11e9-acc4-a19013813bee",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/users/?page=1&number=3",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "number",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "379cf21f-76ad-4c7e-aae0-76f3b8fc58a7",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "b97ee7fe-cedf-4f40-9262-73b9d52931f6",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "论坛",
+			"item": [
+				{
+					"name": "创建话题",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\":\"说说\",\n  \"desc\":\"这是说说板块\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/topics",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"topics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取话题列表",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"status\":\"01\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/topics",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"topics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "修改话题",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\":\"发现1\",\n  \"desc\":\"这是发现者的天地\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/topics/:id",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"topics",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "关闭话题",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "2db771c0-0bd4-11e9-ba6f-cd8cfff9c69e"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/topics/:id/halt",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"topics",
+								":id",
+								"halt"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "启用话题",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/topics/:id/awaken",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"topics",
+								":id",
+								"awaken"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "发帖",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"海马健康金，助力健康\",\n  \"content\": \"<span>海马健康金是一款。。。</span>\",\n  \"location\": \"韩国，首尔\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/topics/:id/posts",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"topics",
+								":id",
+								"posts"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "看贴",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/posts/:id",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"posts",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "改贴",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"海马金\",\n  \"content\": \"<span>1122海马健康金是一款。。。</span>\",\n  \"location\": \"日本，二阪\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/posts/:id",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"posts",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删帖",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\":\"发现1\",\n  \"desc\":\"这是发现者的天地\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/posts/:id",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"posts",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "查贴列表",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/topics/:id/posts/?page=1&number=3&sort=1",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"topics",
+								":id",
+								"posts",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "number",
+									"value": "3"
+								},
+								{
+									"key": "sort",
+									"value": "1"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "35a25b75-da7f-4f3a-bce2-34b72fe8ddf7",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "ec2de1bb-f737-4208-bd4e-7427a4587c01",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "产品",
+			"item": [
+				{
+					"name": "产品-创建",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"desc\": \"中日友好\",\n  \"nation\": \"01\",\n  \"item\": \"<span>基础项内容</span>\",\n  \"feature\": \"<span>产品亮点</span>\",\n  \"detail\": \"<span>产品介绍</span>\",\n  \"routine\": \"<span>产品行程</span>\",\n  \"fee\": \"<span>产品费用</span>\",\n  \"notice\": \"<span>预定须知</span>\",\n  \"hospital\": \"<span>医院简介</span>\",\n  \"adultPrice\": \"16800\",\n  \"companyPrice\": \"5000\",\n  \"childPrice\": \"3000\",\n  \"experts\":[\n  \t{\"picPath\":\"/pic1.jpg\",\"desc\":\"这是一个专1家\",\"likes\":\"33\",\"ranks\":\"3.5\",\"name\":\"专1家\",\"nation\":\"01\"},\n  \t{\"picPath\":\"/pic2.jpg\",\"desc\":\"这是一个专2家\",\"likes\":\"34\",\"ranks\":\"4.5\",\"name\":\"专2家\",\"nation\":\"01\"},\n  \t{\"picPath\":\"/pic3.jpg\",\"desc\":\"这是一个专3家\",\"likes\":\"35\",\"ranks\":\"5.5\",\"name\":\"专3家\",\"nation\":\"01\"}\n  ],\n  \"operations\":[\n  \t{\"name\":\"yuny1\",\"content\":\"这是一个运营活动1\"},\n  \t{\"name\":\"yuny2\",\"content\":\"这是一个运营活动2\"},\n  \t{\"name\":\"yuny3\",\"content\":\"这是一个运营活动3\"}\n  ]\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/products",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "产品-查列表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/products?sort=1&nation=01&page=1&number=10",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"products"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "1"
+								},
+								{
+									"key": "nation",
+									"value": "01"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "number",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "产品-查详情",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/products/:id",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"products",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "7"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "产品-修改",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"desc\": \"中日g友好\",\n  \"nation\": \"01\",\n  \"item\": \"<span>g基础项内容</span>\",\n  \"feature\": \"<span>g产品亮点</span>\",\n  \"detail\": \"<span>g产品介绍</span>\",\n  \"routine\": \"<span>g产品行程</span>\",\n  \"fee\": \"<span>g产品费用</span>\",\n  \"notice\": \"<span>g预定须知</span>\",\n  \"hospital\": \"<span>g医院简介</span>\",\n  \"adultPrice\": \"2800\",\n  \"companyPrice\": \"3000\",\n  \"childPrice\": \"1000\",\n  \"experts\":[\n  \t{\"picPath\":\"/zhuanjpic1.jpg\",\"desc\":\"这是一个专1家\",\"likes\":\"33\",\"ranks\":\"3.5\",\"name\":\"专1家\",\"nation\":\"01\"},\n  \t{\"picPath\":\"/zhuajpic2.jpg\",\"desc\":\"这是一个专2家\",\"likes\":\"34\",\"ranks\":\"4.5\",\"name\":\"专2家\",\"nation\":\"01\"},\n  \t{\"picPath\":\"/zhuujpic3.jpg\",\"desc\":\"这是一个专3家\",\"likes\":\"35\",\"ranks\":\"5.5\",\"name\":\"专3家\",\"nation\":\"01\"}\n  ],\n  \"operations\":[\n  \t{\"name\":\"运营1\",\"content\":\"这是一个运营活动1\"},\n  \t{\"name\":\"运营2\",\"content\":\"这是一个运营活动2\"},\n  \t{\"name\":\"运营3\",\"content\":\"这是一个运营活动3\"}\n  ]\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/products/:id",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"products",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "7"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "产品-停用",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/products/:id/halt",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"products",
+								":id",
+								"halt"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "产品-启用",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/products/:id/awaken",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"products",
+								":id",
+								"awaken"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "产品-删除",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/products/:id",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"products",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "eb1429c0-9af1-4aad-8263-33741a3bbdf2",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "a7458805-8794-496a-b143-442ee079fd9d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "订单",
+			"item": []
+		},
+		{
+			"name": "服务人员",
+			"item": [
+				{
+					"name": "获取人员列表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/servants?type=01&nation=01&page=1&number=5",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"servants"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "01"
+								},
+								{
+									"key": "nation",
+									"value": "01"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "number",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取人员详情",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/servants/:id",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"servants",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "新增人员",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\":\"又疼君\",\n  \"desc\":\"又疼君是一名地接翻译\",\n  \"picPath\":\"/public/servants/zuoteng1.png\",\n  \"type\":\"02\",\n  \"nation\":\"02\",\n  \"service\":\"03\",\n  \"intro\":\"<span>日本的专业地接人员呀</span>\",\n  \"followPrice\":\"1000\",\n  \"recepPrice\":\"2000\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/servants",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"servants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "修改人员",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\":\"疼君\",\n  \"desc\":\"疼君是一名地接X翻译\",\n  \"picPath\":\"/public/servants/zuoteng1.png\",\n  \"type\":\"02\",\n  \"nation\":\"02\",\n  \"service\":\"03\",\n  \"intro\":\"<span>日本的专业地接人员呀</span>\",\n  \"followPrice\":\"1000\",\n  \"recepPrice\":\"2000\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/servants/:id",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"servants",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "停用人员",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/servants/:id/halt",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"servants",
+								":id",
+								"halt"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "启用人员",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/servants/:id/awaken",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"servants",
+								":id",
+								"awaken"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "0f3fa889-0220-426b-88e2-592c75770533",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "4fbbaad5-c28d-4b35-98eb-f992aeb55c15",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "渠道管理",
+			"item": [
+				{
+					"name": "获取渠道列表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/channels?page=1&number=2",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"channels"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "number",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "新增渠道",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"中日友好\",\n  \"desc\": \"中日友好渠道推广\",\n  \"contact\": \"王五\",\n  \"telephone\": \"13323334567\",\n  \"bizCode\": \"B123212\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/channels",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"channels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "修改渠道",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"友商1\",\n  \"desc\": \"中日友好渠道推广\",\n  \"contact\": \"王五\",\n  \"telephone\": \"13323334568\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/channels/:id",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"channels",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "停用渠道",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/channels/:id/halt",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"channels",
+								":id",
+								"halt"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "启用 渠道",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/channels/:id/awaken",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"channels",
+								":id",
+								"awaken"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "c55b44c9-43e2-4016-b1df-1ed7d237e47d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "8dea923f-77b2-44f2-bd46-df3117d3cdc8",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "评论点赞标签",
+			"item": [
+				{
+					"name": "打标签",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "hmtoken",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"推荐\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/tags?target=02&targetId=2",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"tags"
+							],
+							"query": [
+								{
+									"key": "target",
+									"value": "02"
+								},
+								{
+									"key": "targetId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "查标签",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/tags?target=02&targetId=2",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"tags"
+							],
+							"query": [
+								{
+									"key": "target",
+									"value": "02"
+								},
+								{
+									"key": "targetId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删标签",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/tags/:id",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"tags",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "查评论",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/comments?target=01&targetId=3&page=1&number=10",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"comments"
+							],
+							"query": [
+								{
+									"key": "target",
+									"value": "01"
+								},
+								{
+									"key": "targetId",
+									"value": "3"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "number",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "发评论",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"content\": \"这款产品不错呀\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/comments?target=01&targetId=4",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"comments"
+							],
+							"query": [
+								{
+									"key": "target",
+									"value": "01"
+								},
+								{
+									"key": "targetId",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "改评论",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"content\": \"中日友好渠道推广\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/comments/:id",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"comments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删评论",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/comments/:id",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"comments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "点赞\b/取消",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"target\": \"01\",\n  \"targetId\":\"1\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/thumbs",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"thumbs"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "da919148-ff39-4e0c-b19f-869e3fefd765",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "3e8024fe-a3d1-4acd-a12d-6ac35ad25323",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "附加项轮播图",
+			"item": [
+				{
+					"name": "附加项-列表",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"status\": \"01\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/attendants",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"attendants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "附加项-创建",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": \"4500.00\",\n  \"name\": \"甲亢1检查\",\n  \"desc\": \"这是女性一个附加项，可以选的哦\",\n  \"target\": \"02\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/attendants",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"attendants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "附加项-修改",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": \"5500.00\",\n  \"name\": \"甲亢1检查\",\n  \"desc\": \"这是男性一个附加项，可以选的哦\",\n  \"target\": \"01\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/attendants/:id",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"attendants",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "附加项-停用",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/attendants/:id/halt",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"attendants",
+								":id",
+								"halt"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "附加项-启用",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/attendants/:id/awaken",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"attendants",
+								":id",
+								"awaken"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "轮播-创建",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"轮播图5\",\n  \"desc\": \"我是一张轮播图5\",\n  \"location\": \"01\",\n  \"productId\": \"3\",\n  \"picPath\": \"/public/carousel/carous.png\",\n  \"target\": \"05\",\n  \"targetId\": \"1\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/carousels",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"carousels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "轮播-查列表",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"status\":\"01\",\n\t\"productId\":\"1\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/carousels?location=01",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"carousels"
+							],
+							"query": [
+								{
+									"key": "location",
+									"value": "01"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "轮播-修改",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"轮播图5\",\n  \"desc\": \"我是一张轮播图5\",\n  \"location\": \"01\",\n  \"productId\": \"1\",\n  \"picPath\": \"/public/carousel/carous.png\",\n  \"target\": \"05\",\n  \"targetId\": \"1\"\n}"
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/carousels/:id",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"carousels",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "轮播-停用",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/carousels/:id/halt",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"carousels",
+								":id",
+								"halt"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "轮播-启用\b",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/carousels/:id/awaken",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"carousels",
+								":id",
+								"awaken"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "轮播-删除",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/carousels/:id",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"carousels",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "da919148-ff39-4e0c-b19f-869e3fefd765",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "3e8024fe-a3d1-4acd-a12d-6ac35ad25323",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "获取服务器版本信息",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "127.0.0.1:4000",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "4000"
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "200b8f20-0d26-4f2a-8721-9e06c3e7d6ff",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "ddc700b1-a249-4d42-bcef-09eb0024f7e0",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
