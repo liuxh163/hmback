@@ -24,10 +24,20 @@ class Carousel {
 
     async all(request) {
         try {
-            return await db('t_hm101_carousels')
+            if(request.productId){
+                return await db('t_hm101_carousels')
                 .select('*')
-                .where({ location: request.location, productId: request.productId })
+                .where({ location: request.location,
+                    productId: request.productId,
+                    status:request.status })
                 .orderBy('updatedAt', 'desc')
+            }else{
+                return await db('t_hm101_carousels')
+                .select('*')
+                .where({ location: request.location,
+                    status:request.status })
+                .orderBy('updatedAt', 'desc')
+            }
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
@@ -68,7 +78,7 @@ class Carousel {
     async destroy(request) {
         try {
             return await db('t_hm101_carousels')
-                .delete()
+                .update({operateFlag: 'D'})
                 .where({ id: this.id })
         } catch (error) {
             console.log(error)

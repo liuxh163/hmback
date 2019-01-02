@@ -11,9 +11,8 @@
       {
           "price": "4500.00",
           "name": "甲亢检查",
-          "desc": "<span>这是一个附加项，可以选的哦</span>",
-          "target": "01",
-          "status": "01"
+          "desc": "这是一个附加项，可以选的哦",
+          "target": "01"
       }
 
 + Response 200

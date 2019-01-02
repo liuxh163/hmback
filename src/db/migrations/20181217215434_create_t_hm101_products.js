@@ -14,14 +14,14 @@ exports.up = function(knex, Promise) {
         //产品所属国家
         table.string('nation', 2);
         //产品浏览次数
-        table.integer('views', 8).notNullable().defaultTo(0);
+        table.integer('viewNum', 8).notNullable().defaultTo(0);
 
         //亮点页面Id
         table.integer('featureH5Id', 11);
         //详情页面Id
         table.integer('detailH5Id', 11);
         //行程页面id
-        table.integer('routinH5Id', 11);
+        table.integer('routineH5Id', 11);
         //费用页面Id
         table.integer('feeH5Id', 11);
         //须知页面Id

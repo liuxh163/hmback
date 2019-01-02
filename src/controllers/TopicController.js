@@ -25,7 +25,11 @@ class TopicController {
             ctx.throw(400, 'INVALID_DATA' + error)
         }
     }
-
+    /**
+     * 创建新话题
+     * @param  {[type]} ctx [description]
+     * @return {[type]}     [description]
+     */
     async create(ctx) {
         const request = ctx.request.body
         //当前用户是否管理员
@@ -33,7 +37,7 @@ class TopicController {
         if ('02' !== curUser.type) ctx.throw(400, 'INVALID_PREVILEGE')
         const topic = new Topic(request)
         topic.operator = curUser.id
-
+        topic.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
         try {
             let result = await topic.store()
             ctx.body = { id: result[0] }
@@ -58,7 +62,7 @@ class TopicController {
         const topic = new Topic()
         await topic.find(params.id)
         if (!topic) ctx.throw(400, 'INVALID_DATA');
-        console.log("lalalalalalal"+Object.keys(request))
+
         //Add the updated date value
         topic.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
         topic.operateFlag = 'U'
@@ -99,7 +103,7 @@ class TopicController {
         topic.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
         topic.operateFlag = 'U'
         topic.operator = curUser.id
-        // 设置启用状态
+        // 设置停用用状态
         topic.status = '02'
         try {
             await topic.save()

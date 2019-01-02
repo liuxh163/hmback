@@ -8,7 +8,7 @@ const tokenMw = RdsToken()
 
 const productController = new ProductController()
 // 获取指定国家产品，支持不同排序方法，支持分页
-router.get('/api/v1/products/{?sort=1,nation=01,pages=1,pageNum=10}', tokenMw, async (ctx, next) => {
+router.get('/api/v1/products', tokenMw, async (ctx, next) => {
     await productController.index(ctx)
 })
 // 新增产品

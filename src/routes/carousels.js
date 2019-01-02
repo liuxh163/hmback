@@ -8,7 +8,7 @@ const tokenMw = RdsToken()
 
 const carouselController = new CarouselController()
 // 查询轮播图
-router.get('/api/v1/carousels/{?location=01,productId=p11}', tokenMw, async (ctx, next) => {
+router.get('/api/v1/carousels', tokenMw, async (ctx, next) => {
     await carouselController.index(ctx)
 })
 // 新建轮播图

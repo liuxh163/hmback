@@ -8,7 +8,7 @@ const tokenMw = RdsToken()
 
 const attendantController = new AttendantController()
 // 获取所有附加项列表
-router.get('/api/v1/attendants/{?target=01,pages=1,pageNum=10}', tokenMw, async (ctx, next) => {
+router.get('/api/v1/attendants', tokenMw, async (ctx, next) => {
     await attendantController.index(ctx)
 })
 // 新建产品附加项

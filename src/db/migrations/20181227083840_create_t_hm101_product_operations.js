@@ -17,18 +17,6 @@ exports.up = function(knex, Promise) {
         table.string('name', 20);
         //活动内容
         table.string('content', 200);
-        //活动变量名，内容中的{$变量}
-        table.string('var1Name', 20);
-        //活动变量值，用于替换内容中的{$变量}
-        table.decimal('var1Value', 8, 2);
-        //活动变量名，内容中的{$变量}
-        table.string('var2Name', 20);
-        //活动变量值，用于替换内容中的{$变量}
-        table.decimal('var2Value', 8, 2);
-        //活动起始时间
-        table.dateTime('startTime');
-        //活动结束时间
-        table.dateTime('endTime');
 
         // 记录操作人id
         table.string('operator').notNullable();

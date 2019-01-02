@@ -1,33 +1,39 @@
 import dateFormat from 'date-fns/format'
 
 import { Product } from '../models/Product'
+import { User } from '../models/User'
 
 class ProductController {
+    /**
+     * 获取指定参数的产品列表
+     * @param  {[type]} ctx [description]
+     * @return {[type]}     [description]
+     */
     async index(ctx) {
         const query = ctx.query
-
-        //Attach logged in user
-        const user = new User(ctx.state.user)
-        query.operator = user.id
 
         //Init a new product object
         const product = new Product()
 
         //检测查询参数
-        if (!query.sort || !query.nation || !query.pages || !query.pageNum) {
+        if (!query.sort || !query.nation || !query.page || !query.number) {
             ctx.throw(400, 'INVALID_ROUTE_OPTIONS')
         }
 
         //获取产品列表，分页
         try {
             let result = await product.all(query)
-            ctx.body = result
+            ctx.body = {products:result}
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA' + error)
         }
     }
-
+    /**
+     * 查询指定产品详情
+     * @param  {[type]} ctx [description]
+     * @return {[type]}     [description]
+     */
     async show(ctx) {
         const params = ctx.params
         if (!params.id) ctx.throw(400, 'INVALID_DATA')
@@ -44,23 +50,29 @@ class ProductController {
             ctx.throw(400, 'INVALID_DATA')
         }
     }
-
+    /**
+     * 创建产品
+     * @param  {[type]} ctx [description]
+     * @return {[type]}     [description]
+     */
     async create(ctx) {
         const request = ctx.request.body
 
-        //Attach logged in user
-        const user = new User(ctx.state.user)
-        request.oeprator = user.id
+        //获取当前用户
+        const curUser = ctx.state.user
+        if ('02' !== curUser.type) ctx.throw(400, 'INVALID_PREVILEGE');
+        request.operator = curUser.id
 
         //Create a new product object using the request params
         const product = new Product(request)
+        product.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
 
         try {
-            let result = await product.store()
-            ctx.body = { id: result }
+            let result = await product.store(request)
+            ctx.body = { id: result[0] }
         } catch (error) {
             console.log(error)
-            ctx.throw(400, 'INVALID_DATA')
+            ctx.throw(400, 'INVALID_INSERT_PRODUCT_DATA')
         }
     }
 
@@ -74,11 +86,15 @@ class ProductController {
         await product.find(params.id)
         if (!product) ctx.throw(400, 'INVALID_DATA')
 
-        const user = new User(ctx.state.user)
-        if (product.opeartor !== user.id) ctx.throw(400, 'INVALID_DATA')
+        //获取当前用户
+        const curUser = ctx.state.user
+        if ('02' !== curUser.type) ctx.throw(400, 'INVALID_PREVILEGE');
+        // if (product.opeartor !== curUser.id) ctx.throw(400, 'INVALID_USER')
 
         //Add the updated date value
         product.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        product.operateFlag = 'U'
+        product.operator = curUser.id
 
         //Replace the product data with the new updated product data
         Object.keys(ctx.request.body).forEach(function(parameter, index) {
@@ -96,20 +112,22 @@ class ProductController {
 
     async delete(ctx) {
         const params = ctx.params
-        if (!params.id) ctx.throw(400, 'INVALID_DATA')
 
-        //Find that product
+        //获取当前用户
+        const curUser = ctx.state.user
+        if ('02' !== curUser.type) ctx.throw(400, 'INVALID_PREVILEGE');
+
         const product = new Product()
-        await product.find(params.id)
-        if (!product) ctx.throw(400, 'INVALID_DATA')
+        await product.findPro(params.id)
+        if (!product) ctx.throw(400, 'INVALID_SERVANT_DATA')
 
-        //检查操作人权限
-        const user = new User(ctx.state.user)
-        if ('02' !== user.type) ctx.throw(400, 'INVALID_DATA')
-
+        //Add the updated date value
+        product.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        product.operateFlag = 'D'
+        product.operator = curUser.id
         try {
-            await product.destroy()
-            ctx.body = { id: params.id }
+            await product.savePro()
+            ctx.body = { id: product.id }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
@@ -118,33 +136,60 @@ class ProductController {
 
    // 产品下架
     async halt(ctx) {
-        const query = ctx.query
+        const params = ctx.params
 
+        //获取当前用户
+        const curUser = ctx.state.user
+        if ('02' !== curUser.type) ctx.throw(400, 'INVALID_PREVILEGE');
+
+        const product = new Product()
+        await product.findPro(params.id)
+        if (!product.id) ctx.throw(400, 'INVALID_PRODUCT_DATA')
+
+        //Add the updated date value
+        product.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        product.operateFlag = 'U'
+        product.operator = curUser.id
+        // 设置启用状态
+        product.status = '02'
+
+        // Object.keys(product).forEach(function(param,index){
+        //     console.log("product attr "+param+" is "+product[param])
+        // })
         try {
-            await db('t_hm101_products')
-                .update({status:'02'})
-                .where({ id: query.id, status: '01' })
+            await product.savePro()
+            ctx.body = { id: product.id }
         } catch (error) {
             console.log(error)
-            throw new Error('ERROR')
+            ctx.throw(400, 'INVALID_DATA')
         }
-        ctx.body = {id: query.id};
     }
 
     // 产品上架
     async awaken(ctx) {
-        const query = ctx.query
+        const params = ctx.params
 
+        //获取当前用户
+        const curUser = ctx.state.user
+        if ('02' !== curUser.type) ctx.throw(400, 'INVALID_PREVILEGE');
+
+        const product = new Product()
+        await product.findPro(params.id)
+        if (!product.id) ctx.throw(400, 'INVALID_PRODUCT_DATA')
+
+        //Add the updated date value
+        product.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        product.operateFlag = 'U'
+        product.operator = curUser.id
+        // 设置启用状态
+        product.status = '01'
         try {
-            await db('t_hm101_products')
-                .update({status:'01'})
-                .where({ id: query.id, status: '02' })
+            await product.savePro()
+            ctx.body = { id: product.id }
         } catch (error) {
             console.log(error)
-            throw new Error('ERROR')
+            ctx.throw(400, 'INVALID_DATA')
         }
-
-        ctx.body = {id: query.id};
     }
 
 }

@@ -35,7 +35,7 @@ class Servant {
                 .from('t_hm101_servants as a')
                 .leftJoin('t_hm101_htmls as b','a.introH5Id', 'b.id')
                 .where({ type: request.type, nation: request.nation })
-                .orderBy('updatedAt', 'desc')
+                .orderBy('a.updatedAt', 'desc')
                 .offset(--request.page * +request.number)
                 .limit(+request.number)
 
@@ -213,7 +213,7 @@ async function getViews(id,num) {
  */
 async function getThumbs(id) {
     try {
-        return await db('t_hm101_thumbups')
+        return await db('t_hm101_thumbs')
             .count('targetId as count')
             .where({ targetId: id })
     } catch (error) {

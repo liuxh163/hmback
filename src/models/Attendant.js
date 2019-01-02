@@ -18,7 +18,21 @@ class Attendant {
         this.updatedAt = data.updatedAt
         this.createdAt = data.createdAt
     }
-
+    /**
+     * 查询所有附加项
+     * @param  {[type]} request [description]
+     * @return {[type]}         [description]
+     */
+    async all(request) {
+        try {
+            return await db('t_hm101_attendants')
+                .select('*')
+                .where({status:request.status})
+        } catch (error) {
+            console.log(error)
+            throw new Error('ERROR')
+        }
+    }
     async find(id) {
         try {
             let result = await findById(id)

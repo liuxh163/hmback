@@ -184,7 +184,7 @@ async function findById(id) {
  */
 async function getThumbs(id) {
     try {
-        return await db('t_hm101_thumbups')
+        return await db('t_hm101_thumbs')
             .count('targetId as count')
             .where({ targetId: id })
     } catch (error) {

@@ -126,4 +126,9 @@ app.use(tagsRouter.allowedMethods())
 //点赞路由
 app.use(thumbsRouter.routes())
 app.use(thumbsRouter.allowedMethods())
+//附加项路由
+app.use(attendantsRouter.routes())
+app.use(attendantsRouter.allowedMethods())
+
+
 export default app
