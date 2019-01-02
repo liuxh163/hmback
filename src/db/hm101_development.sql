@@ -11,7 +11,7 @@
  Target Server Version : 50552
  File Encoding         : utf-8
 
- Date: 12/27/2018 10:52:26 AM
+ Date: 01/02/2019 16:50:51 PM
 */
 
 SET NAMES utf8mb4;
@@ -63,6 +63,7 @@ DROP TABLE IF EXISTS `t_hm101_carousels`;
 CREATE TABLE `t_hm101_carousels` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `location` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `productId` varchar(11) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `name` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `desc` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `picPath` varchar(96) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -88,6 +89,7 @@ CREATE TABLE `t_hm101_channels` (
   `contact` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `telephone` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
   `bizCode` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '01',
   `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
   `updatedAt` datetime NOT NULL,
@@ -102,8 +104,7 @@ CREATE TABLE `t_hm101_channels` (
 DROP TABLE IF EXISTS `t_hm101_comments`;
 CREATE TABLE `t_hm101_comments` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `topicId` int(11) NOT NULL,
-  `targer` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `target` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `targetId` int(11) NOT NULL,
   `contentH5Id` int(11) NOT NULL,
   `commenterId` int(11) NOT NULL,
@@ -260,7 +261,7 @@ CREATE TABLE `t_hm101_posts` (
   `title` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `contentH5Id` int(11) NOT NULL,
   `posterId` int(11) NOT NULL,
-  `views` int(8) NOT NULL DEFAULT '0',
+  `viewNum` int(8) NOT NULL DEFAULT '0',
   `location` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
@@ -299,12 +300,6 @@ CREATE TABLE `t_hm101_product_operations` (
   `targetId` int(11) DEFAULT NULL,
   `name` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `content` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `var1Name` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `var1Value` decimal(8,2) DEFAULT NULL,
-  `var2Name` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `var2Value` decimal(8,2) DEFAULT NULL,
-  `startTime` datetime DEFAULT NULL,
-  `endTime` datetime DEFAULT NULL,
   `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
   `updatedAt` datetime NOT NULL,
@@ -318,16 +313,16 @@ CREATE TABLE `t_hm101_product_operations` (
 DROP TABLE IF EXISTS `t_hm101_products`;
 CREATE TABLE `t_hm101_products` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `carouselId` int(11) NOT NULL,
   `desc` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `views` int(8) NOT NULL DEFAULT '0',
+  `nation` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `viewNum` int(8) NOT NULL DEFAULT '0',
   `featureH5Id` int(11) DEFAULT NULL,
   `detailH5Id` int(11) DEFAULT NULL,
-  `routinH5Id` int(11) DEFAULT NULL,
+  `routineH5Id` int(11) DEFAULT NULL,
   `feeH5Id` int(11) DEFAULT NULL,
   `noticeH5Id` int(11) DEFAULT NULL,
   `hospitalH5Id` int(11) DEFAULT NULL,
-  `priceH5Id` int(11) DEFAULT NULL,
+  `itemH5Id` int(11) DEFAULT NULL,
   `adultPrice` decimal(8,2) NOT NULL,
   `companyPrice` decimal(8,2) NOT NULL,
   `childPrice` decimal(8,2) NOT NULL,
@@ -346,12 +341,17 @@ DROP TABLE IF EXISTS `t_hm101_servants`;
 CREATE TABLE `t_hm101_servants` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `intro` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `desc` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `picPath` varchar(96) COLLATE utf8mb4_unicode_ci NOT NULL,
   `type` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '01',
   `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '01',
   `nation` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `content` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `service` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `introH5Id` int(11) NOT NULL,
+  `literPrice` decimal(8,2) DEFAULT NULL,
+  `followPrice` decimal(8,2) DEFAULT NULL,
+  `recepPrice` decimal(8,2) DEFAULT NULL,
+  `viewNum` int(8) NOT NULL DEFAULT '0',
   `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
   `updatedAt` datetime NOT NULL,
@@ -368,6 +368,7 @@ CREATE TABLE `t_hm101_tags` (
   `target` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `targetId` int(11) DEFAULT NULL,
   `name` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tagerId` int(11) DEFAULT NULL,
   `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
   `updatedAt` datetime NOT NULL,
@@ -376,14 +377,15 @@ CREATE TABLE `t_hm101_tags` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
---  Table structure for `t_hm101_thumbups`
+--  Table structure for `t_hm101_thumbs`
 -- ----------------------------
-DROP TABLE IF EXISTS `t_hm101_thumbups`;
-CREATE TABLE `t_hm101_thumbups` (
+DROP TABLE IF EXISTS `t_hm101_thumbs`;
+CREATE TABLE `t_hm101_thumbs` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `target` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL,
   `targetId` int(11) DEFAULT NULL,
   `likerId` int(11) DEFAULT NULL,
+  `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '01',
   `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
   `updatedAt` datetime NOT NULL,
@@ -399,6 +401,7 @@ CREATE TABLE `t_hm101_topics` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `desc` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '02',
   `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
   `updatedAt` datetime NOT NULL,
