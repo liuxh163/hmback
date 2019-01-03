@@ -1,6 +1,10 @@
 import redis from 'ioredis'
+
+if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
+require('dotenv').config();
+
 //记录登录用户数据
-const redisdb = new redis();
+const redisdb = new redis(process.env.REDIS_PORT, process.env.REDIS_HOST);
 // 错误处理中间件
 async function outHandler(ctx, next) {
     ctx.redisdb = redisdb
