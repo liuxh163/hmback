@@ -1,7 +1,7 @@
 {
     "apps" : [
             {
-            "name": "koa-api",
+            "name": "hmback",
             "script": "app.js",
             "instances": 2,
             "exec_mode": "cluster"

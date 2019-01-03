@@ -18,26 +18,6 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
---  Table structure for `knex_migrations`
--- ----------------------------
-DROP TABLE IF EXISTS `knex_migrations`;
-CREATE TABLE `knex_migrations` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `batch` int(11) DEFAULT NULL,
-  `migration_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ----------------------------
---  Table structure for `knex_migrations_lock`
--- ----------------------------
-DROP TABLE IF EXISTS `knex_migrations_lock`;
-CREATE TABLE `knex_migrations_lock` (
-  `is_locked` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ----------------------------
 --  Table structure for `t_hm101_attendants`
 -- ----------------------------
 DROP TABLE IF EXISTS `t_hm101_attendants`;

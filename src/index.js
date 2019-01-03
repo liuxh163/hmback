@@ -131,7 +131,7 @@ app.use(thumbsRouter.allowedMethods())
 app.use(attendantsRouter.routes())
 app.use(attendantsRouter.allowedMethods())
 //订单路由
-app.use(orderRouter.routes())
-app.use(orderRouter.allowedMethods())
+app.use(ordersRouter.routes())
+app.use(ordersRouter.allowedMethods())
 
 export default app
