@@ -34,21 +34,22 @@ exports.up = function(knex, Promise) {
         // 用户来源渠道编码
         table.string('source', 10);
         // 用户类型 01-普通用户 02-管理员
-        table.string('type').notNullable().defaultTo('01')
-        // 记录操作标志
-        table.string('operateFlag').defaultTo('A')
-            .notNullable();
-        // 记录操作人id
-        table.string('operator');
+        table.string('type').notNullable().defaultTo('01');
         // 用户登录次数
         table.integer('loginCount').defaultTo(0);
         // 用户最后一次登录IP地址
         table.string('ipAddress', 32);
         // 用户邮寄地址
         table.string('address', 100);
-        // 用户记录创建时间和更新时间
-        table.dateTime('updatedAt');
-        table.timestamp('createdAt')
+
+        // 记录操作人id
+        table.string('operator').comment('表记录操作人Id');
+        // 记录操作标志
+        table.string('operateFlag').defaultTo('A').comment('记录操作标识，非空，默认A，A-新增，U-更新，D-删除')
+            .notNullable();
+        // 记录创建时间和更新时间
+        table.dateTime('updatedAt').comment('记录更新时间，创建时与创建时间相同，用作排序');
+        table.timestamp('createdAt').comment('记录创建时间，数据库自动默认当前时间')
             .notNullable()
             .defaultTo(knex.raw('CURRENT_TIMESTAMP'));
     })

@@ -41,13 +41,23 @@ class Product {
 
     async all(request) {
         try {
-            let result = await db.select('a.id','a.desc','a.nation','a.adultPrice','a.viewNum','b.content as detail')
+            let result;
+            if(request.nation){
+                result = await db.select('a.id','a.desc','a.nation','a.adultPrice','a.viewNum','b.content as detail')
                 .from('t_hm101_products as a')
                 .leftJoin('t_hm101_htmls as b','a.detailH5Id', 'b.id')
                 .where({ nation: request.nation })
                 .orderBy('a.updatedAt', 'desc')
                 .offset(--request.page * +request.number)
                 .limit(+request.number);
+            }else{
+                result = await db.select('a.id','a.desc','a.nation','a.adultPrice','a.viewNum','b.content as detail')
+                .from('t_hm101_products as a')
+                .leftJoin('t_hm101_htmls as b','a.detailH5Id', 'b.id')
+                .orderBy('a.updatedAt', 'desc')
+                .offset(--request.page * +request.number)
+                .limit(+request.number);
+            }
             // 获取点赞数及评论数
             for(var i in result){
                 console.log("product-"+i+":"+result[i].detail)
@@ -141,8 +151,12 @@ class Product {
         delete product.hospital
         delete product.item
 
-        var experts = request.experts;
-        var operations = request.operations
+        var experts = product.experts;
+        var operations = product.operations;
+        delete product.experts;
+        delete product.operations;
+
+        var proudctId
 
         return await db.transaction(function(trx) {
           return db.batchInsert('t_hm101_htmls', contents)
@@ -162,7 +176,7 @@ class Product {
                     .transacting(trx)
                     .then(function(ids){
                         console.log("expert insert product id:"+ids[0])
-                        var proudctId = ids[0]
+                        proudctId = ids[0]
                         for(var i in experts){
                             experts[i].productId = proudctId
                         }
@@ -182,7 +196,7 @@ class Product {
             .catch(trx.rollback);
         })
         .then(function(inserts) {
-            return inserts;
+            return proudctId;
         })
         .catch(function(error) {
             console.log("error is---"+error)

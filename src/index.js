@@ -26,6 +26,7 @@ import tagsRouter from './routes/tags'
 import thumbsRouter from './routes/thubms'
 import filesRouter from './routes/files'
 import ordersRouter from './routes/orders'
+import commonsRouter from './routes/commons'
 
 //Initialize app
 const app = new Koa()
@@ -97,6 +98,9 @@ app.use(userAgent)
 //For managing body. We're only allowing json.
 app.use(bodyParser({ enableTypes: ['json'] }))
 
+//公用资源路由
+app.use(commonsRouter.routes())
+app.use(commonsRouter.allowedMethods())
 //用户资源路由
 app.use(userActionsRouter.routes())
 app.use(userActionsRouter.allowedMethods())

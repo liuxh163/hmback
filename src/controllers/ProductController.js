@@ -16,7 +16,7 @@ class ProductController {
         const product = new Product()
 
         //检测查询参数
-        if (!query.sort || !query.nation || !query.page || !query.number) {
+        if (!query.sort || !query.page || !query.number) {
             ctx.throw(400, 'INVALID_ROUTE_OPTIONS')
         }
 
@@ -69,7 +69,7 @@ class ProductController {
 
         try {
             let result = await product.store(request)
-            ctx.body = { id: result[0] }
+            ctx.body = { id: result }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_INSERT_PRODUCT_DATA')

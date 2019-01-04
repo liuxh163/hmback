@@ -11,7 +11,7 @@
  Target Server Version : 50552
  File Encoding         : utf-8
 
- Date: 01/02/2019 17:04:55 PM
+ Date: 01/05/2019 00:06:30 AM
 */
 
 SET NAMES utf8mb4;
@@ -23,16 +23,16 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `t_hm101_attendants`;
 CREATE TABLE `t_hm101_attendants` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `desc` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `price` decimal(8,2) NOT NULL,
-  `target` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `type` varchar(4) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '01',
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '体检附加项名称',
+  `desc` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '体检附加项简介',
+  `price` decimal(8,2) NOT NULL COMMENT '体检附加项金额',
+  `gender` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '体检附加项适用对象性别，码表类别-XBBM',
+  `type` varchar(4) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '体检附加项类型，暂留，目前为空',
+  `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '01' COMMENT '体检附加项状态，非空，默认01启用，码表类别-ZTBM',
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -50,10 +50,10 @@ CREATE TABLE `t_hm101_carousels` (
   `target` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `targetId` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '01',
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -70,12 +70,33 @@ CREATE TABLE `t_hm101_channels` (
   `telephone` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
   `bizCode` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '01',
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `t_hm101_channels_bizcode_unique` (`bizCode`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+--  Table structure for `t_hm101_codes`
+-- ----------------------------
+DROP TABLE IF EXISTS `t_hm101_codes`;
+CREATE TABLE `t_hm101_codes` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `parentId` int(11) DEFAULT NULL COMMENT '父代码Id',
+  `codeClass` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '代码类别编码',
+  `classDesc` varchar(80) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '代码类别描述',
+  `code` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '代码编码',
+  `codeDesc` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '代码描述',
+  `level` int(2) DEFAULT NULL COMMENT '代码级别',
+  `order` int(4) DEFAULT NULL COMMENT '代码字段显示顺序',
+  `status` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '代码状态，码表类别-ZTBM',
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
@@ -88,10 +109,10 @@ CREATE TABLE `t_hm101_comments` (
   `targetId` int(11) NOT NULL,
   `contentH5Id` int(11) NOT NULL,
   `commenterId` int(11) NOT NULL,
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -104,10 +125,10 @@ CREATE TABLE `t_hm101_files` (
   `name` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `type` varchar(5) COLLATE utf8mb4_unicode_ci NOT NULL,
   `path` varchar(80) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -119,10 +140,10 @@ CREATE TABLE `t_hm101_htmls` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `desc` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `content` mediumtext COLLATE utf8mb4_unicode_ci,
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -139,10 +160,10 @@ CREATE TABLE `t_hm101_loans` (
   `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '01',
   `policyH5Id` int(11) DEFAULT NULL,
   `limit` decimal(9,2) DEFAULT NULL,
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -157,10 +178,10 @@ CREATE TABLE `t_hm101_order_attentants` (
   `price` decimal(8,2) NOT NULL,
   `quantity` int(4) NOT NULL DEFAULT '1',
   `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `t_hm101_order_attentants_ordernumber_unique` (`orderNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -180,10 +201,10 @@ CREATE TABLE `t_hm101_order_peoples` (
   `birthday` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   `passExpir` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   `objective` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '02',
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `t_hm101_order_peoples_ordernumber_unique` (`orderNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -200,10 +221,10 @@ CREATE TABLE `t_hm101_order_periods` (
   `price` decimal(8,2) NOT NULL,
   `periods` int(3) NOT NULL DEFAULT '6',
   `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '01',
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `t_hm101_order_periods_ordernumber_unique` (`orderNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -223,10 +244,10 @@ CREATE TABLE `t_hm101_orders` (
   `contact` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL,
   `telephone` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '01',
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `t_hm101_orders_number_unique` (`number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -243,10 +264,10 @@ CREATE TABLE `t_hm101_posts` (
   `posterId` int(11) NOT NULL,
   `viewNum` int(8) NOT NULL DEFAULT '0',
   `location` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -263,10 +284,10 @@ CREATE TABLE `t_hm101_product_experts` (
   `ranks` varchar(3) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `name` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `nation` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -280,10 +301,10 @@ CREATE TABLE `t_hm101_product_operations` (
   `targetId` int(11) DEFAULT NULL,
   `name` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `content` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -308,10 +329,10 @@ CREATE TABLE `t_hm101_products` (
   `companyPrice` decimal(8,2) NOT NULL DEFAULT '0.00',
   `childPrice` decimal(8,2) NOT NULL DEFAULT '0.00',
   `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '02',
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -333,10 +354,10 @@ CREATE TABLE `t_hm101_servants` (
   `followPrice` decimal(8,2) DEFAULT NULL,
   `recepPrice` decimal(8,2) DEFAULT NULL,
   `viewNum` int(8) NOT NULL DEFAULT '0',
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -350,10 +371,10 @@ CREATE TABLE `t_hm101_tags` (
   `targetId` int(11) DEFAULT NULL,
   `name` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `tagerId` int(11) DEFAULT NULL,
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -367,10 +388,10 @@ CREATE TABLE `t_hm101_thumbs` (
   `targetId` int(11) DEFAULT NULL,
   `likerId` int(11) DEFAULT NULL,
   `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '01',
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -383,10 +404,10 @@ CREATE TABLE `t_hm101_topics` (
   `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `desc` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '02',
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -404,18 +425,18 @@ CREATE TABLE `t_hm101_users` (
   `slogan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `realName` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `idNumber` varchar(19) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '01',
   `userName` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `source` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
-  `operator` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '01',
   `loginCount` int(11) DEFAULT '0',
   `ipAddress` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `address` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `updatedAt` datetime NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
+  `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
+  `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `t_hm101_users_loginid_unique` (`loginId`),
   UNIQUE KEY `t_hm101_users_telephone_unique` (`telephone`),

@@ -9,7 +9,7 @@ class Attendant {
         this.name = data.name
         this.desc = data.desc
         this.price = data.price
-        this.target = data.target
+        this.gender = data.gender
         this.status = data.status
         this.type = data.type
 

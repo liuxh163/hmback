@@ -34,8 +34,10 @@ class UserController {
             request.ipAddress = ctx.request.ip
             request.type = '01';
             delete request.smscode
-            console.log(Object.keys(request))
-            user = new User(request)
+            
+            user = new User(request);
+            user.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss');
+            user.operator = '1';
             try {
                 await user.store()
             } catch (error) {
