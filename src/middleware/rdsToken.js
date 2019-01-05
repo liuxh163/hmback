@@ -19,27 +19,25 @@ module.exports = (opts = {}) => {
             // 代码表保存至redis缓存中，长期有效
             let codeFlag = false;
             await ctx.redisdb.get('codes').then(function (result){
-                if(!result){
-                    codeFlag = true;
-                }else{
-                    ctx.state.codes = JSON.parse(result);
-                    ctx.state.getCode = function(codeClass,code){
-                        for(var i in ctx.state.codes){
-                            if(ctx.state.codes[i].codeClass === codeClass 
-                                &&ctx.state.codes[i].code === code){
-                                    return ctx.state.codes[i].codeDesc
-                                }                            
-                        }
-                    }
-                    console.log("码表信息是--"+ctx.state.getCode("MBZLBM","03"));
-                };
+                if(!result){codeFlag = true};
             });
 
             if(codeFlag){
                 const codes = new Codes();
                 let code = await codes.all();
                 if( code ){
-                    ctx.redisdb.set('codes', JSON.stringify(code))
+                    ctx.state.codes = code;
+                    ctx.redisdb.set('codes', JSON.stringify(code));
+                    ctx.state.getCode = function(codeClass,code){
+                        for(var i in ctx.state.codes){
+                            if(ctx.state.codes[i].codeClass === codeClass 
+                                &&ctx.state.codes[i].code === code){
+                                    return ctx.state.codes[i].codeDesc
+                                }                            
+                        }// end of for loop
+                    }// end of set function
+                    // 如何读取码表信息
+                    // console.log("码表信息是--"+ctx.state.getCode("MBZLBM","03"));
                 }
             }
             // 根据token从redis缓存中读取用户信息保存在上下文中
