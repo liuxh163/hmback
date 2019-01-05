@@ -10,11 +10,11 @@ exports.up = function(knex, Promise) {
         //id主键
         table.increments('id').primary();
         //话题名称
-        table.string('name', 20).notNullable();
+        table.string('name', 20).comment('话题名称，用于显示');
         //话题描述
-        table.string('desc',64);
-        //话题状态 01-启用  02-关闭
-        table.string('status',2).notNullable().defaultTo('02');
+        table.string('desc',64).comment('话题描述内容');
+        //话题状态 
+        table.string('status',2).notNullable().defaultTo('02').comment('话题状态，非空，码表-ZTBM，默认02，停用');
 
         // 记录操作人id
         table.string('operator').comment('表记录操作人Id');

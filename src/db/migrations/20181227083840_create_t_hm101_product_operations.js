@@ -9,14 +9,14 @@ exports.up = function(knex, Promise) {
         table.collate('utf8mb4_unicode_ci')
         //id主键
         table.increments('id').primary();
-        //标签对象 01-产品
-        table.string('target', 2).defaultTo('01');
-        //标签对象id
-        table.integer('targetId', 11);
+        //运营目标类型
+        table.string('target', 2).defaultTo('01').comment('运营目标类型，非空，码表-MBZLBM，默认01-产品');
+        //目标id
+        table.integer('targetId', 11).comment('运营目标Id');
         //活动名称
-        table.string('name', 20);
+        table.string('name', 20).comment('运营活动名称');
         //活动内容
-        table.string('content', 200);
+        table.string('content', 200).comment('运营活动内容');
 
         // 记录操作人id
         table.string('operator').comment('表记录操作人Id');

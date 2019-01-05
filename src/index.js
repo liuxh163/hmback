@@ -11,22 +11,20 @@ import redis from 'ioredis'
 
 import output from './middleware/output'
 //Routes
-import userActionsRouter from './routes/userActions'
-import topicsRouter from './routes/topics'
-import postsRouter from './routes/posts'
-import productsRouter from './routes/products'
-import commentsRouter from './routes/comments'
-import channelsRouter from './routes/channels'
-import carouselsRouter from './routes/carousels'
-import servantsRouter from './routes/servants'
-import attendantsRouter from './routes/attendants'
-import expertsRouter from './routes/experts'
-import operationsRouter from './routes/operations'
-import tagsRouter from './routes/tags'
-import thumbsRouter from './routes/thubms'
-import filesRouter from './routes/files'
-import ordersRouter from './routes/orders'
-import commonsRouter from './routes/commons'
+import userActionsRouter from './routes/userActions';
+import topicsRouter from './routes/topics';
+import postsRouter from './routes/posts';
+import productsRouter from './routes/products';
+import commentsRouter from './routes/comments';
+import channelsRouter from './routes/channels';
+import carouselsRouter from './routes/carousels';
+import servantsRouter from './routes/servants';
+import attendantsRouter from './routes/attendants';
+import tagsRouter from './routes/tags';
+import thumbsRouter from './routes/thubms';
+import filesRouter from './routes/files';
+import ordersRouter from './routes/orders';
+import commonsRouter from './routes/commons';
 
 //Initialize app
 const app = new Koa()

@@ -10,19 +10,19 @@ exports.up = function(knex, Promise) {
         //id主键
         table.increments('id').primary();
         //渠道名称
-        table.string('name', 20).notNullable();
+        table.string('name', 20).comment('渠道商名称');
         //渠道简介
-        table.string('desc',256);
+        table.string('desc',256).comment('渠道商简介');
         //渠道编号
-        table.integer('channelNum', 6).notNullable();
+        table.integer('channelNum', 6).comment('渠道商系统编号');
         //渠道联系人
-        table.string('contact', 20).notNullable();
+        table.string('contact', 20).comment('渠道商联系人');
         //渠道联系人电话
-        table.string('telephone', 16).notNullable();
+        table.string('telephone', 16).comment('渠道商联系人电话');
         //渠道企业代码
-        table.string('bizCode', 20).unique();
+        table.string('bizCode', 20).unique().comment('企业代码，唯一');
         //渠道状态 01-启用  02-停用
-        table.string('status', 2).notNullable().defaultTo('01');
+        table.string('status', 2).notNullable().defaultTo('01').comment('渠道状态，非空，码表-ZTBM，默认01，启用');
 
         // 记录操作人id
         table.string('operator').comment('表记录操作人Id');

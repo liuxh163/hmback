@@ -9,14 +9,14 @@ exports.up = function(knex, Promise) {
         table.collate('utf8mb4_unicode_ci')
         //id主键
         table.increments('id').primary();
-        //评论对象类型 01-产品，02-服务人员，03-帖子，04-回复
-        table.string('target', 2);
+        //评论对象类型
+        table.string('target', 2).comment('评论目标类型，码表-MBZLBM');
         //评论对象编号
-        table.integer('targetId', 11).notNullable();
+        table.integer('targetId', 11).comment('评论目标Id');
         //评论内容
-        table.integer('contentH5Id', 11).notNullable();
+        table.integer('contentH5Id', 11).comment('评论内容h5表记录Id');
         //评论人
-        table.integer('commenterId', 11).notNullable();
+        table.integer('commenterId', 11).comment('评论人Id');
 
         // 记录操作人id
         table.string('operator').comment('表记录操作人Id');

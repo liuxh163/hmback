@@ -10,11 +10,11 @@ exports.up = function(knex, Promise) {
         //id主键
         table.increments('id').primary();
         //文件名称
-        table.string('name', 20);
+        table.string('name', 20).comment('文件名称，上传时的物理名称');
         //文件类型
-        table.string('type',5).notNullable();
+        table.string('type',5).comment('文件存储类型，去文件后缀名填充');
         //文件路径
-        table.string('path', 80);
+        table.string('path', 80).comment('文件存储路径');
 
         // 记录操作人id
         table.string('operator').comment('表记录操作人Id');

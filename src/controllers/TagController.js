@@ -11,7 +11,7 @@ class TagController {
         const tag = new Tag()
 
         if (!query.target || !query.targetId) {
-            ctx.throw(400, 'INVALID_ROUTE_OPTIONS')
+            ctx.throw(400, 'INVALID_QUERY_PARAMS')
         }
 
         //Get paginated list of tags

@@ -11,9 +11,9 @@ class Carousel {
         this.desc = data.desc
         this.location = data.location
         this.productId = data.productId
-        this.picPath = data.picPath
-        this.target = data.target
-        this.targetId = data.targetId
+        this.picFileId = data.picFileId
+        this.linkType = data.linkType
+        this.linkId = data.linkId
         this.status = data.status
 
         this.operator = data.operator
@@ -24,20 +24,34 @@ class Carousel {
 
     async all(request) {
         try {
-            if(request.productId){
+            // 构建查询where条件
+            let conditions = {
+                location:request.location,
+                productId:request.productId,
+                status:request.status
+            };
+            let notConditions = {
+                operateFlag:"D"
+            };
+            // 删除不存在的条件
+            Object.keys(conditions).forEach(function(param, index){
+                if(undefined === conditions[param]){
+                    delete conditions[param];
+                }
+            });
+            if("{}" !== JSON.stringify(conditions)){
                 return await db('t_hm101_carousels')
                 .select('*')
-                .where({ location: request.location,
-                    productId: request.productId,
-                    status:request.status })
+                .where(conditions)
+                .whereNot(notConditions)
                 .orderBy('updatedAt', 'desc')
             }else{
                 return await db('t_hm101_carousels')
                 .select('*')
-                .where({ location: request.location,
-                    status:request.status })
+                .whereNot(notConditions)
                 .orderBy('updatedAt', 'desc')
             }
+            
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')

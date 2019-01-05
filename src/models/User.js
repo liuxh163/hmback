@@ -31,11 +31,38 @@ class User {
 
     async all(request) {
         try {
-            return await db('t_hm101_users')
-                .select('*')
-                .orderBy('updatedAt', 'desc')
-                .offset(--request.page * +request.number)
-                .limit(+request.number)
+            request.page = request.page || 0;
+            request.number = request.number || -1;
+            // 构建查询where条件
+            let conditions = {
+                status:request.status
+            };
+            let notConditions = {
+                operateFlag:"D"
+            };
+            // 删除不存在的条件
+            Object.keys(conditions).forEach(function(param, index){
+                if(undefined === conditions[param]){
+                    delete conditions[param];
+                }
+            });
+            if("{}" !== JSON.stringify(conditions)){
+                return await db('t_hm101_users')
+                    .select('*')
+                    .where(conditions)
+                    .whereNot(notConditions)
+                    .orderBy('updatedAt', 'desc')
+                    .offset(--request.page * +request.number)
+                    .limit(+request.number);
+            }else{
+                return await db('t_hm101_users')
+                    .select('*')
+                    .whereNot(notConditions)
+                    .orderBy('updatedAt', 'desc')
+                    .offset(--request.page * +request.number)
+                    .limit(+request.number);
+            };
+            
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')

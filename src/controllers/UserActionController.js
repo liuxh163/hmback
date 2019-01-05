@@ -240,9 +240,9 @@ class UserController {
         //Init a new user object
         const user = new User()
 
-        //Let's check that the sort options were set. Sort can be empty
-        if (!query.page || !query.number) {
-            ctx.throw(400, 'INVALID_ROUTE_OPTIONS')
+        //检测查询参数
+        if (query.page&&!query.number) {
+            ctx.throw(400, 'INVALID_QUERY_PARAMS')
         }
 
         //Get paginated list of users

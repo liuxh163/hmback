@@ -14,9 +14,12 @@ class CommentController {
 
         const comment = new Comment()
 
-        //检查查询参数
-        if (!query.target || !query.targetId || !query.page || !query.number) {
-            ctx.throw(400, 'INVALID_COMMENT_OPTIONS')
+        //检测查询参数
+        if (query.page&&!query.number) {
+            ctx.throw(400, 'INVALID_QUERY_PARAMS')
+        }
+        if (query.target&&!query.targetId) {
+            ctx.throw(400, 'INVALID_QUERY_PARAMS')
         }
 
         //获取分页列表

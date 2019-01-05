@@ -10,13 +10,13 @@ exports.up = function(knex, Promise) {
         //id主键
         table.increments('id').primary();
         //标签对象 01-产品  02-服务人员
-        table.string('target', 2);
+        table.string('target', 2).comment('标签对象类型，码表-MBZLBM');
         //标签对象id
-        table.integer('targetId', 11);
+        table.integer('targetId', 11).comment('标签对象Id');
         //标签名称
-        table.string('name', 20);
+        table.string('name', 20).comment('标签名称，主要用于显示');
         //标签人
-        table.integer('tagerId', 11);
+        table.integer('tagerId', 11).comment('打标签人Id');
 
         // 记录操作人id
         table.string('operator').comment('表记录操作人Id');

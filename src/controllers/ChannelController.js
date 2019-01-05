@@ -9,8 +9,9 @@ class ChannelController {
 
         const channel = new Channel()
 
-        if (!query.page || !query.number) {
-            ctx.throw(400, 'INVALID_ROUTE_OPTIONS')
+        //检测查询参数
+        if (query.page&&!query.number) {
+            ctx.throw(400, 'INVALID_QUERY_PARAMS')
         }
 
         //Get paginated list of channels

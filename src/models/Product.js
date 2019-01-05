@@ -41,12 +41,28 @@ class Product {
 
     async all(request) {
         try {
+            request.page = request.page || 0;
+            request.number = request.number || -1;
+            // 构建查询where条件
+            let conditions = {
+                nation:request.nation
+            };
+            let notConditions = {
+                operateFlag:"D"
+            };
+            // 删除不存在的条件
+            Object.keys(conditions).forEach(function(param, index){
+                if(undefined === conditions[param]){
+                    delete conditions[param];
+                }
+            });
             let result;
-            if(request.nation){
+            if("{}" !== JSON.stringify(conditions)){
                 result = await db.select('a.id','a.desc','a.nation','a.adultPrice','a.viewNum','b.content as detail')
                 .from('t_hm101_products as a')
                 .leftJoin('t_hm101_htmls as b','a.detailH5Id', 'b.id')
-                .where({ nation: request.nation })
+                .where(conditions)
+                .whereNot(notConditions)
                 .orderBy('a.updatedAt', 'desc')
                 .offset(--request.page * +request.number)
                 .limit(+request.number);
@@ -54,6 +70,7 @@ class Product {
                 result = await db.select('a.id','a.desc','a.nation','a.adultPrice','a.viewNum','b.content as detail')
                 .from('t_hm101_products as a')
                 .leftJoin('t_hm101_htmls as b','a.detailH5Id', 'b.id')
+                .whereNot(notConditions)
                 .orderBy('a.updatedAt', 'desc')
                 .offset(--request.page * +request.number)
                 .limit(+request.number);

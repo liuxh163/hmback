@@ -10,29 +10,27 @@ exports.up = function(knex, Promise) {
         //id主键
         table.increments('id').primary();
         //服务人员姓名
-        table.string('name', 20).notNullable();
+        table.string('name', 20).comment('服务人员名称');
         //服务人员简介
-        table.string('desc', 128);
+        table.string('desc', 128).comment('服务人员介绍');
         //服务人员图片位置
-        table.string('picPath', 96).notNullable();
+        table.string('picFileId', 96).comment('服务人员图片Id');
         //服务人员类型 01-翻译  02-地接
-        table.string('type', 2).notNullable().defaultTo('01');
+        table.string('type', 2).comment('人员类型，码表-FWLXBM');
         //服务人员状态 01-启用  02-停用
-        table.string('status', 2).notNullable().defaultTo('01');
+        table.string('status', 2).notNullable().defaultTo('01').comment('人员状态，非空，码表-ZTBM，默认01，启用');
         //服务人员国籍
-        table.string('nation', 20);
-        //服务内容 01-文字翻译，02-陪同翻译，03-文字翻译及陪同翻译，04-地面接待
-        table.string('service', 2);
+        table.string('nation', 20).comment('服务人员国籍，码表-GJBM');
         //服务人员介绍页面内容
-        table.integer('introH5Id', 11).notNullable();
+        table.integer('introH5Id', 11).comment('服务人员介绍h5内容Id');
         //文翻单价
-        table.decimal('literPrice', 8, 2);
-        //文翻单价
-        table.decimal('followPrice', 8, 2);
+        table.decimal('literPrice', 8, 2).comment('文字翻译单价，含单位');
+        //陪同单价
+        table.decimal('followPrice', 8, 2).comment('陪同翻译单价，含单位');
         //地接价格
-        table.decimal('recepPrice', 8, 2);
+        table.decimal('recepPrice', 8, 2).comment('地接服务单价，含单位0');
         //浏览次数
-        table.integer('viewNum', 8).notNullable().defaultTo(0);
+        table.integer('viewNum', 8).notNullable().defaultTo(0).comment('服务人员介绍浏览次数，非空，默认0');
 
         // 记录操作人id
         table.string('operator').comment('表记录操作人Id');

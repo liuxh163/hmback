@@ -9,14 +9,14 @@ exports.up = function(knex, Promise) {
         table.collate('utf8mb4_unicode_ci')
         //id主键
         table.increments('id').primary();
-        //点赞对象类型 01-产品，02-帖子，03-人员，04-评论
-        table.string('target',2).notNullable();
+        //点赞对象类型
+        table.string('target',2).comment('点赞目标类型，码表-MBZLBM');
         //对象编号
-        table.integer('targetId', 11);
+        table.integer('targetId', 11).comment('点赞目标Id');
         //点赞用户
-        table.integer('likerId', 11);
+        table.integer('likerId', 11).comment('点赞用户Id');
         //点赞状态 01-点赞，02-取消
-        table.string('status',2).notNullable().defaultTo('01');
+        table.string('status',2).notNullable().defaultTo('01').comment('点赞状态，非空，码表-ZTBM，默认01，启用');
 
         // 记录操作人id
         table.string('operator').comment('表记录操作人Id');

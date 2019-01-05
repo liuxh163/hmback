@@ -19,13 +19,36 @@ class Thumb {
 
     async find(request) {
         try {
-            let result = await db('t_hm101_thumbs')
+            // 构建查询where条件
+            let conditions = {
+                target: request.target,
+                targetId:request.targetId,
+                likerId:request.likerId,
+                status:request.status
+            };
+            let notConditions = {
+                operateFlag:"D"
+            };
+            // 删除不存在的条件
+            Object.keys(conditions).forEach(function(param, index){
+                if(undefined === conditions[param]){
+                    delete conditions[param];
+                }
+            });
+            let result;
+            if("{}" !== JSON.stringify(conditions)){
+                result = await db('t_hm101_thumbs')
                 .select('*')
-                .where({ target: request.target, targetId:request.targetId ,likerId:request.likerId})
+                .where(conditions)
+                .whereNot(notConditions)
                 .orderBy('updatedAt', 'desc');
-            // Object.keys(result[0]).forEach(function(param,index){
-            //     console.log("result  attr "+param+" is "+result[0][param])
-            // })
+            }else{
+                result = await db('t_hm101_thumbs')
+                .select('*')
+                .whereNot(notConditions)
+                .orderBy('updatedAt', 'desc');
+            };
+
             if (!result) return {}
             this.constructor(result[0])
         } catch (error) {

@@ -14,14 +14,9 @@ class CarouselController {
         query.status = request.status
         query.productId = request.productId
 
-        const carousel = new Carousel()
+        const carousel = new Carousel();
 
-        //检查查询参数
-        if (!query.location) {
-            ctx.throw(400, 'INVALID_ROUTE_OPTIONS')
-        }
-
-        //Get paginated list of carousels
+        // 获取carousels列表
         try {
             let result = await carousel.all(query)
             ctx.body = {carousels:result}

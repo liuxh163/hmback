@@ -18,9 +18,30 @@ class Topic {
 
     async all(request) {
         try {
-            return await db('t_hm101_topics')
-                .select('*')
-                .where({status:request.status})
+            // 构建查询where条件
+            let conditions = {
+                status:request.status
+            };
+            let notConditions = {
+                operateFlag:"D"
+            };
+            // 删除不存在的条件
+            Object.keys(conditions).forEach(function(param, index){
+                if(undefined === conditions[param]){
+                    delete conditions[param];
+                }
+            });
+            if("{}" !== JSON.stringify(conditions)){
+                return await db('t_hm101_topics')
+                    .select('*')
+                    .where(conditions)
+                    .whereNot(notConditions);
+            }else{
+                return await db('t_hm101_topics')
+                    .select('*')
+                    .whereNot(notConditions);
+            };
+            
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')

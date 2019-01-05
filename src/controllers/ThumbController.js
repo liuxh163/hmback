@@ -7,8 +7,9 @@ class ThumbController {
     async toggle(ctx) {
         const request = ctx.request.body
 
-        if (!request.target || !request.targetId) ctx.throw(400, 'INVALID_DATA');
-
+        if (request.target && !request.targetId){
+            ctx.throw(400, 'INVALID_QUERY_PARAMS');
+        }
         const curUser = ctx.state.user
         request.likerId = curUser.id;
 

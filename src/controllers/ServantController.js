@@ -15,9 +15,9 @@ class ServantController {
         //Init a new servant object
         const servant = new Servant()
 
-        //Let's check that the sort options were set. Sort can be empty
-        if (!query.type || !query.nation || !query.page || !query.number) {
-            ctx.throw(400, 'INVALID_SERVANT_OPTIONS')
+        //检测查询参数
+        if (query.page&&!query.number) {
+            ctx.throw(400, 'INVALID_QUERY_PARAMS')
         }
 
         //Get paginated list of servants

@@ -19,10 +19,33 @@ class Tag {
 
     async all(request) {
         try {
-            return await db('t_hm101_tags')
-                .select('*')
-                .where({ target: request.target, targetId:request.targetId })
-                .orderBy('updatedAt', 'desc')
+            // 构建查询where条件
+            let conditions = {
+                target: request.target,
+                targetId:request.targetId
+            };
+            let notConditions = {
+                operateFlag:"D"
+            };
+            // 删除不存在的条件
+            Object.keys(conditions).forEach(function(param, index){
+                if(undefined === conditions[param]){
+                    delete conditions[param];
+                }
+            });
+            if("{}" !== JSON.stringify(conditions)){
+                return await db('t_hm101_tags')
+                    .select('*')
+                    .where(conditions)
+                    .whereNot(notConditions)
+                    .orderBy('updatedAt', 'desc');
+            }else{
+                return await db('t_hm101_tags')
+                    .select('*')
+                    .whereNot(notConditions)
+                    .orderBy('updatedAt', 'desc');
+            };
+            
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')

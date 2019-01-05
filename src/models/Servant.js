@@ -6,39 +6,66 @@ class Servant {
         if (!data) {
             return
         }
-        this.id = data.id
-        this.name = data.name
-        this.desc = data.desc
-        this.picPath = data.picPath
-        this.type = data.type
-        this.status = data.status
-        this.nation = data.nation
-        this.service = data.service
-        this.introH5Id = data.introH5Id
-        this.intro = data.intro
-        this.literPrice = data.literPrice
-        this.followPrice = data.followPrice
-        this.recepPrice = data.recepPrice
-        this.viewNum = data.viewNum
-        this.thumbNum = data.thumbNum
-        this.commentNum = data.commentNum
+        this.id = data.id;
+        this.name = data.name;
+        this.desc = data.desc;
+        this.picPath = data.picPath;
+        this.type = data.type;
+        this.status = data.status;
+        this.nation = data.nation;
+        this.introH5Id = data.introH5Id;
+        this.intro = data.intro;
+        this.literPrice = data.literPrice;
+        this.followPrice = data.followPrice;
+        this.recepPrice = data.recepPrice;
+        this.viewNum = data.viewNum;
+        this.thumbNum = data.thumbNum;
+        this.commentNum = data.commentNum;
 
-        this.operator = data.operator
-        this.operateFlag = data.operateFlag
-        this.updatedAt = data.updatedAt
-        this.createdAt = data.createdAt
+        this.operator = data.operator;
+        this.operateFlag = data.operateFlag;
+        this.updatedAt = data.updatedAt;
+        this.createdAt = data.createdAt;
     }
 
     async all(request) {
         try {
-            let result = await db.select('a.*','b.content as intro')
+            request.page = request.page || 0;
+            request.number = request.number || -1;
+            // 构建查询where条件
+            let conditions = {
+                type:request.type,
+                nation:request.nation
+            };
+            let notConditions = {
+                operateFlag:"D"
+            };
+            // 删除不存在的条件
+            Object.keys(conditions).forEach(function(param, index){
+                if(undefined === conditions[param]){
+                    delete conditions[param];
+                }
+            });
+            let result;
+            if("{}" !== JSON.stringify(conditions)){
+                result = await db.select('a.*','b.content as intro')
                 .from('t_hm101_servants as a')
                 .leftJoin('t_hm101_htmls as b','a.introH5Id', 'b.id')
-                .where({ type: request.type, nation: request.nation })
+                .where(conditions)
+                .whereNot(notConditions)
                 .orderBy('a.updatedAt', 'desc')
                 .offset(--request.page * +request.number)
                 .limit(+request.number)
-
+            }else{
+                result = await db.select('a.*','b.content as intro')
+                .from('t_hm101_servants as a')
+                .leftJoin('t_hm101_htmls as b','a.introH5Id', 'b.id')
+                .whereNot(notConditions)
+                .orderBy('a.updatedAt', 'desc')
+                .offset(--request.page * +request.number)
+                .limit(+request.number)
+            }
+            
             // 获取点赞数及评论数
             for(var i in result){
                 console.log("servant-"+i+":"+result[i])

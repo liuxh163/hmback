@@ -10,17 +10,17 @@ exports.up = function(knex, Promise) {
         //id主键
         table.increments('id').primary();
         //话题Id
-        table.integer('topicId', 11).notNullable();
+        table.integer('topicId', 11).comment('帖子所属话题Id');
         //帖子标题
-        table.string('title', 64);
+        table.string('title', 32).comment('帖子标题');
         //帖子内容
-        table.integer('contentH5Id', 11).notNullable();
+        table.integer('contentH5Id', 11).comment('帖子内容Id');
         //发帖人
-        table.integer('posterId', 11).notNullable();
+        table.integer('posterId', 11).comment('发帖人Id');
         //浏览次数
-        table.integer('viewNum', 8).notNullable().defaultTo(0);
+        table.integer('viewNum', 8).notNullable().defaultTo(0).comment('帖子浏览次数，非空，默认0');
         //发帖位置
-        table.string('location', 20);
+        table.string('location', 20).comment('发帖时的位置');
 
         // 记录操作人id
         table.string('operator').comment('表记录操作人Id');

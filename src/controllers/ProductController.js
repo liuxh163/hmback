@@ -16,11 +16,11 @@ class ProductController {
         const product = new Product()
 
         //检测查询参数
-        if (!query.sort || !query.page || !query.number) {
-            ctx.throw(400, 'INVALID_ROUTE_OPTIONS')
+        if (query.page&&!query.number) {
+            ctx.throw(400, 'INVALID_QUERY_PARAMS')
         }
 
-        //获取产品列表，分页
+        //获取产品列表
         try {
             let result = await product.all(query)
             ctx.body = {products:result}

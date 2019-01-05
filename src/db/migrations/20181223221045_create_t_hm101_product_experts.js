@@ -10,19 +10,19 @@ exports.up = function(knex, Promise) {
         //id主键
         table.increments('id').primary();
         //产品Id
-        table.integer('productId', 11).notNullable();
+        table.integer('productId', 11).comment('所属产品Id');
         //专家图片位置
-        table.string('picPath', 96).notNullable();
+        table.string('picFileId', 96).comment('产品专家图片表位置');
         //专家描述
-        table.string('desc', 128);
+        table.string('desc', 128).comment('产品专家描述');
         //专家点赞数
-        table.integer('likes', 8).notNullable().defaultTo(0);
+        table.integer('thumbs', 8).notNullable().defaultTo(0).comment('产品专家点赞数量，非空，默认0');
         //专家星级
-        table.string('ranks', 3);
+        table.string('ranks', 3).comment('产品专家星级，购买产品后评论');
         //专家姓名
-        table.string('name', 20);
+        table.string('name', 20).comment('产品专家名称');
         //专家国籍
-        table.string('nation', 20);
+        table.string('nation', 20).comment('产品专家所属国籍');
 
         // 记录操作人id
         table.string('operator').comment('表记录操作人Id');

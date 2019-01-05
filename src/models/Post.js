@@ -29,13 +29,40 @@ class Post {
      */
     async all(request) {
         try {
-            let result = await db.select('a.*','b.content')
+            request.page = request.page || 0;
+            request.number = request.number || -1;
+            // 构建查询where条件
+            let conditions = {
+                topicId:request.topicId
+            };
+            let notConditions = {
+                operateFlag:"D"
+            };
+            // 删除不存在的条件
+            Object.keys(conditions).forEach(function(param, index){
+                if(undefined === conditions[param]){
+                    delete conditions[param];
+                }
+            });
+            let result 
+            if("{}" !== JSON.stringify(conditions)){
+                result = await db.select('a.*','b.content')
                 .from('t_hm101_posts as a')
                 .leftJoin('t_hm101_htmls as b','a.contentH5Id', 'b.id')
-                .where({ topicId: request.topicId })
+                .where(conditions)
+                .whereNot(notConditions)
                 .orderBy('updatedAt', 'desc')
                 .offset(--request.page * +request.number)
                 .limit(+request.number)
+            }else{
+                result = await db.select('a.*','b.content')
+                .from('t_hm101_posts as a')
+                .leftJoin('t_hm101_htmls as b','a.contentH5Id', 'b.id')
+                .whereNot(notConditions)
+                .orderBy('updatedAt', 'desc')
+                .offset(--request.page * +request.number)
+                .limit(+request.number)
+            }
             // 获取帖子点赞数及评论数
             for(var i in result){
                 console.log("post-"+i+":"+result[i])

@@ -22,14 +22,41 @@ class Comment {
 
     async all(request) {
         try {
-            let result = await db.select('a.*','b.content as comment')
+            request.page = request.page || 0;
+            request.number = request.number || -1;
+            // 构建查询where条件
+            let conditions = {
+                target: request.target,
+                targetId: request.targetId
+            };
+            let notConditions = {
+                operateFlag:"D"
+            };
+            // 删除不存在的条件
+            Object.keys(conditions).forEach(function(param, index){
+                if(undefined === conditions[param]){
+                    delete conditions[param];
+                }
+            });
+            let result;
+            if("{}" !== JSON.stringify(conditions)){
+                result = await db.select('a.*','b.content as comment')
                 .from('t_hm101_comments as a')
                 .leftJoin('t_hm101_htmls as b','a.contentH5Id', 'b.id')
-                .where({ target: request.target, targetId: request.targetId })
+                .where(conditions)
+                .whereNot(notConditions)
                 .orderBy('updatedAt', 'desc')
                 .offset(--request.page * +request.number)
                 .limit(+request.number)
-
+            }else{
+                result = await db.select('a.*','b.content as comment')
+                .from('t_hm101_comments as a')
+                .leftJoin('t_hm101_htmls as b','a.contentH5Id', 'b.id')
+                .whereNot(notConditions)
+                .orderBy('updatedAt', 'desc')
+                .offset(--request.page * +request.number)
+                .limit(+request.number)
+            }
             // 获取点赞数及评论数
             for(var i in result){
                 console.log("comment-"+i+":"+result[i])

@@ -12,9 +12,9 @@ class PostController {
 
         const post = new Post()
 
-        //检查查询参数
-        if (!query.sort || !query.page || !query.number) {
-            ctx.throw(400, 'INVALID_ROUTE_OPTIONS')
+        //检测查询参数
+        if (query.page&&!query.number) {
+            ctx.throw(400, 'INVALID_QUERY_PARAMS')
         }
 
         //Get paginated list of posts

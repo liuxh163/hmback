@@ -5,15 +5,10 @@ import { Topic } from '../models/Topic'
 
 class TopicController {
     async index(ctx) {
-        const query = ctx.query
-        const request = ctx.request.body
+        const query = ctx.query;
+        const request = ctx.request.body;
 
-        query.status = request.status
-        //获取当前用户
-        // const curUser = ctx.state.user
-        // if ('02' === curUser.type) {
-        //     query.operateFlag = 'D'
-        // }
+        query.status = request.status;
         const topic = new Topic()
 
         //获取所有话题
@@ -38,6 +33,9 @@ class TopicController {
         const topic = new Topic(request)
         topic.operator = curUser.id
         topic.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        // Object.keys(topic).forEach(function(param, index){
+        //     console.log("topic atrr "+param+" is:"+topic[param]);
+        // });
         try {
             let result = await topic.store()
             ctx.body = { id: result[0] }

@@ -10,9 +10,9 @@ exports.up = function(knex, Promise) {
         //id主键
         table.increments('id').primary();
         //h5内容描述
-        table.string('desc', 20);
+        table.string('desc', 20).comment('h5内容描述');
         //h5内容
-        table.text('content', 'medium');
+        table.text('content', 'medium').comment('h5片段内容');
 
         // 记录操作人id
         table.string('operator').comment('表记录操作人Id');
