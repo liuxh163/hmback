@@ -18,7 +18,9 @@ class User {
         this.password = data.password;
         this.userName = data.userName;
         this.source = data.source;
-        this.status = data.statusß;
+        this.status = data.status;
+        this.birthday = data.birthday;
+        this.gender = data.gender;
         this.ipAddress = data.ipAddress;
         this.address = data.address;
         this.loginCount = data.loginCount
@@ -31,8 +33,8 @@ class User {
 
     async all(request) {
         try {
-            request.page = request.page || 0;
-            request.number = request.number || -1;
+            request.page = request.page || 1;
+            request.number = request.number || 10000;
             // 构建查询where条件
             let conditions = {
                 status:request.status
@@ -99,7 +101,7 @@ class User {
             throw new Error('ERROR')
         }
     }
-    async save(request) {
+    async save() {
         try {
             return await db('t_hm101_users')
                 .update(this)

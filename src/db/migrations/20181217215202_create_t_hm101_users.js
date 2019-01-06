@@ -35,6 +35,10 @@ exports.up = function(knex, Promise) {
         table.string('source', 10).comment('用户来源渠道编码，取自渠道表');
         // 用户类型
         table.string('type').notNullable().defaultTo('01').comment('用户类型 码表-YHLXBM');
+        // 用户生日
+        table.date('birthday').comment('用户生日');
+        // 用户性别
+        table.string('gender',2).comment('用户性别 码表-XBBM');
         // 用户登录次数
         table.integer('loginCount').defaultTo(0).comment('用户登录次数');
         // 用户最后一次登录IP地址

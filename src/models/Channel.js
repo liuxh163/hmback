@@ -21,8 +21,8 @@ class Channel {
 
     async all(request) {
         try {
-            request.page = request.page || 0;
-            request.number = request.number || -1;
+            request.page = request.page || 1;
+            request.number = request.number || 10000;
             // 构建查询where条件
             let conditions = {
                 status: request.status

@@ -211,7 +211,7 @@ class UserController {
 
         //检查当前用户是否管理员
         const curUser = ctx.state.user
-        console.log("user type is "+curUser.type)
+        // console.log("user type is "+curUser.type)
         if ('02' !== curUser.type) ctx.throw(400, 'INVALID_PREVILEGE')
 
         //Add the updated date value
@@ -222,9 +222,11 @@ class UserController {
         //Replace the user data with the new updated user data
         Object.keys(request).forEach(function(parameter, index) {
             user[parameter] = request[parameter]
-            console.log('parameter is'+parameter)
+            // console.log('parameter-'+parameter+'-is:'+user[parameter])
         })
-
+        Object.keys(user).forEach(function(parameter, index) {
+            console.log('user param-'+parameter+'-is:'+user[parameter])
+        });
         try {
             await user.save()
             ctx.body = { id: user.id }

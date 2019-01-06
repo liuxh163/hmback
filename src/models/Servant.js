@@ -30,15 +30,15 @@ class Servant {
 
     async all(request) {
         try {
-            request.page = request.page || 0;
-            request.number = request.number || -1;
+            request.page = request.page || 1;
+            request.number = request.number || 10000;
             // 构建查询where条件
             let conditions = {
                 type:request.type,
                 nation:request.nation
             };
             let notConditions = {
-                operateFlag:"D"
+                "a.operateFlag":"D"
             };
             // 删除不存在的条件
             Object.keys(conditions).forEach(function(param, index){

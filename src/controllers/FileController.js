@@ -27,7 +27,7 @@ class FileController{
      * 标准MULTIPARTDATA ,名字叫做filex，因为叫files的时候koa-body会变得很怪异
      *  如果需要，可以将多文件上传做并行，目前串行
      */
-    async upload_alioss(ctx){
+    async upload(ctx){
        try{
             let results = [];
 

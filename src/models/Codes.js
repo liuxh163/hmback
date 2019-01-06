@@ -22,9 +22,31 @@ class Codes {
 
     async all() {
         try {
-            let result = await db('t_hm101_codes')
-                .select('codeClass','classDesc','code','codeDesc','order')
-                .where({status: '01'})
+            // 构建查询where条件
+            let conditions = {
+                status: request.status
+            };
+            let notConditions = {
+                operateFlag:"D"
+            };
+            // 删除不存在的条件
+            Object.keys(conditions).forEach(function(param, index){
+                if(undefined === conditions[param]){
+                    delete conditions[param];
+                }
+            });
+            let result;
+            if("{}" !== JSON.stringify(conditions)){
+                result = await db('t_hm101_codes')
+                    .select('codeClass','classDesc','code','codeDesc','order')
+                    .where(conditions)
+                    .whereNot(notConditions);
+            }else{
+                result = await db('t_hm101_codes')
+                    .select('codeClass','classDesc','code','codeDesc','order')
+                    .whereNot(notConditions);
+            };
+ 
             // console.log('object codes === '+JSON.stringify(result))
             return  result
         } catch (error) {

@@ -323,7 +323,13 @@
 						"header": [
 							{
 								"key": "hmtoken",
-								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"value": "f58fdb20-1029-11e9-9d50-f1e2efe7fce5",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
 								"type": "text"
 							}
 						],
@@ -359,7 +365,7 @@
 						"header": [
 							{
 								"key": "hmtoken",
-								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"value": "f58fdb20-1029-11e9-9d50-f1e2efe7fce5",
 								"type": "text"
 							},
 							{
@@ -797,7 +803,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"desc\": \"中日友好\",\n  \"nation\": \"02\",\n  \"item\": \"<span>基础项内容</span>\",\n  \"feature\": \"<span>产品亮点</span>\",\n  \"detail\": \"<span>产品介绍</span>\",\n  \"routine\": \"<span>产品行程</span>\",\n  \"fee\": \"<span>产品费用</span>\",\n  \"notice\": \"<span>预定须知</span>\",\n  \"hospital\": \"<span>医院简介</span>\",\n  \"adultPrice\": \"16800\",\n  \"womenPrice\": \"18800\",\n  \"companyPrice\": \"5000\",\n  \"childPrice\": \"3000\",\n  \"experts\":[\n  \t{\"picPath\":\"/pic1.jpg\",\"desc\":\"这是一个专1家\",\"likes\":\"33\",\"ranks\":\"3.5\",\"name\":\"专1家\",\"nation\":\"01\"},\n  \t{\"picPath\":\"/pic2.jpg\",\"desc\":\"这是一个专2家\",\"likes\":\"34\",\"ranks\":\"4.5\",\"name\":\"专2家\",\"nation\":\"01\"},\n  \t{\"picPath\":\"/pic3.jpg\",\"desc\":\"这是一个专3家\",\"likes\":\"35\",\"ranks\":\"5.5\",\"name\":\"专3家\",\"nation\":\"01\"}\n  ],\n  \"operations\":[\n  \t{\"name\":\"yuny1\",\"content\":\"这是一个运营活动1\"},\n  \t{\"name\":\"yuny2\",\"content\":\"这是一个运营活动2\"},\n  \t{\"name\":\"yuny3\",\"content\":\"这是一个运营活动3\"}\n  ]\n}"
+							"raw": "{\n  \"desc\": \"中日友好\",\n  \"nation\": \"02\",\n  \"item\": \"<span>基础项内容</span>\",\n  \"feature\": \"<span>产品亮点</span>\",\n  \"detail\": \"<span>产品介绍</span>\",\n  \"routine\": \"<span>产品行程</span>\",\n  \"fee\": \"<span>产品费用</span>\",\n  \"notice\": \"<span>预定须知</span>\",\n  \"hospital\": \"<span>医院简介</span>\",\n  \"adultPrice\": \"16800\",\n  \"womenPrice\": \"18800\",\n  \"companyPrice\": \"5000\",\n  \"childPrice\": \"3000\",\n  \"experts\":[\n  \t{\"picFileId\":\"1\",\"desc\":\"这是一个专1家\",\"thumbs\":\"33\",\"ranks\":\"3.5\",\"name\":\"专1家\",\"nation\":\"01\"},\n  \t{\"picFileId\":\"2\",\"desc\":\"这是一个专2家\",\"thumbs\":\"34\",\"ranks\":\"4.5\",\"name\":\"专2家\",\"nation\":\"01\"},\n  \t{\"picFileId\":\"3\",\"desc\":\"这是一个专3家\",\"thumbs\":\"35\",\"ranks\":\"5.5\",\"name\":\"专3家\",\"nation\":\"01\"}\n  ],\n  \"operations\":[\n  \t{\"name\":\"yuny1\",\"content\":\"这是一个运营活动1\"},\n  \t{\"name\":\"yuny2\",\"content\":\"这是一个运营活动2\"},\n  \t{\"name\":\"yuny3\",\"content\":\"这是一个运营活动3\"}\n  ]\n}"
 						},
 						"url": {
 							"raw": "127.0.0.1:4000/api/v1/products",
@@ -2284,7 +2290,7 @@
 							{
 								"key": "hmtoken",
 								"type": "text",
-								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+								"value": "f58fdb20-1029-11e9-9d50-f1e2efe7fce5"
 							},
 							{
 								"key": "Content-Type",
@@ -2298,7 +2304,7 @@
 							"raw": "{\n\t\"status\":\"01\",\n\t\"productId\":\"1\"\n}"
 						},
 						"url": {
-							"raw": "127.0.0.1:4000/api/v1/carousels?location=01",
+							"raw": "127.0.0.1:4000/api/v1/carousels?",
 							"host": [
 								"127",
 								"0",
@@ -2314,7 +2320,8 @@
 							"query": [
 								{
 									"key": "location",
-									"value": "01"
+									"value": "01",
+									"disabled": true
 								}
 							]
 						}
