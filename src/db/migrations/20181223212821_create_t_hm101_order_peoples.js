@@ -15,7 +15,7 @@ exports.up = function(knex, Promise) {
         //中文姓
         table.string('firstName',20).notNullable();
         //中文名
-        table.integer('lastName', 20).notNullable();
+        table.string('lastName', 20).notNullable();
         //拼音姓
         table.string('firstPiyin',20).notNullable();
         //拼音名
@@ -23,11 +23,13 @@ exports.up = function(knex, Promise) {
         //护照号
         table.integer('passport', 20).notNullable();
         //出生日期
-        table.string('birthday', 10).notNullable();
+        table.dateTime('birthday').notNullable();
         //证件期限
-        table.string('passExpir', 10).notNullable();
-        //人员目的 01-体检，02-随行
-        table.string('objective', 2).notNullable().defaultTo('02');
+        table.dateTime('passExpir').notNullable();
+        //人员性别
+        table.string('gender', 2).comment();
+        //人员性别
+        table.string('travelType', 2).comment();
 
         // 记录操作人id
         table.string('operator').comment('表记录操作人Id');

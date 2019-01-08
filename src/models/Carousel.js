@@ -12,8 +12,8 @@ class Carousel {
         this.location = data.location
         this.productId = data.productId
         this.picFileId = data.picFileId
-        this.linkType = data.linkType
-        this.linkId = data.linkId
+        this.target = data.target
+        this.targetId = data.targetId
         this.status = data.status
 
         this.operator = data.operator

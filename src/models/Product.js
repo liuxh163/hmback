@@ -24,7 +24,7 @@ class Product {
         this.item = data.item
         this.adultPrice = data.adultPrice
         this.womenPrice = data.womenPrice
-        this.companyPrice = data.companyPrice
+        this.followPrice = data.followPrice
         this.childPrice = data.childPrice
         this.status = data.status
         this.viewNum = data.viewNum

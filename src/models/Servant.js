@@ -9,7 +9,7 @@ class Servant {
         this.id = data.id;
         this.name = data.name;
         this.desc = data.desc;
-        this.picPath = data.picPath;
+        this.picFileId = data.picFileId;
         this.type = data.type;
         this.status = data.status;
         this.nation = data.nation;
@@ -127,9 +127,9 @@ class Servant {
         var content = servant.intro
         delete servant.intro
         // 遍历打印对象内容
-        // Object.keys(post).forEach(function(param,index){
-        //     console.log("post attr "+param+" is "+post[param])
-        // })
+        Object.keys(servant).forEach(function(param,index){
+            console.log("servant attr "+param+" is "+servant[param])
+        })
         // 使用事务插入帖子信息及内容信息表
         return await db.transaction(function(trx) {
           return db('t_hm101_htmls').insert({content: content}, 'id')

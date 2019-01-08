@@ -22,7 +22,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"telephone\": \"13378965431\",\n    \"smscode\": \"877151\"\n}"
+							"raw": "{\n\t\"telephone\": \"13378965431\",\n    \"smscode\": \"137391\"\n}"
 						},
 						"url": {
 							"raw": "http://127.0.0.1:4000/api/v1/user/login",
@@ -204,7 +204,7 @@
 							{
 								"key": "hmtoken",
 								"type": "text",
-								"value": "64dc7970-0b84-11e9-acc4-a19013813bee"
+								"value": "f58fdb20-1029-11e9-9d50-f1e2efe7fce5"
 							},
 							{
 								"key": "Content-Type",
@@ -215,7 +215,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"realName\": \"赵四\",\n  \"iconPath\": \"/users/touxiang.png\",\n  \"slogan\": \"海马健康金，助力健康\",\n  \"idNumber\": \"1XXXXXXXXXXXXXXX\",\n  \"email\": \"test@test.com\",\n  \"address\": \"北京市海淀区学院路99号大中电器3层，100089\",\n  \"username\": \"赵三两\"\n}"
+							"raw": "{\n  \"realName\": \"赵四\",\n  \"iconPath\": \"/users/touxiang.png\",\n  \"slogan\": \"海马健康金，助力健康\",\n  \"idNumber\": \"1XXXXXXXXXXXXXXX\",\n  \"email\": \"test@test.com\",\n  \"address\": \"北京市海淀区学院路99号大中电器3层，100089\",\n  \"username\": \"赵三两\",\n  \"birthday\": \"2018-10-28\",\n  \"gender\": \"01\"\n}"
 						},
 						"url": {
 							"raw": "127.0.0.1:4000/api/v1/users/:id",
@@ -235,7 +235,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "3"
+									"value": "1"
 								}
 							]
 						}
@@ -1123,7 +1123,7 @@
 						"header": [
 							{
 								"key": "hmtoken",
-								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"value": "f58fdb20-1029-11e9-9d50-f1e2efe7fce5",
 								"type": "text"
 							}
 						],
@@ -1132,7 +1132,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "127.0.0.1:4000/api/v1/servants?type=01&nation=01&page=1&number=5",
+							"raw": "127.0.0.1:4000/api/v1/servants?type=02&nation=02",
 							"host": [
 								"127",
 								"0",
@@ -1148,19 +1148,21 @@
 							"query": [
 								{
 									"key": "type",
-									"value": "01"
+									"value": "02"
 								},
 								{
 									"key": "nation",
-									"value": "01"
+									"value": "02"
 								},
 								{
 									"key": "page",
-									"value": "1"
+									"value": "1",
+									"disabled": true
 								},
 								{
 									"key": "number",
-									"value": "5"
+									"value": "5",
+									"disabled": true
 								}
 							]
 						}
@@ -1215,7 +1217,7 @@
 							{
 								"key": "hmtoken",
 								"type": "text",
-								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+								"value": "f58fdb20-1029-11e9-9d50-f1e2efe7fce5"
 							},
 							{
 								"key": "Content-Type",

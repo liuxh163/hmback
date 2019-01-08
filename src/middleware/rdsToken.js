@@ -51,6 +51,7 @@ module.exports = (opts = {}) => {
 
             
         } catch (error) {
+            console.log('123')
             //If it's an expiration error, let's report that specifically.
             if (error.name === 'TokenExpiredError') {
                 ctx.throw(401, 'TOKEN_EXPIRED')

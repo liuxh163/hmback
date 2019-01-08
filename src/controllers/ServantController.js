@@ -65,7 +65,9 @@ class ServantController {
 
         request.operator = curUser.id
         const servant = new Servant(request)
-
+        Object.keys(request).forEach(function(param,index){
+            console.log("request attr "+param+" is "+request[param])
+        })
         try {
             let result = await servant.store()
             ctx.body = { id: result[0] }

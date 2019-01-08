@@ -31,7 +31,7 @@ class CarouselController {
      * @return {[type]}     [description]
      */
     async create(ctx) {
-        const request = ctx.request.body
+        const request = ctx.request.body;
 
         //当前用户是否管理员
         const curUser = ctx.state.user

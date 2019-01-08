@@ -22,11 +22,23 @@ exports.up = function(knex, Promise) {
         //订单用户
         table.integer('buyerId', 11);
         //订单联系人姓名，订单生成时由订单用户带出，可修改
-        table.string('contact',2).notNullable();
+        table.string('contact',20).notNullable();
         //订单联系人电话，订单生成时由订单用户带出，可修改
-        table.string('telephone',2).notNullable();
+        table.string('telephone',11).notNullable();
         //订单状态 01-未支付，02-定金已付，03-全额已付，04-取消，05-过期，06-申请退款，07-退款中，08-已退款
         table.string('status', 2).notNullable().defaultTo('01');
+        //订单最早时间
+        table.dateTime('earliestAt', 8, 2).notNullable().comment();
+        //订单最晚时间
+        table.dateTime('latestAt', 8, 2).notNullable().comment();
+        //订单确认时间
+        table.dateTime('confirmAt', 11).comment();
+        //订支付类型
+        table.string('payType',2).comment();
+        //订单编号
+        table.string('trade_no',45).comment();
+        //服务人员类型
+        table.string('servantType', 2).comment();
 
         // 记录操作人id
         table.string('operator').comment('表记录操作人Id');

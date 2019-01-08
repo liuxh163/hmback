@@ -39,7 +39,9 @@ class UserController {
             user.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss');
             user.operator = '1';
             try {
-                await user.store()
+                let userid = await user.store();
+                user.id = userid[0];
+                console.log("hahahahah"+userid[0]);
             } catch (error) {
                 ctx.throw(400, 'INVALID_DATA_IN_INSERT')
             }
@@ -64,6 +66,13 @@ class UserController {
         }else{
             //已有用户但未登录，则基于时间戳生成新token
             var token = UUID.v1();
+            console.log("before="+Object.keys(user))
+            Object.keys(user).forEach(function(param){
+                if('id' != param && 'telephone' != param && 'type' != param){
+                    delete user[param];
+                }
+            });
+            console.log("after="+Object.keys(user))
             // 设置redis双向绑定
             ctx.redisdb.set(token, JSON.stringify(user), 'EX', process.env.TOKEN_EXPIRATION_TIME);
             ctx.redisdb.set('login-'+request.telephone, token, 'EX', process.env.TOKEN_EXPIRATION_TIME);
@@ -199,20 +208,12 @@ class UserController {
     }
 
     async update(ctx) {
-        const params = ctx.params
-        const request = ctx.request.body
+        const request = ctx.request.body;
 
-        //Make sure they've specified a servant
-        if (!params.id) ctx.throw(400, 'INVALID_DATA')
+        const curUser = ctx.state.user;
 
         const user = new User()
-        await user.find(params.id)
-        if (!user) ctx.throw(400, 'INVALID_DATA')
-
-        //检查当前用户是否管理员
-        const curUser = ctx.state.user
-        // console.log("user type is "+curUser.type)
-        if ('02' !== curUser.type) ctx.throw(400, 'INVALID_PREVILEGE')
+        await user.find(curUser.id);
 
         //Add the updated date value
         user.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')

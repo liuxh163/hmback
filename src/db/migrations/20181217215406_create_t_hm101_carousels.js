@@ -20,9 +20,9 @@ exports.up = function(knex, Promise) {
         //轮播图图片位置
         table.string('picFileId', 96).comment('轮播图图片Id');
         //链接目标类型
-        table.string('linkType', 2).comment('轮播图点击链接类型');
+        table.string('target', 2).comment('轮播图点击链接类型');
         //链接目标Id
-		table.integer('linkId', 11).comment('轮播图点击链接目标Id');
+		table.integer('targetId', 11).comment('轮播图点击链接目标Id');
         //启停用状态 01-启用  02-停用
         table.string('status',2).notNullable().defaultTo('01').comment('轮播启用状态，非空，码表-ZTBM，默认02，停用');
 

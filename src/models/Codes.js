@@ -24,7 +24,7 @@ class Codes {
         try {
             // 构建查询where条件
             let conditions = {
-                status: request.status
+                // status: request.status
             };
             let notConditions = {
                 operateFlag:"D"

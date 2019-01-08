@@ -36,7 +36,7 @@ exports.up = function(knex, Promise) {
         //产品成人女性单价
         table.decimal('womenPrice', 8, 2).notNullable().defaultTo(0.00).comment('产品女性体检单价');
         //产品随行单价
-        table.decimal('companyPrice', 8, 2).notNullable().defaultTo(0.00).comment('产品随行成人单价');
+        table.decimal('followPrice', 8, 2).notNullable().defaultTo(0.00).comment('产品随行成人单价');
         //产品儿童单价
         table.decimal('childPrice', 8, 2).notNullable().defaultTo(0.00).comment('产品随行儿童单价');
         //启停用状态 01-启用  02-停用

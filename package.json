@@ -37,9 +37,11 @@
     "koa-useragent": "^1.1.0",
     "log4js": "^2.8.0",
     "mysql": "^2.15.0",
+    "node-pinyin": "^0.2.3",
     "npm": "^6.1.0",
     "pm2": "^2.10.4",
-    "randexp": "^0.4.9"
+    "randexp": "^0.4.9",
+    "xmlreader": "^0.2.3"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
