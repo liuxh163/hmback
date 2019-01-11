@@ -7,7 +7,8 @@ const pinyin = require('node-pinyin')
 /**
  * 订单数据模型
  */
-const redisdb = new redis( 33601,"47.92.131.110");
+// const redisdb = new redis( 33601,"47.92.131.110");
+const redisdb = require('../db/redis')
 
 async function genID(module_name) {
     return 1000000000 + await redisdb.incr(module_name+"_id");
