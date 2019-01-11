@@ -8,7 +8,7 @@ const tokenMw = RdsToken()
 
 const servantController = new ServantController()
 // 获取服务人员列表
-router.get('/api/v1/servants', tokenMw, async (ctx, next) => {
+router.get('/api/v1/servants', tokenMw,async (ctx, next) => {
     await servantController.index(ctx)
 })
 // 创建新服务人员
@@ -16,7 +16,7 @@ router.post('/api/v1/servants', tokenMw, async (ctx, next) => {
     await servantController.create(ctx)
 })
 // 获取服务人员详情
-router.get('/api/v1/servants/:id', tokenMw, async (ctx, next) => {
+router.get('/api/v1/servants/:id',tokenMw, async (ctx, next) => {
     await servantController.show(ctx)
 })
 // 修改服务人员信息

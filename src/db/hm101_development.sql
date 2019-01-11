@@ -11,11 +11,45 @@
  Target Server Version : 50552
  File Encoding         : utf-8
 
- Date: 01/06/2019 23:43:54 PM
+ Date: 01/08/2019 17:38:34 PM
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+--  Table structure for `knex_migrations`
+-- ----------------------------
+DROP TABLE IF EXISTS `knex_migrations`;
+CREATE TABLE `knex_migrations` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `batch` int(11) DEFAULT NULL,
+  `migration_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+--  Records of `knex_migrations`
+-- ----------------------------
+BEGIN;
+INSERT INTO `knex_migrations` VALUES ('1', '20181217215202_create_t_hm101_users.js', '1', '2019-01-08 16:52:26'), ('2', '20181217215406_create_t_hm101_carousels.js', '1', '2019-01-08 16:52:26'), ('3', '20181217215434_create_t_hm101_products.js', '1', '2019-01-08 16:52:26'), ('4', '20181217215447_create_t_hm101_servants.js', '1', '2019-01-08 16:52:26'), ('5', '20181217215455_create_t_hm101_loans.js', '1', '2019-01-08 16:52:26'), ('6', '20181217215501_create_t_hm101_topics.js', '1', '2019-01-08 16:52:26'), ('7', '20181217215510_create_t_hm101_posts.js', '1', '2019-01-08 16:52:26'), ('8', '20181217215519_create_t_hm101_comments.js', '1', '2019-01-08 16:52:26'), ('9', '20181218184431_create_t_hm101_channels.js', '1', '2019-01-08 16:52:27'), ('10', '20181223212441_create_t_hm101_orders.js', '1', '2019-01-08 16:52:27'), ('11', '20181223212746_create_t_hm101_thumbs.js', '1', '2019-01-08 16:52:27'), ('12', '20181223212821_create_t_hm101_order_peoples.js', '1', '2019-01-08 16:52:27'), ('13', '20181223212841_create_t_hm101_order_attentants.js', '1', '2019-01-08 16:52:27'), ('14', '20181223212924_create_t_hm101_order_periods.js', '1', '2019-01-08 16:52:27'), ('15', '20181223221045_create_t_hm101_product_experts.js', '1', '2019-01-08 16:52:27'), ('16', '20181226142308_create_t_hm101_tags.js', '1', '2019-01-08 16:52:27'), ('17', '20181226142426_create_t_hm101_attendants.js', '1', '2019-01-08 16:52:28'), ('18', '20181226142710_create_t_hm101_files.js', '1', '2019-01-08 16:52:28'), ('19', '20181226142728_create_t_hm101_htmls.js', '1', '2019-01-08 16:52:28'), ('20', '20181227083840_create_t_hm101_product_operations.js', '1', '2019-01-08 16:52:28'), ('21', '20190104143758_create_t_hm101_codes.js', '1', '2019-01-08 16:52:28');
+COMMIT;
+
+-- ----------------------------
+--  Table structure for `knex_migrations_lock`
+-- ----------------------------
+DROP TABLE IF EXISTS `knex_migrations_lock`;
+CREATE TABLE `knex_migrations_lock` (
+  `is_locked` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+--  Records of `knex_migrations_lock`
+-- ----------------------------
+BEGIN;
+INSERT INTO `knex_migrations_lock` VALUES ('0');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `t_hm101_attendants`
@@ -47,8 +81,8 @@ CREATE TABLE `t_hm101_carousels` (
   `name` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '轮播图名称',
   `desc` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '轮播图描述',
   `picFileId` varchar(96) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '轮播图图片Id',
-  `linkType` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '轮播图点击链接类型',
-  `linkId` int(11) DEFAULT NULL COMMENT '轮播图点击链接目标Id',
+  `target` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '轮播图点击链接类型',
+  `targetId` int(11) DEFAULT NULL COMMENT '轮播图点击链接目标Id',
   `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '01' COMMENT '轮播启用状态，非空，码表-ZTBM，默认02，停用',
   `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
   `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
@@ -152,7 +186,14 @@ CREATE TABLE `t_hm101_htmls` (
   `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+--  Records of `t_hm101_htmls`
+-- ----------------------------
+BEGIN;
+INSERT INTO `t_hm101_htmls` VALUES ('1', null, '<span>日本的专业地接人员呀</span>', null, 'A', null, '2019-01-08 17:16:18');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `t_hm101_loans`
@@ -180,17 +221,17 @@ CREATE TABLE `t_hm101_loans` (
 DROP TABLE IF EXISTS `t_hm101_order_attentants`;
 CREATE TABLE `t_hm101_order_attentants` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `orderNumber` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `target` int(11) NOT NULL,
+  `orderNumber` int(11) NOT NULL,
+  `targetId` int(11) NOT NULL,
   `price` decimal(8,2) NOT NULL,
   `quantity` int(4) NOT NULL DEFAULT '1',
   `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ownerId` int(11) NOT NULL,
   `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
   `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
   `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `t_hm101_order_attentants_ordernumber_unique` (`orderNumber`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
@@ -201,13 +242,14 @@ CREATE TABLE `t_hm101_order_peoples` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `orderNumber` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `firstName` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `lastName` int(20) NOT NULL,
+  `lastName` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `firstPiyin` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `lastPiyin` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `passport` int(20) NOT NULL,
-  `birthday` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `passExpir` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `objective` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '02',
+  `birthday` datetime NOT NULL,
+  `passExpir` datetime NOT NULL,
+  `gender` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `travelType` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
   `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
   `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
@@ -248,16 +290,29 @@ CREATE TABLE `t_hm101_orders` (
   `price` decimal(8,2) NOT NULL,
   `payedMoney` decimal(8,2) NOT NULL DEFAULT '0.00',
   `buyerId` int(11) DEFAULT NULL,
-  `contact` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `telephone` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `contact` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `telephone` varchar(11) COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '01',
+  `earliestAt` datetime NOT NULL,
+  `latestAt` datetime NOT NULL,
+  `confirmAt` datetime DEFAULT NULL,
+  `payType` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `trade_no` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `servantType` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
   `operateFlag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A' COMMENT '记录操作标识，非空，默认A，A-新增，U-更新，D-删除',
   `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `t_hm101_orders_number_unique` (`number`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+--  Records of `t_hm101_orders`
+-- ----------------------------
+BEGIN;
+INSERT INTO `t_hm101_orders` VALUES ('1', '1000000074', '01', '1', '1000.00', '0.00', '1', '11', '1111', '10', '2015-12-08 00:00:00', '2015-12-08 00:00:00', null, null, null, '01', '1', 'A', '2019-01-08 17:20:25', '2019-01-08 17:20:25');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `t_hm101_posts`
@@ -333,7 +388,7 @@ CREATE TABLE `t_hm101_products` (
   `itemH5Id` int(11) DEFAULT NULL COMMENT '产品基础项内容介绍h5内容Id',
   `adultPrice` decimal(8,2) NOT NULL DEFAULT '0.00' COMMENT '产品男性体检单价',
   `womenPrice` decimal(8,2) NOT NULL DEFAULT '0.00' COMMENT '产品女性体检单价',
-  `companyPrice` decimal(8,2) NOT NULL DEFAULT '0.00' COMMENT '产品随行成人单价',
+  `followPrice` decimal(8,2) NOT NULL DEFAULT '0.00' COMMENT '产品随行成人单价',
   `childPrice` decimal(8,2) NOT NULL DEFAULT '0.00' COMMENT '产品随行儿童单价',
   `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '02' COMMENT '产品状态，非空，码表-ZTBM，默认02，停用',
   `operator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '表记录操作人Id',
@@ -365,7 +420,14 @@ CREATE TABLE `t_hm101_servants` (
   `updatedAt` datetime DEFAULT NULL COMMENT '记录更新时间，创建时与创建时间相同，用作排序',
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间，数据库自动默认当前时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+--  Records of `t_hm101_servants`
+-- ----------------------------
+BEGIN;
+INSERT INTO `t_hm101_servants` VALUES ('1', '又疼君', '又疼君是一名地接翻译', null, '02', '01', '02', '1', '1000.00', '1000.00', '2000.00', '0', '1', 'A', null, '2019-01-08 17:16:18');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `t_hm101_tags`
@@ -451,6 +513,13 @@ CREATE TABLE `t_hm101_users` (
   UNIQUE KEY `t_hm101_users_openid_unique` (`openId`),
   UNIQUE KEY `t_hm101_users_email_unique` (`email`),
   UNIQUE KEY `t_hm101_users_idnumber_unique` (`idNumber`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+--  Records of `t_hm101_users`
+-- ----------------------------
+BEGIN;
+INSERT INTO `t_hm101_users` VALUES ('1', '958267880', '13378965431', null, null, null, null, null, null, null, '01', null, null, '01', null, null, '0', '::ffff:127.0.0.1', null, '1', 'A', '2019-01-08 16:55:57', '2019-01-08 16:55:57'), ('2', '936390654', '18610971664', null, null, null, null, null, null, null, '01', null, null, '01', null, null, '0', '::ffff:10.1.99.6', null, '1', 'A', '2019-01-08 17:23:04', '2019-01-08 17:23:04');
+COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;

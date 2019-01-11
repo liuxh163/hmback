@@ -21,10 +21,6 @@ router.put('/api/v1/user/login', async (ctx, next) => {
 router.put('/api/v1/users', tokenMw, async (ctx, next) => {
     await userActionController.update(ctx)
 })
-// 用户登出
-router.put('/api/v1/user/logout', tokenMw, async (ctx, next) => {
-    await userActionController.logout(ctx)
-})
 // 查询所有用户，分页，查询条件
 router.get('/api/v1/users', tokenMw, async (ctx, next) => {
     await userActionController.index(ctx)
@@ -40,6 +36,11 @@ router.put('/api/v1/users/:id/awaken', tokenMw, async (ctx, next) => {
 // 发送手机验证短信
 router.post('/api/v1/users/sendSms', async (ctx, next) => {
     await userActionController.sendSms(ctx)
+})
+
+// 查询我的信息
+router.get('/api/v1/users/mine',tokenMw,async (ctx,next)=>{
+   await userActionController.mine(ctx);
 })
 
 export default router

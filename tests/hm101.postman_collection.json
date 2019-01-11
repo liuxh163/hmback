@@ -22,7 +22,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"telephone\": \"13378965431\",\n    \"smscode\": \"137391\"\n}"
+							"raw": "{\n\t\"telephone\": \"13378965431\",\n    \"smscode\": \"634113\"\n}"
 						},
 						"url": {
 							"raw": "http://127.0.0.1:4000/api/v1/user/login",
@@ -58,7 +58,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"telephone\": \"13378965431\"\n}"
+							"raw": "{\n\t\"telephone\": \"13378965439\"\n}"
 						},
 						"url": {
 							"raw": "http://127.0.0.1:4000/api/v1/users/sendSms",
@@ -75,40 +75,6 @@
 								"v1",
 								"users",
 								"sendSms"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "管理员登出",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "hmtoken",
-								"value": "be5ce1d0-0b78-11e9-8b6a-b1efd05343de",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "127.0.0.1:4000/api/v1/user/logout",
-							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
-							],
-							"port": "4000",
-							"path": [
-								"api",
-								"v1",
-								"user",
-								"logout"
 							]
 						}
 					},
@@ -215,7 +181,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"realName\": \"赵四\",\n  \"iconPath\": \"/users/touxiang.png\",\n  \"slogan\": \"海马健康金，助力健康\",\n  \"idNumber\": \"1XXXXXXXXXXXXXXX\",\n  \"email\": \"test@test.com\",\n  \"address\": \"北京市海淀区学院路99号大中电器3层，100089\",\n  \"username\": \"赵三两\",\n  \"birthday\": \"2018-10-28\",\n  \"gender\": \"01\"\n}"
+							"raw": "{\n  \"realName\": \"赵四\",\n  \"iconPath\": \"touxiang.png\",\n  \"slogan\": \"海马健康金，助力健康\",\n  \"idNumber\": \"2XXXXXXXXXXXXXXX\",\n  \"email\": \"test@test.com\",\n  \"address\": \"北京市海淀区学院路99号大中电器3层，100089\",\n  \"username\": \"赵三两\",\n  \"birthday\": \"2018-10-28\",\n  \"gender\": \"01\"\n}"
 						},
 						"url": {
 							"raw": "127.0.0.1:4000/api/v1/users/:id",
@@ -310,6 +276,155 @@
 							""
 						]
 					}
+				}
+			]
+		},
+		{
+			"name": "管理员",
+			"item": [
+				{
+					"name": "管理员-创建",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"telephone\": \"13378965439\",\n\t\"password\": \"123456\",\n\t\"userName\": \"管理员\",\n\t\"smscode\":\"772371\"\n}"
+						},
+						"url": {
+							"raw": "http://127.0.0.1:4000/api/v1/admins",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"admins"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "管理员-登录",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"telephone\": \"13378965439\",\n    \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "http://127.0.0.1:4000/api/v1/admins/login",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"admins",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "管理员-登出",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "904d8f20-13d3-11e9-b548-279610dc1116"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/admins/logout",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"admins",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "管理员-修改密码",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "904d8f20-13d3-11e9-b548-279610dc1116"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/admins/logout",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"admins",
+								"logout"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -1111,7 +1226,162 @@
 		},
 		{
 			"name": "订单",
-			"item": []
+			"item": [
+				{
+					"name": "订单-获取",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "36bfe6c0-1323-11e9-9fda-a3c50712d8ae",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:4000/api/v1/orders?status=01&order=desc&page=0&pageNum=6",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"orders"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "01"
+								},
+								{
+									"key": "order",
+									"value": "desc"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "pageNum",
+									"value": "6"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "订单-下订单",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "hmtoken",
+								"value": "36bfe6c0-1323-11e9-9fda-a3c50712d8ae",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": " {\"target\":\"01\",\r\n   \"targetId\":1,\r\n    \"contact\":\"11\",\r\n    \"telephone\":\"1111\",\r\n    \"latestAt\":\"2015-12-08 00:00:00\",\r\n    \"earliestAt\":\"2015-12-08 00:00:00\",\r\n    \"servantType\":\"01\",\r\n    \"peoples\":[{\r\n    \t\"birthday\":\"2015-12-08 00:00:00\",\r\n        \"firstName\":\"张\",\r\n        \"lastName\":\"三\",\r\n        \"passport\":1234567,\r\n        \"passExpir\":\"3年\",\r\n        \"gender\":\"01\",\r\n        \"travelType\":\"01\",\r\n    \t\"attentants\":[{\r\n    \t\t\"targetId\":1,\r\n    \t\t\"quantity\":1\r\n    \t\t}\r\n    \t]\r\n    }]\r\n}"
+						},
+						"url": {
+							"raw": "localhost:4000/api/v1/orders",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "订单-撤销",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "hmtoken",
+								"value": "36bfe6c0-1323-11e9-9fda-a3c50712d8ae",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:4000/api/v1/orders/:id/withdraw",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"orders",
+								":id",
+								"withdraw"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "订单-支付",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"orderNumber\":100\n}"
+						},
+						"url": {
+							"raw": "localhost:4000/api/v1/orders/wxpay",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"orders",
+								"wxpay"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "服务人员",
@@ -1217,7 +1487,7 @@
 							{
 								"key": "hmtoken",
 								"type": "text",
-								"value": "f58fdb20-1029-11e9-9d50-f1e2efe7fce5"
+								"value": "36bfe6c0-1323-11e9-9fda-a3c50712d8ae"
 							},
 							{
 								"key": "Content-Type",

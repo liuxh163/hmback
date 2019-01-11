@@ -12,7 +12,7 @@ class Post {
         this.content = data.content
         this.contentH5Id = data.contentH5Id
         this.posterId = data.posterId
-        this.views = data.views
+        this.viewNum = data.viewNum
         this.thumbNum = data.thumbNum
         this.commentNum = data.commentNum
         this.location = data.location
@@ -89,9 +89,9 @@ class Post {
             let result = await findById(id)
             if (result) {
                 // 增加并获取查看数
-                let viewNum = ++result.views
+                let viewNum = ++result.viewNum
                 await getViews(id,viewNum)//更新帖子查看数
-                result.views = viewNum
+                result.viewNum = viewNum
                 // 获取点赞数
                 let thumbNum = await getThumbs(id)
                 result.thumbNum = thumbNum[0].count;
@@ -237,7 +237,7 @@ async function findById(id) {
 async function getViews(id,num) {
     try {
         return await db('t_hm101_posts')
-            .update({views:num})
+            .update({viewNum:num})
             .where({ id: id })
     } catch (error) {
         console.log(error)
@@ -276,4 +276,33 @@ async function getComments(id) {
         throw new Error('ERROR')
     }
 }
-export { Post, findById }
+async function findByUserAndTopic(userId,topicId){
+    let condation = {
+        posterId:userId,
+        topicId:topicId
+    }
+    let db_posts =await db('t_hm101_posts').select('id').where(condation);
+    let posts = [];
+    for(let i = 0 ; i < db_posts.length ; ++i){
+        let post = new Post;
+        await post.find(db_posts[i].id);
+        posts.push(post);
+    }
+    console.log(posts)
+    return posts;
+}
+
+async function getThumbNumAndCommentNumForUser(userId){
+    let db_posts =await db('t_hm101_posts').select('id').where({posterId:userId});
+    let thumbNum = 0;
+    let commentNum = 0;
+    for(let i = 0 ; i < db_posts.length ; ++i){
+        thumbNum +=await getThumbs(db_posts[i].id)[0].count;
+        commentNum +=await getComments(db_posts[i].id[0].count);
+    }
+    return {
+        thumbNum:thumbNum,
+        commentNum:commentNum
+    }
+}
+export { Post, findById,findByUserAndTopic ,getThumbNumAndCommentNumForUser}

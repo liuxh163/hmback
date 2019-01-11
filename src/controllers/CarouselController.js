@@ -71,16 +71,17 @@ class CarouselController {
         const curUser = ctx.state.user
         if ('02' !== curUser.type) ctx.throw(400, 'NO_PREVILEGE_TO_UPDATE_DATA')
 
-        //Add the updated date value
-        carousel.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
-        carousel.operateFlag = 'U'
-        carousel.operator = curUser.id
+
 
         //Replace the carousel data with the new updated carousel data
         Object.keys(ctx.request.body).forEach(function(parameter, index) {
             carousel[parameter] = request[parameter]
         })
-
+        //Add the updated date value
+        carousel.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        carousel.operateFlag = 'U'
+        carousel.operator = curUser.id
+        
         try {
             await carousel.save()
             ctx.body = { id: carousel.id }

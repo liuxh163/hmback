@@ -28,4 +28,8 @@ router.delete('/api/v1/posts/:id', tokenMw, async (ctx, next) => {
     await postController.delete(ctx)
 })
 
+//查询我的帖子
+router.get('/api/v1/posts/get/mine',tokenMw,async (ctx,next)=>{
+    await postController.mine(ctx);
+})
 export default router

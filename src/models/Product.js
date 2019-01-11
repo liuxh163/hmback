@@ -168,8 +168,8 @@ class Product {
         delete product.hospital
         delete product.item
 
-        var experts = product.experts;
-        var operations = product.operations;
+        var experts = product.experts||[];
+        var operations = product.operations||[];
         delete product.experts;
         delete product.operations;
 

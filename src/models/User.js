@@ -25,6 +25,7 @@ class User {
         this.address = data.address;
         this.loginCount = data.loginCount
 
+        this.hmCoins = data.hmCoins;
         this.operator = data.operator
         this.operateFlag = data.operateFlag
         this.updatedAt = data.updatedAt
@@ -92,9 +93,13 @@ class User {
             throw new Error('ERROR')
         }
     }
-
-    async store() {
+    /**
+     * 增加用户类型参数，默认普通用户，支持新建管理员
+     * @param {用户类型} type 
+     */
+    async store(type="01") {
         try {
+            this.type = type;
             return await db('t_hm101_users').insert(this)
         } catch (error) {
             console.log(error)
@@ -118,7 +123,7 @@ async function findById(id) {
         const [result] = await db('t_hm101_users')
             .select('*')
             .where({ id: id })
-        return result
+        return new User(result)
     } catch (error) {
         console.log(error)
         throw new Error('ERROR')
@@ -127,7 +132,7 @@ async function findById(id) {
 async function findByPhone(telephone) {
     try {
         const [result] = await db('t_hm101_users')
-            .select('id','telephone','userName','type')
+            .select('id','telephone','userName','type','password')
             .where({ telephone: telephone, status: '01' })
         return result
     } catch (error) {

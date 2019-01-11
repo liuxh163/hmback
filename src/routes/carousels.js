@@ -12,7 +12,7 @@ router.get('/api/v1/carousels', tokenMw, async (ctx, next) => {
     await carouselController.index(ctx)
 })
 // 新建轮播图
-router.post('/api/v1/carousels',  async (ctx, next) => {
+router.post('/api/v1/carousels', tokenMw,  async (ctx, next) => {
     await carouselController.create(ctx)
 })
 

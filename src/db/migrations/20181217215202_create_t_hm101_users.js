@@ -45,7 +45,8 @@ exports.up = function(knex, Promise) {
         table.string('ipAddress', 32).comment('用户最后一次登录IP地址');
         // 用户邮寄地址
         table.string('address', 100).comment('用户邮寄地址');
-
+        //海马币
+        table.integer('hmCoins',11).comment('海马币').defaultTo(0);
         // 记录操作人id
         table.string('operator').comment('表记录操作人Id');
         // 记录操作标志

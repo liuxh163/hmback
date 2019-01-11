@@ -2,8 +2,8 @@ import db from '../db/db'
 import rand from 'randexp'
 import dateFormat from 'date-fns/format'
 
-import { User } from '../models/User'
-
+import { User,findById } from '../models/User'
+import {getThumbNumAndCommentNumForUser} from '../models/Post'
 if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
 require('dotenv').config();
 
@@ -12,7 +12,6 @@ const accessKeyId = process.env.ALI_ACCESSKEYID
 const secretAccessKey = process.env.ALI_SECRETACCESSKEY
 
 const UUID = require('uuid');
-
 class UserController {
     constructor() {}
 
@@ -135,22 +134,10 @@ class UserController {
         }
     }
 
-    //用户登出操作
-    async logout(ctx) {
-        if(ctx.header.hmtoken){
-            var telephone;
-            await ctx.redisdb.get(ctx.header.hmtoken).then(function (result) {
-                if(result){
-                    telephone = JSON.parse(result).telephone
-                }
-            })
-            ctx.redisdb.del(ctx.header.hmtoken)
-            ctx.body = {telephone: telephone}
-        }else{
-            ctx.throw(401, 'LOGOUT_ERROR_USER');
-        }
-    }
-    // 检查手机验证码
+    /**
+     * 检查手机验证码
+     * @param {*} ctx 
+     */
     async checkSmsCode(ctx){
         const request = ctx.request.body;
         //验证手机短信
@@ -255,6 +242,16 @@ class UserController {
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA' + error)
+        }
+    }
+    async mine(ctx){
+        let userid = ctx.state.user.id;
+        let user = await findById(userid);
+        let nums = await getThumbNumAndCommentNumForUser(userid);
+        ctx.body = {
+            user:user,
+            thumbNum:nums.thumbNum,
+            commentNum:nums.commentNum
         }
     }
 }

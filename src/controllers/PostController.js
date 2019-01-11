@@ -1,7 +1,7 @@
 import dateFormat from 'date-fns/format'
 
 import { User } from '../models/User'
-import { Post } from '../models/Post'
+import { Post,findById,findByUserAndTopic } from '../models/Post'
 
 class PostController {
     async index(ctx) {
@@ -134,6 +134,13 @@ class PostController {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
         }
+    }
+    async mine(ctx){
+        console.log('ccvvv')
+        let x = await findByUserAndTopic(ctx.state.user.id,ctx.query.topicId);
+        console.log('ccvvv')
+        console.log(x);
+        ctx.body = x;
     }
 }
 

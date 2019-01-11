@@ -25,6 +25,7 @@ import thumbsRouter from './routes/thubms';
 import filesRouter from './routes/files';
 import ordersRouter from './routes/orders';
 import commonsRouter from './routes/commons';
+import adminsRouter from './routes/admins';
 
 //Initialize app
 const app = new Koa()
@@ -138,5 +139,7 @@ app.use(attendantsRouter.allowedMethods())
 //订单路由
 app.use(ordersRouter.routes())
 app.use(ordersRouter.allowedMethods())
-
+//管理员路由
+app.use(adminsRouter.routes())
+app.use(adminsRouter.allowedMethods())
 export default app

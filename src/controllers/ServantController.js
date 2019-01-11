@@ -70,7 +70,7 @@ class ServantController {
         })
         try {
             let result = await servant.store()
-            ctx.body = { id: result[0] }
+            ctx.body = { id: result }
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
@@ -98,13 +98,24 @@ class ServantController {
         if ('02' !== curUser.type) ctx.throw(400, 'INVALID_PREVILEGE')
 
         //Add the updated date value
-        servant.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        //servant.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        servant.updatedAt = new Date();
         servant.operateFlag = 'U'
         servant.operator = curUser.id
         //Replace the servant data with the new updated servant data
-        Object.keys(ctx.request.body).forEach(function(parameter, index) {
-            servant[parameter] = request[parameter]
+        let validColumn = ["name","desc","picFileId","nation","literPrice","followPrice","recepPrice","type","service","intro","status","feedesc","car"];
+        validColumn.forEach((parameter)=>{
+            if(request[parameter]){
+                servant[parameter] = request[parameter];
+            }
         })
+        // Object.keys(servant).forEach((parameter)=>{
+        //     if(parameter == '')
+        //     servant[parameter] = request[parameter]?request[parameter]:servant[parameter]
+        // })
+        // Object.keys(ctx.request.body).forEach(function(parameter, index) {
+        //     servant[parameter] = request[parameter]
+        // })
 
         try {
             await servant.save()
