@@ -33,7 +33,10 @@ class FileController{
        try{
             let results = [];
 
-            console.log(Object.prototype.toString(ctx.request.files.filex))
+            console.log(Object.prototype.toString(ctx.request.files.filex));
+
+            const curUser = ctx.state.user;
+            
             if( Array.isArray(ctx.request.files.filex)){
                 for(let i = 0 ; i < ctx.request.files.filex.length ; ++i ){
                     let file =  ctx.request.files.filex[i];
@@ -58,6 +61,8 @@ class FileController{
                 }else{
                     files[index].type = fileNames[1]||"";
                 }
+                files[index].updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+                files[index].operator = curUser.id
                 files[index].id = await FileStore(files[index]);
             }
             ctx.body = {files: files};
