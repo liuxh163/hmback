@@ -9,7 +9,8 @@ class PostController {
         const params = ctx.params
 
         query.topicId = params.id
-
+        //Attach logged in user
+        const curUser = ctx.state.user;
         const post = new Post()
 
         //检测查询参数
@@ -20,6 +21,8 @@ class PostController {
         //Get paginated list of posts
         try {
             let result = await post.all(query)
+            result.userName = curUser.userName;
+            result.iconPath = curUser.iconPath;
             ctx.body = {posts:result}
         } catch (error) {
             console.log(error)
@@ -53,8 +56,8 @@ class PostController {
         const params = ctx.params
         request.topicId = params.id;
         //Attach logged in user
-        const user = new User(ctx.state.user)
-        request.posterId = user.id
+        const curUser = ctx.state.user;
+        request.posterId = curUser.id
 
         var post = new Post(request)
         try {

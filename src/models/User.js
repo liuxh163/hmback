@@ -132,7 +132,7 @@ async function findById(id) {
 async function findByPhone(telephone) {
     try {
         const [result] = await db('t_hm101_users')
-            .select('id','telephone','userName','type','password')
+            .select('id','telephone','userName','type','password','iconPath')
             .where({ telephone: telephone, status: '01' })
         return result
     } catch (error) {

@@ -12,6 +12,8 @@ const accessKeyId = process.env.ALI_ACCESSKEYID
 const secretAccessKey = process.env.ALI_SECRETACCESSKEY
 
 const UUID = require('uuid');
+const token_expire = process.env.TOKEN_EXPIRATION_TIME;
+const sms_expire = process.env.SMS_EXPIRATION_TIME;
 class UserController {
     constructor() {}
 
@@ -58,8 +60,8 @@ class UserController {
         }
         if(logined){
             // token续期
-            ctx.redisdb.expire('login-'+request.telephone, process.env.TOKEN_EXPIRATION_TIME)
-            ctx.redisdb.expire(logined, process.env.TOKEN_EXPIRATION_TIME)
+            ctx.redisdb.expire('login-'+request.telephone, token_expire)
+            ctx.redisdb.expire(logined, token_expire)
             // 返回用户token
             ctx.body = {accessToken: logined}
         }else{
@@ -67,14 +69,15 @@ class UserController {
             var token = UUID.v1();
             console.log("before="+Object.keys(user))
             Object.keys(user).forEach(function(param){
-                if('id' != param && 'telephone' != param && 'type' != param){
+                if('id' != param && 'telephone' != param && 'type' != param 
+                    && 'userName' != param && 'iconPath' != param){
                     delete user[param];
                 }
             });
             console.log("after="+Object.keys(user))
             // 设置redis双向绑定
-            ctx.redisdb.set(token, JSON.stringify(user), 'EX', process.env.TOKEN_EXPIRATION_TIME);
-            ctx.redisdb.set('login-'+request.telephone, token, 'EX', process.env.TOKEN_EXPIRATION_TIME);
+            ctx.redisdb.set(token, JSON.stringify(user), 'EX', token_expire);
+            ctx.redisdb.set('login-'+request.telephone, token, 'EX', token_expire);
             // 返回用户token
             ctx.body = {accessToken: token}
         }
@@ -172,7 +175,7 @@ class UserController {
 
         let sms = {smscode:verify}
 
-        ctx.redisdb.set(request.telephone,JSON.stringify(sms),'EX',process.env.SMS_EXPIRATION_TIME)
+        ctx.redisdb.set(request.telephone,JSON.stringify(sms),'EX',sms_expire)
 
         ctx.body = sms
 
@@ -185,7 +188,7 @@ class UserController {
         // }).then(function (res) {
         //     let {Code}=res
         //     if (Code === 'OK') {
-        //         ctx.redisdb.set(request.telephone,verify,'EX',process.env.SMS_EXPIRATION_TIME)
+        //         ctx.redisdb.set(request.telephone,verify,'EX',sms_expire)
         //         //处理返回参数
         //         console.log(res)
         //     }

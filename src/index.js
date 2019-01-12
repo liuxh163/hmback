@@ -33,7 +33,7 @@ const app = new Koa()
 if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
 require('dotenv').config();
 
-const redisdb = require('../db/redis')
+const redisdb = require('./db/redis')
 
 //Here's the rate limiter
 app.use(
