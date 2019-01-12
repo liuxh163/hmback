@@ -58,7 +58,7 @@ class Product {
             });
             let result;
             if("{}" !== JSON.stringify(conditions)){
-                result = await db.select('a.id','a.desc','a.nation','a.adultPrice','a.viewNum','b.content as detail')
+                result = await db.select('a.id','a.desc','a.nation','a.status','a.adultPrice','a.viewNum','b.content as detail')
                 .from('t_hm101_products as a')
                 .leftJoin('t_hm101_htmls as b','a.detailH5Id', 'b.id')
                 .where(conditions)
@@ -67,7 +67,7 @@ class Product {
                 .offset(--request.page * +request.number)
                 .limit(+request.number);
             }else{
-                result = await db.select('a.id','a.desc','a.nation','a.adultPrice','a.viewNum','b.content as detail')
+                result = await db.select('a.id','a.desc','a.nation','a.status','a.adultPrice','a.viewNum','b.content as detail')
                 .from('t_hm101_products as a')
                 .leftJoin('t_hm101_htmls as b','a.detailH5Id', 'b.id')
                 .whereNot(notConditions)
@@ -176,7 +176,7 @@ class Product {
         var proudctId
 
         return await db.transaction(function(trx) {
-          return db.batchInsert('t_hm101_htmls', contents)
+          return db.batchInsert('t_hm101_htmls', contents, 7)
             .returning('id')
             .transacting(trx)
             .then(function(ids) {
