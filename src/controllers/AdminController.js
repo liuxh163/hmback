@@ -53,13 +53,14 @@ class UserController {
         }else{
             //未登录，则基于时间戳生成新token
             var token = UUID.v1();
-            // console.log("before="+Object.keys(user))
-            Object.keys(user).forEach(function(param){
-                if('id' != param && 'telephone' != param && 'type' != param){
-                    delete user[param];
+            // console.log("before="+Object.keys(admin))
+            Object.keys(admin).forEach(function(param){
+                if('id' != param && 'telephone' != param && 'type' != param 
+                    && 'userName' != param && 'iconPath' != param){
+                    delete admin[param];
                 }
             });
-            // console.log("after="+Object.keys(user))
+            // console.log("after="+Object.keys(admin))
             // 设置redis双向绑定
             ctx.redisdb.set(token, JSON.stringify(admin),
                 'EX', process.env.TOKEN_EXPIRATION_TIME);
