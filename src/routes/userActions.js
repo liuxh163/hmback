@@ -18,7 +18,7 @@ router.put('/api/v1/user/login', async (ctx, next) => {
     await userActionController.login(ctx)
 })
 // 用户信息修改
-router.put('/api/v1/users', tokenMw, async (ctx, next) => {
+router.put('/api/v1/users/:id', tokenMw, async (ctx, next) => {
     await userActionController.update(ctx)
 })
 // 查询所有用户，分页，查询条件

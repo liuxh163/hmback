@@ -1,6 +1,5 @@
-import db from '../db/db'
-import rand from 'randexp'
-import dateFormat from 'date-fns/format'
+import rand from 'randexp';
+import dateFormat from 'date-fns/format';
 
 import { User,findById } from '../models/User'
 import {getThumbNumAndCommentNumForUser} from '../models/Post'
@@ -211,12 +210,18 @@ class UserController {
         user.operator = curUser.id
 
         //Replace the user data with the new updated user data
-        Object.keys(request).forEach(function(parameter, index) {
-            user[parameter] = request[parameter]
-            // console.log('parameter-'+parameter+'-is:'+user[parameter])
+        Object.keys(request).forEach(function(param) {
+            if("birthday" === param){
+                user.birthday = dateFormat(new Date(request[param]),'YYYY-MM-DD');
+            }else{
+                user[param] = request[param];
+                // console.log('param-'+param+'-is:'+user[param])
+            }
+            
+            
         })
-        Object.keys(user).forEach(function(parameter, index) {
-            console.log('user param-'+parameter+'-is:'+user[parameter])
+        Object.keys(user).forEach(function(param) {
+            console.log('user param-'+param+'-is:'+user[param])
         });
         try {
             await user.save()
