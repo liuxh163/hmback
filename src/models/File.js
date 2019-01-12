@@ -31,7 +31,7 @@ async function FilesQuery(ids) {
             operateFlag:"D"
         };
         return await db('t_hm101_files')
-            .select('path')
+            .select('id','name','type','path')
             .whereIn('id',ids)
             .whereNot(notConditions)
             .orderBy('updatedAt', 'desc');

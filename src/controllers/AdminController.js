@@ -16,9 +16,9 @@ class UserController {
         if (!request.telephone&&!request.password)
             ctx.throw(401, 'INVALID_REQUEST_PARAMS')
         var admin = new User()
-        await admin.findPhone(request.telephone)
+        await admin.findPhone(request.telephone, "02");
         if (!admin){
-            ctx.throw(400, 'INVALID_USER')
+            ctx.throw(400, 'INVALID_ADMIN_USER')
         }
         //检查用户登录密码
         try {
@@ -36,7 +36,7 @@ class UserController {
         // 判断管理员登录状态
         var logined;
         try {
-            await ctx.redisdb.get('login-'+request.telephone)
+            await ctx.redisdb.get('admin-'+request.telephone)
                 .then(function (result){
                 // 用户已经登录
                 if(result){logined = result}
@@ -46,7 +46,7 @@ class UserController {
         }
         if(logined){
             // token续期
-            ctx.redisdb.expire('login-'+request.telephone, process.env.TOKEN_EXPIRATION_TIME)
+            ctx.redisdb.expire('admin-'+request.telephone, process.env.TOKEN_EXPIRATION_TIME)
             ctx.redisdb.expire(logined, process.env.TOKEN_EXPIRATION_TIME)
             // 返回用户token
             ctx.body = {accessToken: logined}
@@ -64,7 +64,7 @@ class UserController {
             // 设置redis双向绑定
             ctx.redisdb.set(token, JSON.stringify(admin),
                 'EX', process.env.TOKEN_EXPIRATION_TIME);
-            ctx.redisdb.set('login-'+request.telephone, token, 
+            ctx.redisdb.set('admin-'+request.telephone, token, 
                 'EX', process.env.TOKEN_EXPIRATION_TIME);
             // 返回用户token
             ctx.body = {accessToken: token}
@@ -80,7 +80,7 @@ class UserController {
                 }
             })
             ctx.redisdb.del(ctx.header.hmtoken);
-            ctx.redisdb.del('login-'+telephone);
+            ctx.redisdb.del('admin-'+telephone);
             ctx.body = {telephone: telephone}
         }else{
             ctx.throw(401, 'LOGOUT_ERROR_USER');
@@ -99,7 +99,7 @@ class UserController {
         if(!await this.checkSmsCode(ctx))
             ctx.throw(401, 'WRONG_SMS_CODE');
         var admin = new User()
-        await admin.findPhone(request.telephone)
+        await admin.findPhone(request.telephone, "02");
         if (admin.telephone){
             ctx.throw(401, 'TELEPHONE_ALREADY_REGISTRY')
         }
@@ -133,7 +133,7 @@ class UserController {
         if(!await this.checkSmsCode(ctx))
             ctx.throw(401, 'WRONG_SMS_CODE');
         var admin = new User()
-        await admin.findPhone(request.telephone)
+        await admin.findPhone(request.telephone, "02");
         if (!admin){
             ctx.throw(400, 'INVALID_ADMIN_USER')
         }

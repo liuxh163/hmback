@@ -1,5 +1,5 @@
 import db from '../db/db'
-import rand from 'randexp'
+import { FilesQuery } from '../models/File'
 
 class Post {
     constructor(data) {
@@ -12,6 +12,7 @@ class Post {
         this.content = data.content
         this.picIds = data.picIds
         this.posterId = data.posterId
+        this.pictures = data.pictures
         this.viewNum = data.viewNum
         this.thumbNum = data.thumbNum
         this.commentNum = data.commentNum
@@ -68,6 +69,13 @@ class Post {
                 // 获取评论数
                 let commentNum = await getComments(result[i].id)
                 result[i].commentNum = commentNum[0].count;
+            }
+            // 获取帖子图片
+            for(var i in result){
+                console.log("post-"+i+":"+result[i])
+                let pics = result[i].picIds.split(",");
+                // 获取帖子图片集合
+                result[i].pictures = await getPictures(pics);
             }
             return result
         } catch (error) {
@@ -269,6 +277,19 @@ async function getComments(id) {
         throw new Error('ERROR')
     }
 }
+/**
+ * 根据文件id数组获取文件对象
+ * @param {*} ids 
+ */
+async function getPictures(ids) {
+    try {
+        return await FilesQuery(ids);
+    } catch (error) {
+        console.log(error)
+        throw new Error('ERROR')
+    }
+}
+getPictures
 async function findByUserAndTopic(userId,topicId){
     let condation = {
         posterId:userId,

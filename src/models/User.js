@@ -72,9 +72,9 @@ class User {
         }
     }
 
-    async find(id) {
+    async find(id,type="01") {
         try {
-            let result = await findById(id)
+            let result = await findById(id,type)
             if (!result) return {}
             this.constructor(result)
         } catch (error) {
@@ -83,9 +83,9 @@ class User {
         }
     }
 
-    async findPhone(telephone) {
+    async findPhone(telephone, type="01") {
         try {
-            let result = await findByPhone(telephone)
+            let result = await findByPhone(telephone,type)
             if (!result) return {}
             this.constructor(result)
         } catch (error) {
@@ -118,22 +118,22 @@ class User {
     }
 }
 
-async function findById(id) {
+async function findById(id,type="01") {
     try {
         const [result] = await db('t_hm101_users')
             .select('*')
-            .where({ id: id })
+            .where({ id: id, type: type })
         return new User(result)
     } catch (error) {
         console.log(error)
         throw new Error('ERROR')
     }
 }
-async function findByPhone(telephone) {
+async function findByPhone(telephone, type="01") {
     try {
         const [result] = await db('t_hm101_users')
             .select('id','telephone','userName','type','password','iconPath')
-            .where({ telephone: telephone, status: '01' })
+            .where({ telephone: telephone, status: '01', type: type })
         return result
     } catch (error) {
         console.log(error)
