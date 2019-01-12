@@ -12,7 +12,7 @@ exports.up = function(knex, Promise) {
         //服务人员姓名
         table.string('name', 20).comment('服务人员名称');
         //服务人员简介
-        table.string('desc', 128).comment('服务人员介绍');
+        table.string('desc', 512).comment('服务人员介绍');
         //服务人员图片位置
         table.string('picFileId', 96).comment('服务人员图片Id');
         //服务人员类型 01-翻译  02-地接

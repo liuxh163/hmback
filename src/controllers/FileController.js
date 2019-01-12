@@ -1,3 +1,5 @@
+import { FileStore } from '../models/File'
+
 if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
 require('dotenv').config();
 
@@ -43,12 +45,26 @@ class FileController{
                 let result =await this.upload_alioss_file(file);
                 results.push(result);
             }
-            ctx.body = results
+            let files = [];
+            let tmpName;
+            for(var index in results){
+                files[index] = {};
+                tmpName = results[index].name;
+                files[index].name = tmpName;
+                files[index].path = results[index].url;
+                let fileNames = tmpName.split(".")
+                if(fileNames.length > 2){
+                    files[index].type = fileNames[fileNames.length - 1];
+                }else{
+                    files[index].type = fileNames[1]||"";
+                }
+                files[index].id = await FileStore(files[index]);
+            }
+            ctx.body = {files: files};
         }catch(error){
             console.log(error)
             ctx.throw(400, error)
         }
-
     }
 
     async upload_alioss_file(file){

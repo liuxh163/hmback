@@ -207,11 +207,28 @@ class Servant {
         delete servant.feedesc
         // 使用事务插入帖子信息及内容信息表
         return await db.transaction(async function(trx) {
-            await trx('t_hm101_htmls').update({content:content}).where({id: servant.introH5Id});
-            await trx('t_hm101_htmls').update({content:carContent}).where({id: servant.carH5Id});
-            await trx('t_hm101_htmls').update({content:feedesc}).where({id: servant.feedescH5Id});
-            await trx('t_hm101_servants').update(servant).where({id:servant.id});
+            try {
+                await trx('t_hm101_htmls').update({content:content})
+                    .where({id: servant.introH5Id});
+                await trx('t_hm101_htmls').update({content:carContent})
+                    .where({id: servant.carH5Id});
+                await trx('t_hm101_htmls').update({content:feedesc})
+                    .where({id: servant.feedescH5Id});
+                await trx('t_hm101_servants').update(servant)
+                    .where({id:servant.id});
+                return trx.commit();
+            } catch (error) {
+                console.log(error)
+                return trx.rollback(error);
+            };  
         });
+        // .then(function(inserts) {
+        //     return inserts;
+        // })
+        // .catch(function(error) {
+        //     console.log("error is---"+error)
+        //   throw new Error('ERROR')
+        // });
         //  return db('t_hm101_htmls').update(content)
         //    .transacting(trx)
         //     .where({id: servant.introH5Id})

@@ -1,14 +1,44 @@
 import db from '../db/db'
+import rand from 'randexp'
 import redis from 'ioredis'
 const getServant = require('./Servant').findById
 const getProduct = require('./Product').findById
 const getAttentans = require('./Attendant').findById
 const pinyin = require('node-pinyin')
 /**
+ * 数据库修改
+ * 
+ * t_hm101_orders{
+ * telphone  varchar(2)=>varchar(11)
+ * contact     varchar(2)=>varchar(10)
+ * updatedAt DateTime=>TimeStamp
+ * +earliestAt TimeStamp  NN
+ * +latestAt   TimeStamp  NN
+ * +confirmAt  TimeStamp
+ * +payType     vchar(2)
+ * +trade_no    vchar(45)
+ * +servantType  vchar(2)
+ * }
+ * 
+ * 
+ * t_hm101_order_peoples{
+ * birthday varchar=>TimeStamp
+ * updatedAt DateTime=>TimeStamp
+ * lastName int(20)=>vchar(20)
+ * +travelType vchar(2)
+ * }
+ * 
+ * t_hm101_order_attentants{
+ * target => targetId
+ * orderNumber del UQ
+ * +ownerId int(11)  NN
+ * }
+ */
+
+/**
  * 订单数据模型
  */
-// const redisdb = new redis( 33601,"47.92.131.110");
-const redisdb = require('../db/redis')
+const redisdb = new redis( 33601,"47.92.131.110");
 
 async function genID(module_name) {
     return 1000000000 + await redisdb.incr(module_name+"_id");
@@ -113,8 +143,8 @@ class Order {
               .where({id:this.id})
     }
     async save(trx){
-        //let v = await db(G_TABLE_NAME).insert(this).transacting(trx);
-        let v = await db(G_TABLE_NAME).insert(this);
+        let v = await trx(G_TABLE_NAME).insert(this);
+        //let v = await db(G_TABLE_NAME).insert(this);
         this.id = v[0];
     }
     async find(id) {
@@ -183,8 +213,8 @@ class OrderPeople{
         this.orderNumber = order.number;
         this.operateFlag = 'A'
 
-        if(this.travelType === '02'){
-            order.price += product.followPrice;
+        if(this.travelType === '01'){
+            order.price += product.companyPrice;
         }else{
             let birthday = new Date(this.birthday);
             let age = Date.now() - birthday;
@@ -206,8 +236,8 @@ class OrderPeople{
         console.log("1111"+order.price)
     }
     async save(trx){
-      //  await db(G_TABLE_ORDER_PEOPLE_NAME).insert(this).transacting(trx);
-        await db(G_TABLE_ORDER_PEOPLE_NAME).insert(this);
+        await trx(G_TABLE_ORDER_PEOPLE_NAME).insert(this);
+      //  await db(G_TABLE_ORDER_PEOPLE_NAME).insert(this);
     }
 }
 class OrderAttendant{
@@ -242,8 +272,8 @@ class OrderAttendant{
         console.log("2222"+order.price)
     }
     async save(trx){
-        //await db(G_TABLE_ORDER_ATTENTANTS_NAME).insert(this).transacting(trx);
-        await db(G_TABLE_ORDER_ATTENTANTS_NAME).insert(this);
+       // this.bccc = 'c'
+        await trx(G_TABLE_ORDER_ATTENTANTS_NAME).insert(this);
     }
 }
 
@@ -254,11 +284,9 @@ class OrderDBTranscation{
     }
     async save() {
         let order = new Order(this.data);
-        //await db.transaction(async (trx)=>{
-        //    let isSuc = false;
-        //    try{
-            //没搞懂这个事务
-                let trx = null;
+        await db.transaction(async (trx)=>{
+            let isSuc = false;
+            try{
                 await order.fillForInsert();
                 await order.save(trx);
                 if(order.target == '02'){
@@ -275,13 +303,14 @@ class OrderDBTranscation{
                         }
                     }   
                 }
-            //    isSuc = true;
-            // }catch(e){
-            //     isSuc = false;
-            //     trx.rollback();
-            // }
-            // if(isSuc) trx.commit();
-        //})
+               isSuc = true;
+               return trx.commit();
+            }catch(e){
+                isSuc = false;
+                console.log(e)
+                return trx.rollback(e);
+            }
+        })
         return order;
     }
 }

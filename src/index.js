@@ -97,7 +97,7 @@ app.use(cors({ origin: '*' }))
 app.use(userAgent)
 
 //For managing body. We're only allowing json.
-app.use(bodyParser())
+app.use(bodyParser({jsonLimit:'10mb'}));
 
 //公用资源路由
 app.use(commonsRouter.routes())

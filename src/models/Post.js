@@ -10,7 +10,7 @@ class Post {
         this.topicId = data.topicId
         this.title = data.title
         this.content = data.content
-        this.contentH5Id = data.contentH5Id
+        this.picIds = data.picIds
         this.posterId = data.posterId
         this.viewNum = data.viewNum
         this.thumbNum = data.thumbNum
@@ -36,7 +36,7 @@ class Post {
                 topicId:request.topicId
             };
             let notConditions = {
-                "a.operateFlag":"D"
+                "operateFlag":"D"
             };
             // 删除不存在的条件
             Object.keys(conditions).forEach(function(param, index){
@@ -46,18 +46,14 @@ class Post {
             });
             let result 
             if("{}" !== JSON.stringify(conditions)){
-                result = await db.select('a.*','b.content')
-                .from('t_hm101_posts as a')
-                .leftJoin('t_hm101_htmls as b','a.contentH5Id', 'b.id')
+                result = await db('t_hm101_posts').select('*')
                 .where(conditions)
                 .whereNot(notConditions)
                 .orderBy('updatedAt', 'desc')
                 .offset(--request.page * +request.number)
                 .limit(+request.number)
             }else{
-                result = await db.select('a.*','b.content')
-                .from('t_hm101_posts as a')
-                .leftJoin('t_hm101_htmls as b','a.contentH5Id', 'b.id')
+                result = await db('t_hm101_posts').select('*')
                 .whereNot(notConditions)
                 .orderBy('updatedAt', 'desc')
                 .offset(--request.page * +request.number)
@@ -119,33 +115,32 @@ class Post {
     async store() {
         var post = this
         // 插入post表时去掉数据中非字段项
-        delete post.commentNum
-        delete post.thumbNum
-        var content = post.content
-        delete post.content
+        delete post.commentNum;
+        delete post.thumbNum;
         // 遍历打印对象内容
         // Object.keys(post).forEach(function(param,index){
         //     console.log("post attr "+param+" is "+post[param])
         // })
+        return await db('t_hm101_posts').insert(post);
         // 使用事务插入帖子信息及内容信息表
-        return await db.transaction(function(trx) {
-          return db('t_hm101_htmls').insert({content: content}, 'id')
-            .transacting(trx)
-            .then(function(ids) {
-                console.log("content id is :"+ids[0])
-                post.contentH5Id = ids[0];
-                return db('t_hm101_posts').insert(post).transacting(trx);
-            })
-            .then(trx.commit)
-            .catch(trx.rollback);
-        })
-        .then(function(inserts) {
-            return inserts;
-        })
-        .catch(function(error) {
-            console.log("error is---"+error)
-          throw new Error('ERROR')
-        });
+        // return await db.transaction(function(trx) {
+        //   return db('t_hm101_htmls').insert({content: content}, 'id')
+        //     .transacting(trx)
+        //     .then(function(ids) {
+        //         console.log("content id is :"+ids[0])
+        //         post.contentH5Id = ids[0];
+        //         return db('t_hm101_posts').insert(post).transacting(trx);
+        //     })
+        //     .then(trx.commit)
+        //     .catch(trx.rollback);
+        // })
+        // .then(function(inserts) {
+        //     return inserts;
+        // })
+        // .catch(function(error) {
+        //     console.log("error is---"+error)
+        //   throw new Error('ERROR')
+        // });
     }
     /**
      * 更新帖子相关信息
@@ -155,13 +150,13 @@ class Post {
     async save(request) {
         var post = this
         // 插入post表时去掉数据中非字段项
-        delete post.commentNum
-        delete post.thumbNum
-        var content = {content:post.content}
-        content.updatedAt = post.updatedAt
-        content.operateFlag = post.operateFlag
-        content.operator = post.posterId
-        delete post.content
+        delete post.commentNum;
+        delete post.thumbNum;
+        // var content = {content:post.content}
+        // content.updatedAt = post.updatedAt
+        // content.operateFlag = post.operateFlag
+        // content.operator = post.posterId
+        // delete post.content
         // 遍历打印对象内容
         // Object.keys(content).forEach(function(param,index){
         //     console.log("content attr "+param+" is "+content[param])
@@ -169,29 +164,29 @@ class Post {
         // Object.keys(post).forEach(function(param,index){
         //     console.log("post attr "+param+" is "+post[param])
         // })
-
+        return db('t_hm101_posts').update(post).where({id: post.id});
         // 使用事务插入帖子信息及内容信息表
-        return await db.transaction(function(trx) {
-          return db('t_hm101_htmls').update(content)
-            .transacting(trx)
-            .where({id: post.contentH5Id})
-            .then(function(ids) {
-                console.log("content id is :"+ids[0])
-                return db('t_hm101_posts')
-                    .update(post)
-                    .transacting(trx)
-                    .where({id: post.id});
-            })
-            .then(trx.commit)
-            .catch(trx.rollback);
-        })
-        .then(function(inserts) {
-            return inserts;
-        })
-        .catch(function(error) {
-            console.log("error is---"+error)
-          throw new Error('ERROR')
-        });
+        // return await db.transaction(function(trx) {
+        //   return db('t_hm101_htmls').update(content)
+        //     .transacting(trx)
+        //     .where({id: post.contentH5Id})
+        //     .then(function(ids) {
+        //         console.log("content id is :"+ids[0])
+        //         return db('t_hm101_posts')
+        //             .update(post)
+        //             .transacting(trx)
+        //             .where({id: post.id});
+        //     })
+        //     .then(trx.commit)
+        //     .catch(trx.rollback);
+        // })
+        // .then(function(inserts) {
+        //     return inserts;
+        // })
+        // .catch(function(error) {
+        //     console.log("error is---"+error)
+        //   throw new Error('ERROR')
+        // });
     }
     /**
      * 删除指定的帖子
@@ -216,10 +211,8 @@ class Post {
  */
 async function findById(id) {
     try {
-        let [result] = await db.select('a.*','b.content')
-                    .from('t_hm101_posts as a')
-                    .leftJoin('t_hm101_htmls as b','a.contentH5Id', 'b.id')
-                    .where({ 'a.id': id});
+        let [result] = await db('t_hm101_posts').select('*')
+                    .where({ 'id': id});
         // Object.keys(result).forEach(function(param,index){
         //     console.log("return post attr "+param+" is "+result[param])
         // })

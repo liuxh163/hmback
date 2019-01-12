@@ -60,6 +60,9 @@ class PostController {
         request.posterId = curUser.id
 
         var post = new Post(request)
+        post.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        post.operator = curUser.id
+
         try {
             let result = await post.store()
             ctx.body = { id: result[0] }
