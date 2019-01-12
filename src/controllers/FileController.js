@@ -1,4 +1,5 @@
 import { FileStore } from '../models/File'
+import dateFormat from 'date-fns/format';
 
 if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
 require('dotenv').config();
@@ -36,7 +37,7 @@ class FileController{
             console.log(Object.prototype.toString(ctx.request.files.filex));
 
             const curUser = ctx.state.user;
-            
+
             if( Array.isArray(ctx.request.files.filex)){
                 for(let i = 0 ; i < ctx.request.files.filex.length ; ++i ){
                     let file =  ctx.request.files.filex[i];
