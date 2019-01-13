@@ -72,10 +72,15 @@ class Post {
             }
             // 获取帖子图片
             for(var i in result){
-                console.log("post-"+i+":"+result[i])
-                let pics = result[i].picIds.split(",");
-                // 获取帖子图片集合
-                result[i].pictures = await getPictures(pics);
+                console.log("post-"+i+":"+result[i]);
+                let pics = undefined;
+                if(result[i].picIds){
+                    pics = result[i].picIds.split(",");
+                    // 获取帖子图片集合
+                    result[i].pictures = await getPictures(pics);
+                }else{
+                    result[i].pictures = [];
+                };
             }
             return result
         } catch (error) {
