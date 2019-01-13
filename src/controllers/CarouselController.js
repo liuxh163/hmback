@@ -9,20 +9,15 @@ class CarouselController {
      * @return {[type]}     [description]
      */
     async index(ctx) {
-        const query = ctx.query
-        const request = ctx.request.body
-        query.status = request.status
-        query.productId = request.productId
-
+        const query = ctx.query;
         const carousel = new Carousel();
-
         // 获取carousels列表
         try {
-            let result = await carousel.all(query)
-            ctx.body = {carousels:result}
+            let result = await carousel.all(query);
+            ctx.body = {carousels:result};
         } catch (error) {
-            console.log(error)
-            ctx.throw(400, 'INVALID_DATA' + error)
+            console.log(error);
+            ctx.throw(400, 'INVALID_DATA' + error);
         }
     }
     /**

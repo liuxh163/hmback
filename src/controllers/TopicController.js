@@ -6,18 +6,14 @@ import { Topic } from '../models/Topic'
 class TopicController {
     async index(ctx) {
         const query = ctx.query;
-        const request = ctx.request.body;
-
-        query.status = request.status;
-        const topic = new Topic()
-
+        const topic = new Topic();
         //获取所有话题
         try {
-            let result = await topic.all(query)
-            ctx.body = {topics:result}
+            let result = await topic.all(query);
+            ctx.body = {topics:result};
         } catch (error) {
-            console.log(error)
-            ctx.throw(400, 'INVALID_DATA' + error)
+            console.log(error);
+            ctx.throw(400, 'INVALID_DATA' + error);
         }
     }
     /**

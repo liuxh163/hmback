@@ -9,20 +9,17 @@ class AttendantController {
      * @return {[type]}     [description]
      */
     async index(ctx) {
-        const query = ctx.query
-        const request = ctx.request.body
-
-        query.status = request.status
+        const query = ctx.query;
         //Init a new attendant object
-        const attendant = new Attendant()
+        const attendant = new Attendant();
 
         //Get paginated list of attendants
         try {
-            let result = await attendant.all(query)
-            ctx.body = {attendants:result}
+            let result = await attendant.all(query);
+            ctx.body = {attendants:result};
         } catch (error) {
-            console.log(error)
-            ctx.throw(400, 'INVALID_DATA' + error)
+            console.log(error);
+            ctx.throw(400, 'INVALID_DATA' + error);
         }
     }
     /**
