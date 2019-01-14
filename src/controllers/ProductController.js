@@ -1,7 +1,7 @@
 import dateFormat from 'date-fns/format'
 
 import { Product } from '../models/Product'
-
+import {isLike} from '../models/Thumb'
 class ProductController {
     /**
      * 获取指定参数的产品列表
@@ -43,6 +43,8 @@ class ProductController {
         try {
             //Find and show product
             await product.find(params.id)
+            console.log(product.id)
+            product.isLike = await isLike(ctx.state.user.id,'01',product.id);
             ctx.body = product
         } catch (error) {
             console.log(error)
