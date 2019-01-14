@@ -3,7 +3,11 @@ import rand from 'randexp'
 async function getH5Content(id){
     let x = await db('t_hm101_htmls').select('content').where({id:id});
     console.log(x)
-    let retVal = x.length>0?x[0].content:"";
+    let retVal = "";
+    if(x.length >0 ){
+        retVal = x[0].content;
+    }
+    //let retVal = x.length>0?x[0].content:"";
     console.log("ret val:"+retVal);
     return retVal;
 }
@@ -85,7 +89,7 @@ class Servant {
             // 获取点赞数及评论数
             for(var i in result){
                 result[i].car = await getH5Content(result[i].carH5Id);
-                result[i].feedesc = await getH5Content(result[i].feedescH5Id);
+                result[i].feedesc =await  getH5Content(result[i].feedescH5Id);
                 console.log("servant-"+i+":"+result[i])
                 // 获取点赞数
                 let thumbNum = await getThumbs(result[i].id)

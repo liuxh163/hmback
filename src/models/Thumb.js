@@ -79,4 +79,8 @@ class Thumb {
     }
 }
 
-export { Thumb }
+async function isLike(userId,target,targetId){
+   let rows = await db('t_hm101_thumbs').select('id').where({likerId:userId,target:target,targetId:targetId});
+   return rows.length>0;
+}
+export { Thumb ,isLike}

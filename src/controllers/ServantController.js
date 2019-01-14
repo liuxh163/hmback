@@ -2,13 +2,13 @@ import dateFormat from 'date-fns/format'
 
 import { Servant } from '../models/Servant'
 import { User } from '../models/User'
-
+import {isLike} from '../models/Thumb'
 class ServantController {
     /**
      * 分类型国籍查询服务人员列表，支持分页
      * @param  {[type]} ctx [description]
      * @return {[type]}     [description]
-     */
+     */ 
     async index(ctx) {
         const query = ctx.query
 
@@ -43,6 +43,7 @@ class ServantController {
         try {
             //Find and show servant
             await servant.find(params.id)
+            servant.isLike = await isLike(ctx.state.user.userId,'03',servant.id);
             // Object.keys(servant).forEach(function(param,index){
             //     console.log("controller show attr "+param+" is "+servant[param])
             // })
