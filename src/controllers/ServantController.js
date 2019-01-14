@@ -43,7 +43,7 @@ class ServantController {
         try {
             //Find and show servant
             await servant.find(params.id)
-            servant.isLike = await isLike(ctx.state.user.userId,'03',servant.id);
+            servant.isLike = await isLike(ctx.state.user.id,'03',servant.id);
             // Object.keys(servant).forEach(function(param,index){
             //     console.log("controller show attr "+param+" is "+servant[param])
             // })
