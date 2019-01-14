@@ -1,7 +1,7 @@
 import dateFormat from 'date-fns/format'
 
-import { User } from '../models/User'
-import { Post,findById,findByUserAndTopic } from '../models/Post'
+import { User, findById } from '../models/User'
+import { Post,findByUserAndTopic } from '../models/Post'
 
 class PostController {
     async index(ctx) {
@@ -21,7 +21,12 @@ class PostController {
         //Get paginated list of posts
         try {
             let result = await post.all(query);
-            // TODo获取发帖人昵称和头像
+            // TODO获取发帖人昵称和头像
+            for(var i in result){
+                var tmp = await findById(result[i].posterId);
+                result[i].userName = tmp.userName;
+                result[i].iconPath = tmp.iconPath;
+            }
             ctx.body = {posts:result}
         } catch (error) {
             console.log(error)
