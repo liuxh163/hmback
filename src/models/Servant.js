@@ -1,5 +1,5 @@
 import db from '../db/db'
-import rand from 'randexp'
+
 async function getH5Content(id){
     let x = await db('t_hm101_htmls').select('content').where({id:id});
     console.log(x)
@@ -32,13 +32,14 @@ class Servant {
         this.literPrice = data.literPrice;
         this.followPrice = data.followPrice;
         this.recepPrice = data.recepPrice;
+        this.rank = data.rank;
         this.viewNum = data.viewNum;
         this.thumbNum = data.thumbNum;
         this.commentNum = data.commentNum;
-
         this.category = data.category;
         this.isMainPage = data.isMainPage;
         this.score = data.score;
+
         this.operator = data.operator;
         this.operateFlag = data.operateFlag;
         this.updatedAt = data.updatedAt;
@@ -160,14 +161,21 @@ class Servant {
         // 使用事务插入帖子信息及内容信息表
         let dbresult = 0;
         await db.transaction(async function(trx) {
-            let x = await trx('t_hm101_htmls').insert({content: content});
-            servant.introH5Id = x[0];
-            x = await trx('t_hm101_htmls').insert({content: carContent});
-            servant.carH5Id = x[0];
-            x = await trx('t_hm101_htmls').insert({content: feedesc});
-            servant.feedescH5Id = x[0];
-            x = await trx('t_hm101_servants').insert(servant);
-            dbresult =  x[0];
+            try {
+                let x = await trx('t_hm101_htmls').insert({content: content});
+                servant.introH5Id = x[0];
+                x = await trx('t_hm101_htmls').insert({content: carContent});
+                servant.carH5Id = x[0];
+                x = await trx('t_hm101_htmls').insert({content: feedesc});
+                servant.feedescH5Id = x[0];
+                x = await trx('t_hm101_servants').insert(servant);
+                dbresult =  x[0];
+                return trx.commit();
+            } catch (error) {
+                console.log(error);
+                return trx.rollback(error);
+            }
+            
         });
         return dbresult;
         //     return db('t_hm101_servants').insert(servant).transacting(trx);
@@ -193,7 +201,7 @@ class Servant {
      * @param  {[type]} request [description]
      * @return {[type]}         [description]
      */
-    async save(request) {
+    async save() {
         var servant = this
         // 插入post表时去掉数据中非字段项
         delete servant.commentNum
@@ -255,7 +263,7 @@ class Servant {
         // });
     }
 
-    async destroy(request) {
+    async destroy() {
         try {
             return await db('t_hm101_servants')
                 .update({operateFlag : 'D'})

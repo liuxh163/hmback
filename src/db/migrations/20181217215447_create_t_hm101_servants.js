@@ -33,6 +33,8 @@ exports.up = function(knex, Promise) {
         table.decimal('literPrice', 8, 2).comment('文字翻译单价，含单位');
         //陪同单价
         table.decimal('followPrice', 8, 2).comment('陪同翻译单价，含单位');
+        // 服务人员星级
+        table.decimal('rank', 2, 1).comment('服务人员评价星级，一位小数');
         //地接价格
         table.decimal('recepPrice', 8, 2).comment('地接服务单价，含单位0');
         //浏览次数
