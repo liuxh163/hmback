@@ -1,6 +1,7 @@
 import dateFormat from 'date-fns/format'
 
 import { User } from '../models/User'
+
 import { Comment } from '../models/Comment'
 
 class CommentController {
@@ -25,6 +26,21 @@ class CommentController {
         //获取分页列表
         try {
             let result = await comment.all(query)
+            for(let i = 0 ; i < result.length ; ++i){
+                let comm = result[i];
+                await comm.formatForClient();
+                let replyQuery = {
+                    target:"05",
+                    targetId:comm.id
+                }
+                let replyList = await comment.all(replyQuery);
+                
+                for(let j = 0 ; j < replyList.length ; ++j){
+                    let reply = replyList[j];
+                    await reply.formatForClient();
+                }
+                comm.replyList = replyList;
+            }
             ctx.body = result
         } catch (error) {
             console.log(error)

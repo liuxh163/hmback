@@ -1,5 +1,6 @@
 import db from '../db/db'
-
+import dateFormat from 'date-fns/format'
+const getUser = require('../models/User').findById
 class Comment {
     constructor(data) {
         if (!data) {
@@ -57,6 +58,7 @@ class Comment {
                 .offset(--request.page * +request.number)
                 .limit(+request.number)
             }
+            let comments = [];
             // 获取点赞数及评论数
             for(var i in result){
                 console.log("comment-"+i+":"+result[i])
@@ -66,9 +68,11 @@ class Comment {
                 // 获取评论数
                 let commentNum = await getComments(result[i].id)
                 result[i].commentNum = commentNum[0].count;
-            }
 
-            return result;
+                let comment = new Comment(result[i]);
+                comments.push(comment);
+            }
+            return comments;
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
@@ -185,6 +189,14 @@ class Comment {
             console.log(error)
             throw new Error('ERROR')
         }
+    }
+
+    async formatForClient(){
+        let date = new Date(this.createdAt);
+        this.createdAt = dateFormat(new Date(this.createdAt), 'YYYY-MM-DD HH:mm:ss');
+        let curUser = await getUser(this.commenterId);
+        this.iconPath = curUser.iconPath;
+        this.userName = curUser.userName;
     }
 }
 /**
