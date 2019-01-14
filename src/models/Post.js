@@ -130,6 +130,7 @@ class Post {
         // 插入post表时去掉数据中非字段项
         delete post.commentNum;
         delete post.thumbNum;
+        delete post.pictures;
         // 遍历打印对象内容
         // Object.keys(post).forEach(function(param,index){
         //     console.log("post attr "+param+" is "+post[param])
@@ -165,6 +166,7 @@ class Post {
         // 插入post表时去掉数据中非字段项
         delete post.commentNum;
         delete post.thumbNum;
+        delete post.pictures;
         // var content = {content:post.content}
         // content.updatedAt = post.updatedAt
         // content.operateFlag = post.operateFlag
