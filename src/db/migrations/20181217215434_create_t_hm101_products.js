@@ -15,7 +15,8 @@ exports.up = function(knex, Promise) {
         table.string('nation', 2).comment('产品所属国籍，码表-GJBM');
         //产品浏览次数
         table.integer('viewNum', 8).notNullable().defaultTo(0).comment('浏览次数，非空，默认0');
-
+        //产品所属国家
+        table.string('coverId', 20).comment('产品列表封面图片Id，files表中id');
         //亮点页面Id
         table.integer('featureH5Id', 11).comment('产品亮点内容介绍h5内容Id');
         //详情页面Id

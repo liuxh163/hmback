@@ -22,7 +22,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"telephone\": \"13378965431\",\n    \"smscode\": \"634113\"\n}"
+							"raw": "{\n\t\"telephone\": \"18610971664\",\n    \"smscode\": \"652168\"\n}"
 						},
 						"url": {
 							"raw": "http://127.0.0.1:4000/api/v1/user/login",
@@ -58,7 +58,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"telephone\": \"13378965439\"\n}"
+							"raw": "{\n\t\"telephone\": \"18610971664\"\n}"
 						},
 						"url": {
 							"raw": "http://127.0.0.1:4000/api/v1/users/sendSms",
@@ -170,7 +170,7 @@
 							{
 								"key": "hmtoken",
 								"type": "text",
-								"value": "f58fdb20-1029-11e9-9d50-f1e2efe7fce5"
+								"value": "36bfe6c0-1323-11e9-9fda-a3c50712d8ae"
 							},
 							{
 								"key": "Content-Type",
@@ -181,10 +181,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"realName\": \"赵四\",\n  \"iconPath\": \"touxiang.png\",\n  \"slogan\": \"海马健康金，助力健康\",\n  \"idNumber\": \"2XXXXXXXXXXXXXXX\",\n  \"email\": \"test@test.com\",\n  \"address\": \"北京市海淀区学院路99号大中电器3层，100089\",\n  \"username\": \"赵三两\",\n  \"birthday\": \"2018-10-28\",\n  \"gender\": \"01\"\n}"
+							"raw": "{\n  \"realName\": \"赵四\",\n  \"iconPath\": \"touxiang.png\",\n  \"slogan\": \"海马健康金，助力健康\",\n  \"idNumber\": \"2XXXXXXXXXXXXXXX\",\n  \"email\": \"test@test.com\",\n  \"address\": \"北京市海淀区学院路99号大中电器3层，100089\",\n  \"username\": \"赵三两\",\n  \"birthday\": \"2018-10-28 12:10:21 Z\",\n  \"gender\": \"01\"\n}"
 						},
 						"url": {
-							"raw": "127.0.0.1:4000/api/v1/users/:id",
+							"raw": "127.0.0.1:4000/api/v1/users",
 							"host": [
 								"127",
 								"0",
@@ -195,14 +195,7 @@
 							"path": [
 								"api",
 								"v1",
-								"users",
-								":id"
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "1"
-								}
+								"users"
 							]
 						}
 					},
@@ -296,7 +289,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"telephone\": \"13378965439\",\n\t\"password\": \"123456\",\n\t\"userName\": \"管理员\",\n\t\"smscode\":\"772371\"\n}"
+							"raw": "{\n\t\"telephone\": \"13718863263\",\n\t\"password\": \"123456\",\n\t\"userName\": \"管理员\",\n\t\"smscode\":\"524489\"\n}"
 						},
 						"url": {
 							"raw": "http://127.0.0.1:4000/api/v1/admins",
@@ -366,7 +359,7 @@
 							{
 								"key": "hmtoken",
 								"type": "text",
-								"value": "904d8f20-13d3-11e9-b548-279610dc1116"
+								"value": "6e632070-13d6-11e9-a539-e56156a60b5"
 							}
 						],
 						"body": {
@@ -400,15 +393,21 @@
 							{
 								"key": "hmtoken",
 								"type": "text",
-								"value": "904d8f20-13d3-11e9-b548-279610dc1116"
+								"value": "6e632070-13d6-11e9-a539-e56156a60b51"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": ""
+							"raw": "{\n\t\"telephone\": \"13378965439\",\n\t\"password\": \"654321\",\n\t\"smscode\":\"512688\"\n}"
 						},
 						"url": {
-							"raw": "127.0.0.1:4000/api/v1/admins/logout",
+							"raw": "127.0.0.1:4000/api/v1/admins",
 							"host": [
 								"127",
 								"0",
@@ -419,8 +418,7 @@
 							"path": [
 								"api",
 								"v1",
-								"admins",
-								"logout"
+								"admins"
 							]
 						}
 					},
@@ -471,31 +469,28 @@
 					"response": []
 				},
 				{
-					"name": "获取话题列表",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
+					"name": "话题-查列表",
 					"request": {
 						"method": "GET",
 						"header": [
 							{
 								"key": "hmtoken",
-								"value": "f58fdb20-1029-11e9-9d50-f1e2efe7fce5",
-								"type": "text"
+								"type": "text",
+								"value": "f58fdb20-1029-11e9-9d50-f1e2efe7fce5"
 							},
 							{
 								"key": "Content-Type",
 								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
+								"type": "text",
+								"value": "application/json"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"status\":\"01\"\n}"
+							"raw": ""
 						},
 						"url": {
-							"raw": "127.0.0.1:4000/api/v1/topics",
+							"raw": "127.0.0.1:4000/api/v1/topics?status=01",
 							"host": [
 								"127",
 								"0",
@@ -507,6 +502,12 @@
 								"api",
 								"v1",
 								"topics"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "01"
+								}
 							]
 						}
 					},
@@ -635,14 +636,14 @@
 					"response": []
 				},
 				{
-					"name": "发帖",
+					"name": "帖子-发帖",
 					"request": {
 						"method": "POST",
 						"header": [
 							{
 								"key": "hmtoken",
 								"type": "text",
-								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+								"value": "36bfe6c0-1323-11e9-9fda-a3c50712d8ae"
 							},
 							{
 								"key": "Content-Type",
@@ -653,7 +654,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"title\": \"海马健康金，助力健康\",\n  \"content\": \"<span>海马健康金是一款。。。</span>\",\n  \"location\": \"韩国，首尔\"\n}"
+							"raw": "{\n  \"title\": \"海马健康金，助力健康\",\n  \"content\": \"海马健康金是一款。。。\",\n  \"picIds\": \"1,2,3\",\n  \"location\": \"韩国，首尔\"\n}"
 						},
 						"url": {
 							"raw": "127.0.0.1:4000/api/v1/topics/:id/posts",
@@ -682,17 +683,61 @@
 					"response": []
 				},
 				{
-					"name": "看贴",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
+					"name": "帖子-我发的",
 					"request": {
 						"method": "GET",
 						"header": [
 							{
 								"key": "hmtoken",
 								"type": "text",
-								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+								"value": "36bfe6c0-1323-11e9-9fda-a3c50712d8ae"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/posts/get/mine?topicId=2",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"posts",
+								"get",
+								"mine"
+							],
+							"query": [
+								{
+									"key": "topicId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "帖子-看帖",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "36bfe6c0-1323-11e9-9fda-a3c50712d8ae"
 							}
 						],
 						"body": {
@@ -725,13 +770,13 @@
 					"response": []
 				},
 				{
-					"name": "改贴",
+					"name": "帖子-改贴",
 					"request": {
 						"method": "PUT",
 						"header": [
 							{
 								"key": "hmtoken",
-								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67",
+								"value": "36bfe6c0-1323-11e9-9fda-a3c50712d8ae",
 								"type": "text"
 							},
 							{
@@ -743,7 +788,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"title\": \"海马金\",\n  \"content\": \"<span>1122海马健康金是一款。。。</span>\",\n  \"location\": \"日本，二阪\"\n}"
+							"raw": "{\n  \"title\": \"海马银\",\n  \"content\": \"1122海马健康金是一款。。。\",\n  \"picIds\": \"4,5\",\n  \"location\": \"日本，二阪\"\n}"
 						},
 						"url": {
 							"raw": "127.0.0.1:4000/api/v1/posts/:id",
@@ -771,7 +816,7 @@
 					"response": []
 				},
 				{
-					"name": "删帖",
+					"name": "帖子-删帖",
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -811,17 +856,14 @@
 					"response": []
 				},
 				{
-					"name": "查贴列表",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
+					"name": "帖子-查列表",
 					"request": {
 						"method": "GET",
 						"header": [
 							{
 								"key": "hmtoken",
 								"type": "text",
-								"value": "19f3c8e0-0c43-11e9-bc53-fba5f94a1d67"
+								"value": "36bfe6c0-1323-11e9-9fda-a3c50712d8ae"
 							}
 						],
 						"body": {
@@ -862,7 +904,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "0"
+									"value": "2"
 								}
 							]
 						}
@@ -946,7 +988,7 @@
 							{
 								"key": "hmtoken",
 								"type": "text",
-								"value": "f58fdb20-1029-11e9-9d50-f1e2efe7fce5"
+								"value": "36bfe6c0-1323-11e9-9fda-a3c50712d8ae"
 							}
 						],
 						"body": {
@@ -1387,7 +1429,7 @@
 			"name": "服务人员",
 			"item": [
 				{
-					"name": "获取人员列表",
+					"name": "人员-查列表",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -1440,7 +1482,7 @@
 					"response": []
 				},
 				{
-					"name": "获取人员详情",
+					"name": "人员-查详情",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -1480,7 +1522,7 @@
 					"response": []
 				},
 				{
-					"name": "新增人员",
+					"name": "人员-新增",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -1519,7 +1561,7 @@
 					"response": []
 				},
 				{
-					"name": "修改人员",
+					"name": "人员-修改",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -1565,7 +1607,7 @@
 					"response": []
 				},
 				{
-					"name": "停用人员",
+					"name": "人员-停用",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -1606,7 +1648,7 @@
 					"response": []
 				},
 				{
-					"name": "启用人员",
+					"name": "人员-启用",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -1677,7 +1719,7 @@
 			"name": "渠道管理",
 			"item": [
 				{
-					"name": "获取渠道列表",
+					"name": "渠道-查列表",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -1720,7 +1762,7 @@
 					"response": []
 				},
 				{
-					"name": "新增渠道",
+					"name": "渠道-新增",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -1759,7 +1801,7 @@
 					"response": []
 				},
 				{
-					"name": "修改渠道",
+					"name": "渠道-修改",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -1805,7 +1847,7 @@
 					"response": []
 				},
 				{
-					"name": "停用渠道",
+					"name": "渠道-停用",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -1846,7 +1888,7 @@
 					"response": []
 				},
 				{
-					"name": "启用 渠道",
+					"name": "渠道-启用",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -2304,10 +2346,7 @@
 			"name": "附加项轮播图",
 			"item": [
 				{
-					"name": "附加项-列表",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
+					"name": "附加项-查列表",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -2325,10 +2364,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"status\": \"01\"\n}"
+							"raw": ""
 						},
 						"url": {
-							"raw": "127.0.0.1:4000/api/v1/attendants",
+							"raw": "127.0.0.1:4000/api/v1/attendants?status=01",
 							"host": [
 								"127",
 								"0",
@@ -2340,6 +2379,12 @@
 								"api",
 								"v1",
 								"attendants"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "01"
+								}
 							]
 						}
 					},
@@ -2553,16 +2598,13 @@
 				},
 				{
 					"name": "轮播-查列表",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"method": "GET",
 						"header": [
 							{
 								"key": "hmtoken",
 								"type": "text",
-								"value": "f58fdb20-1029-11e9-9d50-f1e2efe7fce5"
+								"value": "36bfe6c0-1323-11e9-9fda-a3c50712d8ae"
 							},
 							{
 								"key": "Content-Type",
@@ -2573,10 +2615,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"status\":\"01\",\n\t\"productId\":\"1\"\n}"
+							"raw": ""
 						},
 						"url": {
-							"raw": "127.0.0.1:4000/api/v1/carousels?",
+							"raw": "127.0.0.1:4000/api/v1/carousels?location=05&status=01&productId=3",
 							"host": [
 								"127",
 								"0",
@@ -2592,8 +2634,15 @@
 							"query": [
 								{
 									"key": "location",
-									"value": "01",
-									"disabled": true
+									"value": "05"
+								},
+								{
+									"key": "status",
+									"value": "01"
+								},
+								{
+									"key": "productId",
+									"value": "3"
 								}
 							]
 						}
@@ -2827,6 +2876,39 @@
 								"v1",
 								"codes",
 								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "文件-上传",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "hmtoken",
+								"type": "text",
+								"value": "f58fdb20-1029-11e9-9d50-f1e2efe7fce5"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "127.0.0.1:4000/api/v1/upload",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"upload"
 							]
 						}
 					},

@@ -69,9 +69,8 @@ class Post {
                 // 获取评论数
                 let commentNum = await getComments(result[i].id)
                 result[i].commentNum = commentNum[0].count;
-            }
-            // 获取帖子图片
-            for(var i in result){
+
+                // 获取帖子图片
                 console.log("post-"+i+":"+result[i]);
                 let pics = undefined;
                 if(result[i].picIds){
@@ -82,6 +81,7 @@ class Post {
                     result[i].pictures = [];
                 };
             }
+            
             return result
         } catch (error) {
             console.log(error)
@@ -294,7 +294,7 @@ async function getPictures(ids) {
         throw new Error('ERROR')
     }
 }
-getPictures
+
 async function findByUserAndTopic(userId,topicId){
     let condation = {
         posterId:userId,

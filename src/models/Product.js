@@ -5,38 +5,40 @@ class Product {
         if (!data) {
             return
         }
-        this.id = data.id
-        this.desc = data.desc
-        this.nation = data.nation
-        this.featureH5Id = data.featureH5Id
-        this.detailH5Id = data.detailH5Id
-        this.routineH5Id = data.routineH5Id
-        this.feeH5Id = data.feeH5Id
-        this.noticeH5Id = data.noticeH5Id
-        this.hospitalH5Id = data.hospitalH5Id
-        this.itemH5Id = data.itemH5Id
-        this.feature = data.feature
-        this.detail = data.detail
-        this.routine = data.routine
-        this.fee = data.fee
-        this.notice = data.notice
-        this.hospital = data.hospital
-        this.item = data.item
-        this.adultPrice = data.adultPrice
-        this.womenPrice = data.womenPrice
-        this.followPrice = data.followPrice
-        this.childPrice = data.childPrice
-        this.status = data.status
-        this.viewNum = data.viewNum
-        this.thumbNum = data.thumbNum
-        this.commentNum = data.commentNum
-        this.experts = data.experts
-        this.operations = data.operations
+        this.id = data.id;
+        this.desc = data.desc;
+        this.nation = data.nation;
+        this.featureH5Id = data.featureH5Id;
+        this.detailH5Id = data.detailH5Id;
+        this.routineH5Id = data.routineH5Id;
+        this.feeH5Id = data.feeH5Id;
+        this.noticeH5Id = data.noticeH5Id;
+        this.hospitalH5Id = data.hospitalH5Id;
+        this.itemH5Id = data.itemH5Id;
+        this.feature = data.feature;
+        this.detail = data.detail;
+        this.routine = data.routine;
+        this.fee = data.fee;
+        this.notice = data.notice;
+        this.hospital = data.hospital;
+        this.item = data.item;
+        this.adultPrice = data.adultPrice;
+        this.womenPrice = data.womenPrice;
+        this.followPrice = data.followPrice;
+        this.childPrice = data.childPrice;
+        this.status = data.status;
+        this.coverId = data.coverId;
+        this.coverPic = data.coverPic;
+        this.viewNum = data.viewNum;
+        this.thumbNum = data.thumbNum;
+        this.commentNum = data.commentNum;
+        this.experts = data.experts;
+        this.operations = data.operations;
 
-        this.operator = data.operator
-        this.operateFlag = data.operateFlag
-        this.updatedAt = data.updatedAt
-        this.createdAt = data.createdAt
+        this.operator = data.operator;
+        this.operateFlag = data.operateFlag;
+        this.updatedAt = data.updatedAt;
+        this.createdAt = data.createdAt;
     }
 
     async all(request) {
@@ -58,7 +60,7 @@ class Product {
             });
             let result;
             if("{}" !== JSON.stringify(conditions)){
-                result = await db.select('a.id','a.desc','a.nation','a.status','a.adultPrice','a.viewNum','b.content as detail')
+                result = await db.select('a.id','a.desc','a.nation','a.status','a.coverId','a.adultPrice','a.viewNum','b.content as detail')
                 .from('t_hm101_products as a')
                 .leftJoin('t_hm101_htmls as b','a.detailH5Id', 'b.id')
                 .where(conditions)
@@ -67,7 +69,7 @@ class Product {
                 .offset(--request.page * +request.number)
                 .limit(+request.number);
             }else{
-                result = await db.select('a.id','a.desc','a.nation','a.status','a.adultPrice','a.viewNum','b.content as detail')
+                result = await db.select('a.id','a.desc','a.nation','a.status','a.coverId','a.adultPrice','a.viewNum','b.content as detail')
                 .from('t_hm101_products as a')
                 .leftJoin('t_hm101_htmls as b','a.detailH5Id', 'b.id')
                 .whereNot(notConditions)
@@ -84,6 +86,13 @@ class Product {
                 // 获取评论数
                 let commentNum = await getComments(result[i].id)
                 result[i].commentNum = commentNum[0].count;
+
+                let pics = undefined;
+                // 获取产品封面图片
+                if(result[i].coverId){
+                    pics = result[i].coverId.split(",");
+                    result[i].coverPic = await getPictures(pics);
+                }
             }
             return result;
         } catch (error) {
@@ -99,7 +108,21 @@ class Product {
     async find(id) {
         try {
             let result = await findById(id)
-            if (!result) return {}
+            if (result) {
+                // 增加并获取查看数
+                let viewNum = ++result.viewNum
+                await getViews(id,viewNum)//更新产品查看数
+                result.viewNum = viewNum
+                // 获取点赞数
+                let thumbNum = await getThumbs(id)
+                result.thumbNum = thumbNum[0].count;
+                // 获取评论数
+                let commentNum = await getComments(id)
+                result.commentNum = commentNum[0].count;
+                // await getComments(id);
+            }else{
+                return {}
+            }
             this.constructor(result)
         } catch (error) {
             console.log(error)
@@ -289,6 +312,22 @@ class Product {
     }
 }
 
+/**
+ * 根据文件id数组获取文件对象
+ * @param {*} ids 
+ */
+async function getPictures(ids) {
+    try {
+        return await FilesQuery(ids);
+    } catch (error) {
+        console.log(error)
+        throw new Error('ERROR')
+    }
+}
+/**
+ * 根据Id获取产品信息
+ * @param {*} id 
+ */
 async function findById(id) {
     try {
         let product = await db.select('*').from('t_hm101_products')
