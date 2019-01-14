@@ -96,4 +96,15 @@ async function findById(id) {
     }
 }
 
-export { Tag, findById }
+async function findByPid(pid) {
+    try {
+        let tagData = await db('t_hm101_tags')
+            .select('name')
+            .where({ targetId: pid });
+        return tagData;
+    } catch (error) {
+        console.log(error)
+        throw new Error('ERROR')
+    }
+}
+export { Tag, findById, findByPid }

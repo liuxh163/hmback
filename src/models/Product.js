@@ -1,4 +1,5 @@
-import db from '../db/db'
+import db from '../db/db';
+import { findByPid } from '../models/Tag';
 
 class Product {
     constructor(data) {
@@ -34,6 +35,7 @@ class Product {
         this.commentNum = data.commentNum;
         this.experts = data.experts;
         this.operations = data.operations;
+        this.tags = data.tags;
 
         this.operator = data.operator;
         this.operateFlag = data.operateFlag;
@@ -93,6 +95,8 @@ class Product {
                     pics = result[i].coverId.split(",");
                     result[i].coverPic = await getPictures(pics);
                 }
+                // 获取产品标签
+                result[i].tags = await getTags(result[i].id);
             }
             return result;
         } catch (error) {
@@ -120,6 +124,8 @@ class Product {
                 let commentNum = await getComments(id)
                 result.commentNum = commentNum[0].count;
                 // await getComments(id);
+                // 获取产品标签
+                result.tags = await getTags(result.id);
             }else{
                 return {}
             }
@@ -153,8 +159,9 @@ class Product {
     async store(request) {
         var product = this
         // 插入表时去掉数据中非字段项
-        delete product.commentNum
-        delete product.thumbNum
+        delete product.commentNum;
+        delete product.thumbNum;
+        delete product.tags;
         // var content = servant.intro
         // delete servant.intro
         // 遍历打印对象内容
@@ -183,13 +190,13 @@ class Product {
         // Object.keys(contents).forEach(function(param,index){
         //     console.log("contents attr "+param+" is "+contents[param])
         // })
-        delete product.feature
-        delete product.detail
-        delete product.routine
-        delete product.fee
-        delete product.notice
-        delete product.hospital
-        delete product.item
+        delete product.feature;
+        delete product.detail;
+        delete product.routine;
+        delete product.fee;
+        delete product.notice;
+        delete product.hospital;
+        delete product.item;
 
         var experts = product.experts||[];
         var operations = product.operations||[];
@@ -203,13 +210,13 @@ class Product {
             .returning('id')
             .transacting(trx)
             .then(function(ids) {
-                product.featureH5Id = ids[0]
-                product.detailH5Id = ids[0]+1
-                product.routineH5Id = ids[0]+2
-                product.feeH5Id = ids[0]+3
-                product.noticeH5Id = ids[0]+4
-                product.hospitalH5Id = ids[0]+5
-                product.itemH5Id = ids[0]+6
+                product.featureH5Id = ids[0];
+                product.detailH5Id = ids[0]+1;
+                product.routineH5Id = ids[0]+2;
+                product.feeH5Id = ids[0]+3;
+                product.noticeH5Id = ids[0]+4;
+                product.hospitalH5Id = ids[0]+5;
+                product.itemH5Id = ids[0]+6;
 
                 return db('t_hm101_products').insert(product)
                     .returning('id')
@@ -219,16 +226,18 @@ class Product {
                         proudctId = ids[0]
                         for(var i in experts){
                             experts[i].productId = proudctId
-                        }
+                        };
 
                         for(var i in operations){
                             operations[i].target = '01';
                             operations[i].targetID = proudctId;
-                        }
-                        return db.batchInsert('t_hm101_product_experts', experts).transacting(trx);
+                        };
+                        return db.batchInsert('t_hm101_product_experts', 
+                            experts).transacting(trx);
                     })
                     .then(function(ids){
-                        return db.batchInsert('t_hm101_product_operations', operations).transacting(trx)
+                        return db.batchInsert('t_hm101_product_operations',
+                             operations).transacting(trx);
                     })
 
             })
@@ -278,19 +287,20 @@ class Product {
                 .where({targetId: product.id})
         }
         // 插入表时去掉数据中非字段项
-        delete product.commentNum
-        delete product.thumbNum
-        delete product.feature
-        delete product.detail
-        delete product.routine
-        delete product.fee
-        delete product.notice
-        delete product.hospital
-        delete product.item
-        delete product.experts
-        delete product.operations
+        delete product.commentNum;
+        delete product.thumbNum;
+        delete product.feature;
+        delete product.detail;
+        delete product.routine;
+        delete product.fee;
+        delete product.notice;
+        delete product.hospital;
+        delete product.item;
+        delete product.experts;
+        delete product.operations;
+        delete product.tags;
         // 更新产品表
-        product.savePro()
+        product.savePro();
     }
     /**
      * 只存储产品本身信息
@@ -319,6 +329,18 @@ class Product {
 async function getPictures(ids) {
     try {
         return await FilesQuery(ids);
+    } catch (error) {
+        console.log(error)
+        throw new Error('ERROR')
+    }
+}
+/**
+ * 根据文件id数组获取文件对象
+ * @param {*} ids 
+ */
+async function getTags(id) {
+    try {
+        return await findByPid(id);
     } catch (error) {
         console.log(error)
         throw new Error('ERROR')

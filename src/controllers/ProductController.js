@@ -1,7 +1,6 @@
 import dateFormat from 'date-fns/format'
 
 import { Product } from '../models/Product'
-import { User } from '../models/User'
 
 class ProductController {
     /**

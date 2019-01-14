@@ -14,7 +14,7 @@ exports.up = function(knex, Promise) {
         //帖子标题
         table.string('title', 32).comment('帖子标题');
         //帖子内容
-        table.integer('content', 11).comment('帖子文字内容');
+        table.string('content', 512).comment('帖子文字内容');
         //帖子内容
         table.string('picIds', 128).comment('帖子图片集id，逗号分隔图片文件Id');
         //发帖人
