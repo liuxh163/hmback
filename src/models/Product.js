@@ -269,23 +269,33 @@ class Product {
             {content: product.item, id: product.itemH5Id}
         ];
         var experts = product.experts;
-        var operations = product.operations
+        var operations = product.operations;
         //更新产品内容表
         for(var i in contents){
             await db('t_hm101_htmls').update(contents[i])
                 .where({id: contents[i].id})
-        }
+        };
+        if(experts){
+            await db('t_hm101_product_experts')
+                        .where({productId: product.id}).del();
+        };
         // 更新产品专家表
         for(var i in experts){
-            await db('t_hm101_product_experts').update(experts[i])
-                .where({productId: product.id})
-        }
-
+            experts[i].productId = product.id;
+            await db('t_hm101_product_experts').insert(experts[i])
+                    .where({productId: product.id});
+        };
+        if(operations){
+            await db('t_hm101_product_operations')
+                        .where({targetId: product.id}).del();
+        };
         // 更新产品运营表
         for(var i in operations){
-            await db('t_hm101_product_operations').update(operations[i])
-                .where({targetId: product.id})
-        }
+            operations[i].target = '01';
+            operations[i].targetId = product.id;
+            await db('t_hm101_product_operations').insert(operations[i])
+                .where({targetId: product.id});
+        };
         // 插入表时去掉数据中非字段项
         delete product.commentNum;
         delete product.thumbNum;

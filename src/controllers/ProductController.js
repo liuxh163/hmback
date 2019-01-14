@@ -57,57 +57,57 @@ class ProductController {
      * @return {[type]}     [description]
      */
     async create(ctx) {
-        const request = ctx.request.body
+        const request = ctx.request.body;
 
         //获取当前用户
-        const curUser = ctx.state.user
+        const curUser = ctx.state.user;
         if ('02' !== curUser.type) ctx.throw(400, 'INVALID_PREVILEGE');
-        request.operator = curUser.id
+        request.operator = curUser.id;
 
         //Create a new product object using the request params
-        const product = new Product(request)
-        product.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        const product = new Product(request);
+        product.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss');
 
         try {
-            let result = await product.store(request)
-            ctx.body = { id: result }
+            let result = await product.store(request);
+            ctx.body = { id: result };
         } catch (error) {
-            console.log(error)
-            ctx.throw(400, 'INVALID_INSERT_PRODUCT_DATA')
+            console.log(error);
+            ctx.throw(400, 'INVALID_INSERT_PRODUCT_DATA');
         }
     }
 
     async update(ctx) {
-        const params = ctx.params
-        const request = ctx.request.body
+        const params = ctx.params;
+        const request = ctx.request.body;
 
-        if (!params.id) ctx.throw(400, 'INVALID_DATA')
+        if (!params.id) ctx.throw(400, 'INVALID_DATA');
 
-        const product = new Product()
-        await product.find(params.id)
-        if (!product) ctx.throw(400, 'INVALID_DATA')
+        const product = new Product();
+        await product.find(params.id);
+        if (!product) ctx.throw(400, 'INVALID_DATA');
 
         //获取当前用户
-        const curUser = ctx.state.user
+        const curUser = ctx.state.user;
         if ('02' !== curUser.type) ctx.throw(400, 'INVALID_PREVILEGE');
         // if (product.opeartor !== curUser.id) ctx.throw(400, 'INVALID_USER')
 
         //Add the updated date value
-        product.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
-        product.operateFlag = 'U'
-        product.operator = curUser.id
+        product.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss');
+        product.operateFlag = 'U';
+        product.operator = curUser.id;
 
         //Replace the product data with the new updated product data
         Object.keys(ctx.request.body).forEach(function(parameter, index) {
-            product[parameter] = request[parameter]
+            product[parameter] = request[parameter];
         })
-
+        delete product.isLike;
         try {
-            await product.save()
-            ctx.body = { id: product.id }
+            await product.save();
+            ctx.body = { id: product.id };
         } catch (error) {
-            console.log(error)
-            ctx.throw(400, 'INVALID_DATA')
+            console.log(error);
+            ctx.throw(400, 'INVALID_DATA');
         }
     }
 
