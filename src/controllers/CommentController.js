@@ -37,21 +37,21 @@ class CommentController {
      * @return {[type]}     [description]
      */
     async create(ctx) {
-        const query = ctx.query
-        const request = ctx.request.body
+        // const query = ctx.query;
+        const request = ctx.request.body;
 
         //Attach logged in user
-        const curUser = new User(ctx.state.user)
-        request.commenterId = curUser.id
-        request.operator = curUser.id
+        const curUser = new User(ctx.state.user);
+        request.commenterId = curUser.id;
+        request.operator = curUser.id;
 
-        const comment = new Comment(request)
+        const comment = new Comment(request);
 
         comment.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss');
         //Replace the servant data with the new updated servant data
-        Object.keys(query).forEach(function(parameter, index) {
-            comment[parameter] = query[parameter]
-        })
+        // Object.keys(query).forEach(function(parameter, index) {
+        //     comment[parameter] = query[parameter]
+        // })
 
         try {
             let result = await comment.store()
