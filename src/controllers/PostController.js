@@ -20,9 +20,8 @@ class PostController {
 
         //Get paginated list of posts
         try {
-            let result = await post.all(query)
-            result.userName = curUser.userName;
-            result.iconPath = curUser.iconPath;
+            let result = await post.all(query);
+            // TODo获取发帖人昵称和头像
             ctx.body = {posts:result}
         } catch (error) {
             console.log(error)
@@ -60,7 +59,7 @@ class PostController {
         request.posterId = curUser.id
 
         var post = new Post(request)
-        post.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
+        post.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss');
         post.operator = curUser.id
 
         try {

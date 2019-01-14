@@ -84,8 +84,8 @@ class Servant {
             
             // 获取点赞数及评论数
             for(var i in result){
-                result[i].car = getH5Content(result[i].carH5Id);
-                result[i].feedesc = getH5Content(result[i].feedescH5Id);
+                result[i].car = await getH5Content(result[i].carH5Id);
+                result[i].feedesc = await getH5Content(result[i].feedescH5Id);
                 console.log("servant-"+i+":"+result[i])
                 // 获取点赞数
                 let thumbNum = await getThumbs(result[i].id)
