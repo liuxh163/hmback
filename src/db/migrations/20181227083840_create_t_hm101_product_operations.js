@@ -17,7 +17,8 @@ exports.up = function(knex, Promise) {
         table.string('name', 20).comment('运营活动名称');
         //活动内容
         table.string('content', 200).comment('运营活动内容');
-
+        //类型
+        table.string('type', 2).comment('运营活动类型');
         // 记录操作人id
         table.string('operator').comment('表记录操作人Id');
         // 记录操作标志
