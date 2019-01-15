@@ -1,5 +1,6 @@
 import db from '../db/db';
 import { findByPid } from '../models/Tag';
+import {FilesQuery} from '../models/File'
 const func_getThumbs = require('./Thumb').getThumbs
 const TARGET = '01'
 async function getThumbs(id){
