@@ -32,7 +32,7 @@ class ThumbController {
             // Object.keys(thumb).forEach(function(param,index){
             //     console.log("controller1 thumb attr "+param+" is "+thumb[param])
             // })
-
+                thumb.status = '01';
             try {
                 let result = await thumb.store()
                 ctx.body = { id: result[0] }

@@ -146,10 +146,7 @@ class PostController {
         }
     }
     async mine(ctx){
-        console.log('ccvvv')
         let x = await findByUserAndTopic(ctx.state.user.id,ctx.query.topicId);
-        console.log('ccvvv')
-        console.log(x);
         ctx.body = x;
     }
 }

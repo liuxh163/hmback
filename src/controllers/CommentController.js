@@ -3,7 +3,7 @@ import dateFormat from 'date-fns/format'
 import { User } from '../models/User'
 
 import { Comment,findById } from '../models/Comment'
-
+import {isLike} from '../models/Thumb'
 class CommentController {
     /**
      * 查询指定对象的评论，支持分页
@@ -29,6 +29,7 @@ class CommentController {
             for(let i = 0 ; i < result.length ; ++i){
                 let comm = result[i];
                 await comm.formatForClient();
+                comm.isLike = await isLike(ctx.state.user.id,'05',comm.id)
                 let replyQuery = {
                     target:"05",
                     targetId:comm.id
