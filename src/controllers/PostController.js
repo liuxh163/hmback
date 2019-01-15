@@ -146,8 +146,18 @@ class PostController {
             ctx.throw(400, 'INVALID_DATA')
         }
     }
+
     async mine(ctx){
         let x = await findByUserAndTopic(ctx.state.user.id,ctx.query.topicId);
+        let user = await  findById(ctx.state.user.id);
+        for(let i = 0 ; i < x.length ; ++i){
+            let post = x[i];
+            post.iconPath = user.iconPath;
+            post.userName = user.userName;
+            let date = new Date(post.createdAt);
+            post.createdAt = dateFormat(date, 'YYYY-MM-DD HH:mm:ss');
+ 
+        }
         ctx.body = x;
     }
     async getLikers(ctx){
