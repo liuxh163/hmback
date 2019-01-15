@@ -335,7 +335,7 @@ async function getThumbNumAndCommentNumForUser(userId){
         let db_response = await getThumbs(db_posts[i].id);
         thumbNum += db_response;
         db_response = await getComments(db_posts[i].id);
-        commentNum += db_response;
+        commentNum += db_response[0].count;
     }
     return {
         thumbNum:thumbNum,
