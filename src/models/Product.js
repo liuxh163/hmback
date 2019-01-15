@@ -177,7 +177,7 @@ class Product {
         }
     }
 
-    async store(request) {
+    async store() {
         var product = this
         // 插入表时去掉数据中非字段项
         delete product.commentNum;
@@ -223,6 +223,7 @@ class Product {
         var operations = product.operations||[];
         delete product.experts;
         delete product.operations;
+        delete product.coverPic;
 
         var proudctId
 
