@@ -107,6 +107,15 @@ class Post {
                 // 获取评论数
                 let commentNum = await getComments(id)
                 result.commentNum = commentNum[0].count;
+
+                let pics = undefined;
+                if(result.picIds){
+                    pics = result.picIds.split(",");
+                    // 获取帖子图片集合
+                    result.pictures = await getPictures(pics);
+                }else{
+                    result.pictures = [];
+                };
                 // await getComments(id);
             }else{
                 return {}
