@@ -324,6 +324,9 @@ class Product {
         delete product.experts;
         delete product.operations;
         delete product.tags;
+        delete product.coverPic;
+        delete product.createdAt;
+        // delete product.updatedAt;
         // 更新产品表
         product.savePro();
     }
@@ -332,12 +335,13 @@ class Product {
      * @return {[type]} [description]
      */
     async savePro() {
+        let pro = this;
         try {
-            
-            Object.keys(this).forEach(function(param,index){
-                console.log("this attr:"+param);
-                console.log("this attr "+param+" is "+this[param])
-            })
+            console.log('123');
+            // Object.keys(this).forEach(function(param,index){
+            //     console.log("this attr:"+param);
+            //     console.log("this attr "+param+" is "+pro[param])
+            // })
             return await db('t_hm101_products')
                 .update(this)
                 .where({ id: this.id })

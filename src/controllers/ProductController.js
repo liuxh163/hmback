@@ -80,7 +80,7 @@ class ProductController {
     async update(ctx) {
         const params = ctx.params;
         const request = ctx.request.body;
-        
+
         if (!params.id) ctx.throw(400, 'INVALID_DATA');
 
         const product = new Product();
@@ -92,15 +92,16 @@ class ProductController {
         if ('02' !== curUser.type) ctx.throw(400, 'INVALID_PREVILEGE');
         // if (product.opeartor !== curUser.id) ctx.throw(400, 'INVALID_USER')
 
-        //Add the updated date value
-        product.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss');
-        product.operateFlag = 'U';
-        product.operator = curUser.id;
-
         //Replace the product data with the new updated product data
         Object.keys(ctx.request.body).forEach(function(parameter, index) {
             product[parameter] = request[parameter];
         })
+
+        //Add the updated date value
+        //product.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss');
+        product.updatedAt = new Date();
+        product.operateFlag = 'U';
+        product.operator = curUser.id;
         delete product.isLike;
         try {
             await product.save();
