@@ -32,4 +32,8 @@ router.delete('/api/v1/posts/:id', tokenMw, async (ctx, next) => {
 router.get('/api/v1/posts/get/mine',tokenMw,async (ctx,next)=>{
     await postController.mine(ctx);
 })
+//查询帖子
+router.get('/api/vi/posts/get/getLikerList',tokenMw,async (ctx,next)=>{
+    await postController.getLikers(ctx);
+})
 export default router

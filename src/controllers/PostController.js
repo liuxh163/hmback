@@ -2,7 +2,7 @@ import dateFormat from 'date-fns/format'
 
 import { User, findById } from '../models/User'
 import { Post,findByUserAndTopic } from '../models/Post'
-
+import {getLikers} from '../models/Thumb'
 class PostController {
     async index(ctx) {
         const query = ctx.query
@@ -148,6 +148,18 @@ class PostController {
     async mine(ctx){
         let x = await findByUserAndTopic(ctx.state.user.id,ctx.query.topicId);
         ctx.body = x;
+    }
+    async getLikers(ctx){
+        let id = ctx.query.id;
+        let ids = await getLikers(id,'02');
+        let usersName = [];
+        for(let i = 0 ; i < 10 && i < ids.length ; ++i){
+            let user= await findById(ids[i]);
+            if(user && user.userName){
+                usersName.push(user.userName);
+            }
+        }
+        ctx.body = usersName;
     }
 }
 

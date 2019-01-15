@@ -328,7 +328,7 @@ async function findByUserAndTopic(userId,topicId){
 }
 
 async function getThumbNumAndCommentNumForUser(userId){
-    let db_posts =await db('t_hm101_posts').select('id').where({posterId:userId});
+    let db_posts = await db('t_hm101_posts').select('id').where({posterId:userId});
     let thumbNum = 0;
     let commentNum = 0;
     for(let i = 0 ; i < db_posts.length ; ++i){

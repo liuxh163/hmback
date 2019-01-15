@@ -90,4 +90,15 @@ async function getThumbs(targetId,target){
     // let rows = await db('t_hm101_thumbs').select('id').where({likerId:userId,target:target,targetId:targetId,status:"01"});
    return rows[0].count;
 }
-export { Thumb ,isLike,getThumbs}
+async function getLikers(targetId,target){
+    let rows = await db('t_hm101_thumbs').select('likerId').where({target:target,targetId:targetId,status:"01"});
+
+    let ids = [];
+    for(let i = 0 ; i < rows.length ; ++i){
+
+        ids.push(rows[i].likerId);
+    }
+
+    return ids;
+}
+export { Thumb ,isLike,getThumbs,getLikers}
