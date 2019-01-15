@@ -23,8 +23,8 @@ exports.up = function(knex, Promise) {
         table.string('nation', 20).comment('服务人员国籍，码表-GJBM');
         //服务人员介绍页面内容
         table.integer('introH5Id', 11).comment('服务人员介绍h5内容Id');
-        //最新最热或没有  没有01，最新02，最热02
-        table.string('category', 2).comment('最新最热或没有  没有03，最新01，最热02');
+        //最新最热
+        table.string('category', 2).comment('最新最热或没有  没有03，推荐01，最热02');
         //是否首页 01 是 02 不是
         table.string('isMainPage', 2).comment('是否首页 01 是 02 不是');
         //评分

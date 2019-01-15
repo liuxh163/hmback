@@ -42,6 +42,9 @@ class Product {
         this.operations = data.operations;
         this.tags = data.tags;
 
+        this.category = data.category;
+        this.isMainPage = data.isMainPage;
+
         this.operator = data.operator;
         this.operateFlag = data.operateFlag;
         this.updatedAt = data.updatedAt;

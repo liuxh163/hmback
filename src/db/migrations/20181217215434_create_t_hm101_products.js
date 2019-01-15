@@ -43,6 +43,10 @@ exports.up = function(knex, Promise) {
         //启停用状态 01-启用  02-停用
         table.string('status',2).notNullable().defaultTo('02').comment('产品状态，非空，码表-ZTBM，默认02，停用');
 
+        //最新最热
+        table.string('category', 2).comment('最新最热或没有  没有03，推荐01，最热02');
+        //是否首页 01 是 02 不是
+        table.string('isMainPage', 2).comment('是否首页 01 是 02 不是');
         // 记录操作人id
         table.string('operator').comment('表记录操作人Id');
         // 记录操作标志
