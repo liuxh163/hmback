@@ -342,4 +342,4 @@ async function getComments(id) {
         throw new Error('ERROR')
     }
 }
-export { Servant, findById }
+export { Servant, findById ,getH5Content}

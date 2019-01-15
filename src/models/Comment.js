@@ -1,6 +1,7 @@
 import db from '../db/db'
 import dateFormat from 'date-fns/format'
 const getUser = require('../models/User').findById
+const getH5Content = require('./Servant').getH5Content
 class Comment {
     constructor(data) {
         if (!data) {
@@ -31,7 +32,7 @@ class Comment {
                 targetId: request.targetId
             };
             let notConditions = {
-                "a.operateFlag":"D"
+                "operateFlag":"D"
             };
             // 删除不存在的条件
             Object.keys(conditions).forEach(function(param, index){
@@ -41,18 +42,20 @@ class Comment {
             });
             let result;
             if("{}" !== JSON.stringify(conditions)){
-                result = await db.select('a.*','b.content as comment')
-                .from('t_hm101_comments as a')
-                .leftJoin('t_hm101_htmls as b','a.contentH5Id', 'b.id')
+                result = await db('t_hm101_comments').select('*')
+                // result = await db.select('a.*','b.content as comment')
+                // .from('t_hm101_comments as a')
+                // .leftJoin('t_hm101_htmls as b','a.contentH5Id', 'b.id')
                 .where(conditions)
                 .whereNot(notConditions)
                 .orderBy('updatedAt', 'desc')
                 .offset(--request.page * +request.number)
                 .limit(+request.number)
             }else{
-                result = await db.select('a.*','b.content as comment')
-                .from('t_hm101_comments as a')
-                .leftJoin('t_hm101_htmls as b','a.contentH5Id', 'b.id')
+                result = await db('t_hm101_comments').select('*')
+                // result = await db.select('a.*','b.content as comment')
+                // .from('t_hm101_comments as a')
+                // .leftJoin('t_hm101_htmls as b','a.contentH5Id', 'b.id')
                 .whereNot(notConditions)
                 .orderBy('updatedAt', 'desc')
                 .offset(--request.page * +request.number)
@@ -63,6 +66,7 @@ class Comment {
             for(var i in result){
                 console.log("comment-"+i+":"+result[i])
                 // 获取点赞数
+                 result[i].content = await getH5Content(result[i].contentH5Id);
                 let thumbNum = await getThumbs(result[i].id)
                 result[i].thumbNum = thumbNum[0].count;
                 // 获取评论数
