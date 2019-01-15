@@ -80,7 +80,7 @@ class Thumb {
 }
 
 async function isLike(userId,target,targetId){
-   let rows = await db('t_hm101_thumbs').select('id').where({likerId:userId,target:target,targetId:targetId});
+   let rows = await db('t_hm101_thumbs').select('id').where({likerId:userId,target:target,targetId:targetId,status:"01"});
    return rows.length>0;
 }
 export { Thumb ,isLike}
