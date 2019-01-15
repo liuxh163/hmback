@@ -70,7 +70,7 @@ class Product {
             });
             let result;
             if("{}" !== JSON.stringify(conditions)){
-                result = await db.select('a.id','a.desc','a.nation','a.status','a.coverId','a.adultPrice','a.viewNum','b.content as detail')
+                result = await db.select('a.id','a.desc','a.nation','a.status','a.coverId','a.adultPrice','a.viewNum','a.isMainPage','a.category','b.content as detail')
                 .from('t_hm101_products as a')
                 .leftJoin('t_hm101_htmls as b','a.detailH5Id', 'b.id')
                 .where(conditions)
