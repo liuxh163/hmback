@@ -260,9 +260,10 @@ async function getViews(id,num) {
  */
 async function getThumbs(id) {
     try {
-        return await db('t_hm101_thumbs')
+        let x = await db('t_hm101_thumbs')
             .count('targetId as count')
             .where({ targetId: id })
+            return x;
     } catch (error) {
         console.log(error)
         throw new Error('ERROR')
@@ -318,8 +319,10 @@ async function getThumbNumAndCommentNumForUser(userId){
     let thumbNum = 0;
     let commentNum = 0;
     for(let i = 0 ; i < db_posts.length ; ++i){
-        thumbNum +=await getThumbs(db_posts[i].id)[0].count;
-        commentNum +=await getComments(db_posts[i].id[0].count);
+        let db_response = await getThumbs(db_posts[i].id);
+        thumbNum += db_response[0].count;
+        db_response = await getComments(db_posts[i].id);
+        commentNum += db_response[0].count;
     }
     return {
         thumbNum:thumbNum,
