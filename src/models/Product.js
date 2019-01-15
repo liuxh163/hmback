@@ -70,7 +70,9 @@ class Product {
             });
             let result;
             if("{}" !== JSON.stringify(conditions)){
-                result = await db.select('a.id','a.desc','a.nation','a.status','a.coverId','a.adultPrice','a.viewNum','a.isMainPage','a.category','b.content as detail')
+                result = await db.select('a.id','a.desc','a.nation',
+                    'a.status','a.coverId','a.adultPrice','a.viewNum',
+                    'a.isMainPage','a.category','b.content as detail')
                 .from('t_hm101_products as a')
                 .leftJoin('t_hm101_htmls as b','a.detailH5Id', 'b.id')
                 .where(conditions)
@@ -339,19 +341,18 @@ class Product {
      * @return {[type]} [description]
      */
     async savePro() {
-        let pro = this;
         try {
             console.log('123');
-            // Object.keys(this).forEach(function(param,index){
-            //     console.log("this attr:"+param);
-            //     console.log("this attr "+param+" is "+pro[param])
-            // })
+            Object.keys(this).forEach(function(param,index){
+                // console.log("product attr:"+param);
+                console.log("product attr "+param+" is "+pro[param]);
+            })
             return await db('t_hm101_products')
                 .update(this)
-                .where({ id: this.id })
+                .where({ id: this.id });
         } catch (error) {
-            console.log(error)
-            throw new Error('ERROR')
+            console.log(error);
+            throw new Error('ERROR');
         }
     }
 }
@@ -364,8 +365,8 @@ async function getPictures(ids) {
     try {
         return await FilesQuery(ids);
     } catch (error) {
-        console.log(error)
-        throw new Error('ERROR')
+        console.log(error);
+        throw new Error('ERROR');
     }
 }
 /**
@@ -376,8 +377,8 @@ async function getTags(id) {
     try {
         return await findByPid(id);
     } catch (error) {
-        console.log(error)
-        throw new Error('ERROR')
+        console.log(error);
+        throw new Error('ERROR');
     }
 }
 /**
@@ -389,8 +390,8 @@ async function findById(id) {
         let product = await db.select('*').from('t_hm101_products')
                     .where({ 'id': id});
         Object.keys(product[0]).forEach(function(param,index){
-            console.log("product1 attr "+param+" is "+product[0][param])
-        })
+            console.log("product1 attr "+param+" is "+product[0][param]);
+        });
         product[0].feature = (await db.select('content').from('t_hm101_htmls')
                             .where({ 'id': product[0].featureH5Id}))[0].content;
         product[0].detail = (await db.select('content').from('t_hm101_htmls')
