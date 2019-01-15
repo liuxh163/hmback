@@ -343,10 +343,10 @@ class Product {
     async savePro() {
         try {
             console.log('123');
-            Object.keys(this).forEach(function(param,index){
-                // console.log("product attr:"+param);
-                console.log("product attr "+param+" is "+pro[param]);
-            })
+            // Object.keys(this).forEach(function(param){
+            //     // console.log("product attr:"+param);
+            //     console.log("product attr-"+param+" is-"+this[param]);
+            // })
             return await db('t_hm101_products')
                 .update(this)
                 .where({ id: this.id });
