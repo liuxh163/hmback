@@ -131,6 +131,14 @@ class Product {
                 result.commentNum = commentNum[0].count;
                 // await getComments(id);
                 // 获取产品标签
+                let pics = undefined;
+                // 获取产品封面图片
+                if(result.coverId){
+                    pics = result.coverId.split(",");
+                    result.coverPic = await getPictures(pics);
+                }else{
+                    result.coverPic = [];
+                }
                 result.tags = await getTags(result.id);
             }else{
                 return {}
@@ -324,10 +332,10 @@ class Product {
      */
     async savePro() {
         try {
-            // 遍历打印对象内容
-            // Object.keys(this).forEach(function(param,index){
-            //     console.log("this attr "+param+" is "+this[param])
-            // })
+            遍历打印对象内容
+            Object.keys(this).forEach(function(param,index){
+                console.log("this attr "+param+" is "+this[param])
+            })
             return await db('t_hm101_products')
                 .update(this)
                 .where({ id: this.id })

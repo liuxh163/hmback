@@ -80,7 +80,7 @@ class ProductController {
     async update(ctx) {
         const params = ctx.params;
         const request = ctx.request.body;
-
+        
         if (!params.id) ctx.throw(400, 'INVALID_DATA');
 
         const product = new Product();
