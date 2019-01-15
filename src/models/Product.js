@@ -144,6 +144,7 @@ class Product {
                 return {}
             }
             this.constructor(result)
+            console.log(" xxxx :"+this.id);
         } catch (error) {
             console.log(error)
             throw new Error('ERROR')
