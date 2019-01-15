@@ -66,7 +66,7 @@ class Comment {
             for(var i in result){
                 console.log("comment-"+i+":"+result[i])
                 // 获取点赞数
-                 result[i].content = await getH5Content(result[i].contentH5Id);
+                result[i].content = await getH5Content(result[i].contentH5Id);
                 let thumbNum = await getThumbs(result[i].id)
                 result[i].thumbNum = thumbNum[0].count;
                 // 获取评论数
@@ -122,6 +122,7 @@ class Comment {
         delete comment.thumbNum
         var content = comment.content
         delete comment.content
+        comment.createdAt = new Date();
         // 遍历打印对象内容
         Object.keys(comment).forEach(function(param,index){
             console.log("comment attr "+param+" is "+comment[param])
@@ -210,11 +211,17 @@ class Comment {
  */
 async function findById(id) {
     try {
-        let [commentData] = await db.select('a.*','b.content as content')
-                    .from('t_hm101_comments as a')
-                    .leftJoin('t_hm101_htmls as b','a.contentH5Id', 'b.id')
-                    .where({ 'a.id': id});
-        return commentData
+        let [commentData] = await db('t_hm101_comments').select('*')
+                    .where({ id: id});
+        let comment = new Comment(commentData);
+        comment.content = await getH5Content(comment.contentH5Id);
+        // 获取点赞数
+        let thumbNum = await getThumbs(comment.id)
+        comment.thumbNum = thumbNum[0].count;
+        // 获取评论数
+        let commentNum = await getComments(comment.id)
+        comment.commentNum = commentNum[0].count;
+        return comment;
     } catch (error) {
         console.log(error)
         throw new Error('ERROR')
@@ -251,4 +258,4 @@ async function getComments(id) {
         throw new Error('ERROR')
     }
 }
-export { Comment }
+export { Comment ,findById}

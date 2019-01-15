@@ -2,7 +2,7 @@ import dateFormat from 'date-fns/format'
 
 import { User } from '../models/User'
 
-import { Comment } from '../models/Comment'
+import { Comment,findById } from '../models/Comment'
 
 class CommentController {
     /**
@@ -71,7 +71,10 @@ class CommentController {
 
         try {
             let result = await comment.store()
-            ctx.body = { id: result[0] }
+            let  id = result[0];
+            let sendedComment = await findById(id);
+            await sendedComment.formatForClient();
+            ctx.body =  sendedComment;
         } catch (error) {
             console.log(error)
             ctx.throw(400, 'INVALID_DATA')
