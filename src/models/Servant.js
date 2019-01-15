@@ -1,5 +1,9 @@
 import db from '../db/db'
-
+const func_getThumbs = require('./Thumb').getThumbs
+const TARGET = '03'
+async function getThumbs(id){
+    return await func_getThumbs(id,TARGET);
+}
 async function getH5Content(id){
     let x = await db('t_hm101_htmls').select('content').where({id:id});
     console.log(x)
@@ -94,7 +98,7 @@ class Servant {
                 console.log("servant-"+i+":"+result[i])
                 // 获取点赞数
                 let thumbNum = await getThumbs(result[i].id)
-                result[i].thumbNum = thumbNum[0].count;
+                result[i].thumbNum = thumbNum;
                 // 获取评论数
                 let commentNum = await getComments(result[i].id)
                 result[i].commentNum = commentNum[0].count;
@@ -121,7 +125,7 @@ class Servant {
                 result.viewNum = viewNum
                 // 获取点赞数
                 let thumbNum = await getThumbs(id)
-                result.thumbNum = thumbNum[0].count;
+                result.thumbNum = thumbNum;
                 // 获取评论数
                 let commentNum = await getComments(id)
                 result.commentNum = commentNum[0].count;
@@ -316,16 +320,16 @@ async function getViews(id,num) {
  * @param  {[type]} id [description]
  * @return {[type]}    [description]
  */
-async function getThumbs(id) {
-    try {
-        return await db('t_hm101_thumbs')
-            .count('targetId as count')
-            .where({ targetId: id })
-    } catch (error) {
-        console.log(error)
-        throw new Error('ERROR')
-    }
-}
+// async function getThumbs(id) {
+//     try {
+//         return await db('t_hm101_thumbs')
+//             .count('targetId as count')
+//             .where({ targetId: id })
+//     } catch (error) {
+//         console.log(error)
+//         throw new Error('ERROR')
+//     }
+// }
 
 /**
  * 获取评论数

@@ -1,6 +1,10 @@
 import db from '../db/db'
 import { FilesQuery } from '../models/File'
-
+const func_getThumbs = require('./Thumb').getThumbs
+const TARGET = '02'
+async function getThumbs(id){
+    return await func_getThumbs(id,TARGET);
+}
 class Post {
     constructor(data) {
         if (!data) {
@@ -65,7 +69,7 @@ class Post {
                 console.log("post-"+i+":"+result[i])
                 // 获取点赞数
                 let thumbNum = await getThumbs(result[i].id)
-                result[i].thumbNum = thumbNum[0].count;
+                result[i].thumbNum = thumbNum;
                 // 获取评论数
                 let commentNum = await getComments(result[i].id)
                 result[i].commentNum = commentNum[0].count;
@@ -103,7 +107,7 @@ class Post {
                 result.viewNum = viewNum
                 // 获取点赞数
                 let thumbNum = await getThumbs(id)
-                result.thumbNum = thumbNum[0].count;
+                result.thumbNum = thumbNum;
                 // 获取评论数
                 let commentNum = await getComments(id)
                 result.commentNum = commentNum[0].count;
@@ -267,17 +271,17 @@ async function getViews(id,num) {
  * @param  {[type]} id [description]
  * @return {[type]}    [description]
  */
-async function getThumbs(id) {
-    try {
-        let x = await db('t_hm101_thumbs')
-            .count('targetId as count')
-            .where({ targetId: id })
-            return x;
-    } catch (error) {
-        console.log(error)
-        throw new Error('ERROR')
-    }
-}
+// async function getThumbs(id) {
+//     try {
+//         let x = await db('t_hm101_thumbs')
+//             .count('targetId as count')
+//             .where({ targetId: id })
+//             return x;
+//     } catch (error) {
+//         console.log(error)
+//         throw new Error('ERROR')
+//     }
+// }
 
 /**
  * 获取帖子评论数
@@ -329,9 +333,9 @@ async function getThumbNumAndCommentNumForUser(userId){
     let commentNum = 0;
     for(let i = 0 ; i < db_posts.length ; ++i){
         let db_response = await getThumbs(db_posts[i].id);
-        thumbNum += db_response[0].count;
+        thumbNum += db_response;
         db_response = await getComments(db_posts[i].id);
-        commentNum += db_response[0].count;
+        commentNum += db_response;
     }
     return {
         thumbNum:thumbNum,

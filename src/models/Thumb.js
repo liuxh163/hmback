@@ -83,4 +83,11 @@ async function isLike(userId,target,targetId){
    let rows = await db('t_hm101_thumbs').select('id').where({likerId:userId,target:target,targetId:targetId,status:"01"});
    return rows.length>0;
 }
-export { Thumb ,isLike}
+async function getThumbs(targetId,target){
+    let rows = await db('t_hm101_thumbs')
+            .count('id as count')
+            .where({target:target,targetId:targetId,status:"01"})
+    // let rows = await db('t_hm101_thumbs').select('id').where({likerId:userId,target:target,targetId:targetId,status:"01"});
+   return rows[0].count;
+}
+export { Thumb ,isLike,getThumbs}

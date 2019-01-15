@@ -2,6 +2,11 @@ import db from '../db/db'
 import dateFormat from 'date-fns/format'
 const getUser = require('../models/User').findById
 const getH5Content = require('./Servant').getH5Content
+const func_getThumbs = require('./Thumb').getThumbs
+const TARGET = '05'
+async function getThumbs(id){
+    return await func_getThumbs(id,TARGET);
+}
 class Comment {
     constructor(data) {
         if (!data) {
@@ -68,7 +73,7 @@ class Comment {
                 // 获取点赞数
                 result[i].content = await getH5Content(result[i].contentH5Id);
                 let thumbNum = await getThumbs(result[i].id)
-                result[i].thumbNum = thumbNum[0].count;
+                result[i].thumbNum = thumbNum;
                 // 获取评论数
                 let commentNum = await getComments(result[i].id)
                 result[i].commentNum = commentNum[0].count;
@@ -94,7 +99,7 @@ class Comment {
             if (result) {
                 // 获取点赞数
                 let thumbNum = await getThumbs(id)
-                result.thumbNum = thumbNum[0].count;
+                result.thumbNum = thumbNum;
                 // 获取评论数
                 let commentNum = await getComments(id)
                 result.commentNum = commentNum[0].count;
@@ -217,7 +222,7 @@ async function findById(id) {
         comment.content = await getH5Content(comment.contentH5Id);
         // 获取点赞数
         let thumbNum = await getThumbs(comment.id)
-        comment.thumbNum = thumbNum[0].count;
+        comment.thumbNum = thumbNum;
         // 获取评论数
         let commentNum = await getComments(comment.id)
         comment.commentNum = commentNum[0].count;
@@ -227,21 +232,21 @@ async function findById(id) {
         throw new Error('ERROR')
     }
 }
-/**
- * 获取点赞数
- * @param  {[type]} id [description]
- * @return {[type]}    [description]
- */
-async function getThumbs(id) {
-    try {
-        return await db('t_hm101_thumbs')
-            .count('targetId as count')
-            .where({ targetId: id })
-    } catch (error) {
-        console.log(error)
-        throw new Error('ERROR')
-    }
-}
+// /**
+//  * 获取点赞数
+//  * @param  {[type]} id [description]
+//  * @return {[type]}    [description]
+//  */
+// async function getThumbs(id) {
+//     try {
+//         return await db('t_hm101_thumbs')
+//             .count('targetId as count')
+//             .where({ targetId: id ,status:'01'})
+//     } catch (error) {
+//         console.log(error)
+//         throw new Error('ERROR')
+//     }
+// }
 
 /**
  * 获取评论数
