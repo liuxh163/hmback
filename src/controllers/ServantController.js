@@ -104,7 +104,8 @@ class ServantController {
         servant.operateFlag = 'U'
         servant.operator = curUser.id
         //Replace the servant data with the new updated servant data
-        let validColumn = ["name","desc","picFileId","nation","literPrice","followPrice","recepPrice","type","service","intro","status","feedesc","car"];
+        let validColumn = ["name","desc","picFileId","nation","literPrice","followPrice",
+            "recepPrice","type","service","intro","status","feedesc","car","category","isMainPage","score"];
         validColumn.forEach((parameter)=>{
             if(request[parameter]){
                 servant[parameter] = request[parameter];
