@@ -334,6 +334,7 @@ class Product {
         try {
             
             Object.keys(this).forEach(function(param,index){
+                console.log("this attr:"+param);
                 console.log("this attr "+param+" is "+this[param])
             })
             return await db('t_hm101_products')
