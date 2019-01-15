@@ -98,6 +98,8 @@ class Product {
                 if(result[i].coverId){
                     pics = result[i].coverId.split(",");
                     result[i].coverPic = await getPictures(pics);
+                }else{
+                    result[i].coverPic = [];
                 }
                 // 获取产品标签
                 result[i].tags = await getTags(result[i].id);

@@ -18,7 +18,9 @@ class File {
 }
 async function FileStore(file) {
     try {
-        return await db('t_hm101_files').insert(file).returning('id');
+        let ids = await db('t_hm101_files').insert(file).returning('id');
+        return ids[0];
+        //return await db('t_hm101_files').insert(file).returning('id');
     } catch (error) {
         console.log(error)
         throw new Error('ERROR')
