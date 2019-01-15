@@ -332,7 +332,7 @@ class Product {
      */
     async savePro() {
         try {
-            遍历打印对象内容
+            
             Object.keys(this).forEach(function(param,index){
                 console.log("this attr "+param+" is "+this[param])
             })

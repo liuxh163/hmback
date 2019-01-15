@@ -2,7 +2,7 @@ import dateFormat from 'date-fns/format'
 
 import { User, findById } from '../models/User'
 import { Post,findByUserAndTopic } from '../models/Post'
-import {getLikers} from '../models/Thumb'
+import {getLikers,isLike} from '../models/Thumb'
 class PostController {
     async index(ctx) {
         const query = ctx.query
