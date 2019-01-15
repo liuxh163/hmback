@@ -26,6 +26,8 @@ class PostController {
                 var tmp = await findById(result[i].posterId);
                 result[i].userName = tmp.userName;
                 result[i].iconPath = tmp.iconPath;
+                let date = new Date(result[i].createdAt);
+                result[i].createdAt = dateFormat(date, 'YYYY-MM-DD HH:mm:ss');
                 result[i].isLike = await isLike(ctx.state.user.id,'02',result[i].id);
             }
             ctx.body = {posts:result}
