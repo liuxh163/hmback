@@ -5,10 +5,10 @@ import { Post,findByUserAndTopic } from '../models/Post'
 import {getLikers,isLike} from '../models/Thumb'
 class PostController {
     async index(ctx) {
-        const query = ctx.query
-        const params = ctx.params
+        const query = ctx.query;
+        const params = ctx.params;
 
-        query.topicId = params.id
+        query.topicId = params.id;
         //Attach logged in user
         // const curUser = ctx.state.user;
         const post = new Post()
@@ -98,7 +98,7 @@ class PostController {
         //判断操作用户是否发帖人，不是发帖人不允许更新
         const curUser = new User(ctx.state.user)
         if (post.posterId !== curUser.id ||
-            "02" == curUser.type) ctx.throw(400, 'INVALID_OPERATOR')
+            "02" !== curUser.type) ctx.throw(400, 'INVALID_OPERATOR')
         // Object.keys(post).forEach(function(param,index){
         //     console.log("controller1 post attr "+param+" is "+post[param])
         // })
