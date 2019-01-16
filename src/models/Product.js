@@ -110,6 +110,9 @@ class Product {
                 }
                 // 获取产品标签
                 result[i].tags = await getTags(result[i].id);
+                // 获取运营活动
+                result[i].operations = await db('t_hm101_product_operations').select('*')
+                .where({'targetId': result[i].id});
             }
             return result;
         } catch (error) {
