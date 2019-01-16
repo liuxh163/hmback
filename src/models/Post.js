@@ -10,22 +10,24 @@ class Post {
         if (!data) {
             return
         }
-        this.id = data.id
-        this.topicId = data.topicId
-        this.title = data.title
-        this.content = data.content
-        this.picIds = data.picIds
-        this.posterId = data.posterId
-        this.pictures = data.pictures
-        this.viewNum = data.viewNum
-        this.thumbNum = data.thumbNum
-        this.commentNum = data.commentNum
-        this.location = data.location
+        this.id = data.id;
+        this.topicId = data.topicId;
+        this.title = data.title;
+        this.content = data.content;
+        this.picIds = data.picIds;
+        this.posterId = data.posterId;
+        this.pictures = data.pictures;
+        this.viewNum = data.viewNum;
+        this.thumbNum = data.thumbNum;
+        this.commentNum = data.commentNum;
+        this.location = data.location;
+        this.category = data.category;
+        this.isMainPage = data.isMainPage;
 
-        this.operator = data.operator
-        this.operateFlag = data.operateFlag
-        this.updatedAt = data.updatedAt
-        this.createdAt = data.createdAt
+        this.operator = data.operator;
+        this.operateFlag = data.operateFlag;
+        this.updatedAt = data.updatedAt;
+        this.createdAt = data.createdAt;
     }
     /**
      * 查询所有符合条件的帖子列表
@@ -174,7 +176,7 @@ class Post {
      * @param  {[type]} request [description]
      * @return {[type]}         [description]
      */
-    async save(request) {
+    async save() {
         var post = this
         // 插入post表时去掉数据中非字段项
         delete post.commentNum;
@@ -221,7 +223,7 @@ class Post {
      * @param  {[type]} request [description]
      * @return {[type]}         [description]
      */
-    async destroy(request) {
+    async destroy() {
         try {
             return await db('t_hm101_posts')
                 .update({operateFlag : 'D'})

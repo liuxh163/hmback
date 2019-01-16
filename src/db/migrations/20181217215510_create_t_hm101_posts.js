@@ -23,6 +23,10 @@ exports.up = function(knex, Promise) {
         table.integer('viewNum', 8).notNullable().defaultTo(0).comment('帖子浏览次数，非空，默认0');
         //发帖位置
         table.string('location', 20).comment('发帖时的位置');
+        //最新最热
+        table.string('category', 2).comment('最新最热或没有 码表-FWRYFLBM');
+        //是否首页 01 是 02 不是
+        table.string('isMainPage', 2).comment('是否首页 01 是 02 不是 码表-SFSYBM');
 
         // 记录操作人id
         table.string('operator').comment('表记录操作人Id');
