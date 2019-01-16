@@ -57,7 +57,8 @@ class Product {
             request.number = request.number || 10000;
             // 构建查询where条件
             let conditions = {
-                nation:request.nation
+                nation:request.nation,
+                isMainPage: request.isMainPage
             };
             let notConditions = {
                 "a.operateFlag":"D"

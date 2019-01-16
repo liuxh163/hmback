@@ -40,7 +40,8 @@ class Post {
             request.number = request.number || 10000;
             // 构建查询where条件
             let conditions = {
-                topicId:request.topicId
+                topicId: request.topicId,
+                isMainPage: request.isMainPage
             };
             let notConditions = {
                 "operateFlag":"D"

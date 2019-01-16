@@ -10,7 +10,7 @@ class PostController {
 
         query.topicId = params.id
         //Attach logged in user
-        const curUser = ctx.state.user;
+        // const curUser = ctx.state.user;
         const post = new Post()
 
         //检测查询参数
@@ -97,7 +97,8 @@ class PostController {
 
         //判断操作用户是否发帖人，不是发帖人不允许更新
         const curUser = new User(ctx.state.user)
-        if (post.posterId !== curUser.id) ctx.throw(400, 'INVALID_OPERATOR')
+        if (post.posterId !== curUser.id ||
+            "02" == curUser.type) ctx.throw(400, 'INVALID_OPERATOR')
         // Object.keys(post).forEach(function(param,index){
         //     console.log("controller1 post attr "+param+" is "+post[param])
         // })
