@@ -1,15 +1,14 @@
 'use strict'
 
-import Koa from 'koa'
-import bodyParser from 'koa-bodyparser'
-import cors from 'kcors'
-import logger from './logs/log'
-import userAgent from 'koa-useragent'
-import error from 'koa-json-error'
-import ratelimit from 'koa-ratelimit'
-import redis from 'ioredis'
+import Koa from 'koa';
+import bodyParser from 'koa-bodyparser';
+import cors from 'koa2-cors';
+import logger from './logs/log';
+import userAgent from 'koa-useragent';
+import error from 'koa-json-error';
+import ratelimit from 'koa-ratelimit';
 
-import output from './middleware/output'
+import output from './middleware/output';
 //Routes
 import userActionsRouter from './routes/userActions';
 import topicsRouter from './routes/topics';
