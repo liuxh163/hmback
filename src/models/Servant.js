@@ -234,7 +234,7 @@ class Servant {
                     .where({id:servant.id});
                 return trx.commit();
             } catch (error) {
-                console.log(error)
+                console.log(error);
                 return trx.rollback(error);
             };  
         });

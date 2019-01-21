@@ -82,23 +82,23 @@ class Thumb {
 async function isLike(userId,target,targetId){
    let rows = await db('t_hm101_thumbs').select('id').where({likerId:userId,target:target,targetId:targetId,status:"01"});
    return rows.length>0;
-}
+};
 async function getThumbs(targetId,target){
     let rows = await db('t_hm101_thumbs')
             .count('id as count')
-            .where({target:target,targetId:targetId,status:"01"})
-    // let rows = await db('t_hm101_thumbs').select('id').where({likerId:userId,target:target,targetId:targetId,status:"01"});
+            .where({target:target,targetId:targetId,status:"01"});
    return rows[0].count;
-}
+};
 async function getLikers(targetId,target){
-    let rows = await db('t_hm101_thumbs').select('likerId').where({target:target,targetId:targetId,status:"01"});
+    let rows = await db('t_hm101_thumbs')
+        .select('likerId')
+        .where({target:target,targetId:targetId,status:"01"});
 
     let ids = [];
     for(let i = 0 ; i < rows.length ; ++i){
-
         ids.push(rows[i].likerId);
-    }
-
+    };
     return ids;
-}
+};
+
 export { Thumb ,isLike,getThumbs,getLikers}

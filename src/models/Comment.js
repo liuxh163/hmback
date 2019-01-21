@@ -230,37 +230,34 @@ async function findById(id) {
     } catch (error) {
         console.log(error)
         throw new Error('ERROR')
-    }
-}
-// /**
-//  * 获取点赞数
-//  * @param  {[type]} id [description]
-//  * @return {[type]}    [description]
-//  */
-// async function getThumbs(id) {
-//     try {
-//         return await db('t_hm101_thumbs')
-//             .count('targetId as count')
-//             .where({ targetId: id ,status:'01'})
-//     } catch (error) {
-//         console.log(error)
-//         throw new Error('ERROR')
-//     }
-// }
+    };
+};
+/**
+ * 获取评论数
+ * @param {*} targetId 
+ * @param {*} target 
+ */
+async function getComments(targetId,target="05"){
+    let rows = await db('t_hm101_thumbs')
+            .count('id as count')
+            .where({target:target,targetId:targetId,status:"01"});
+   return rows[0].count;
+};
 
 /**
  * 获取评论数
  * @param  {[type]} id [description]
  * @return {[type]}    [description]
  */
-async function getComments(id) {
-    try {
-        return await db('t_hm101_comments')
-            .count('targetId as count')
-            .where({ targetId: id })
-    } catch (error) {
-        console.log(error)
-        throw new Error('ERROR')
-    }
-}
-export { Comment ,findById}
+// async function getComments(id) {
+//     try {
+//         return await db('t_hm101_comments')
+//             .count('targetId as count')
+//             .where({ targetId: id });
+//     } catch (error) {
+//         console.log(error)
+//         throw new Error('ERROR')
+//     };
+// };
+
+export { Comment , getComments, findById}

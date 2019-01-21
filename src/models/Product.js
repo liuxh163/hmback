@@ -1,11 +1,16 @@
 import db from '../db/db';
 import { findByPid } from '../models/Tag';
-import {FilesQuery} from '../models/File'
-const func_getThumbs = require('./Thumb').getThumbs
+import {FilesQuery} from '../models/File';
+
+const func_getThumbs = require('./Thumb').getThumbs;
+const func_getComments = require('./Comment').getComments;
 const TARGET = '01'
 async function getThumbs(id){
     return await func_getThumbs(id,TARGET);
-}
+};
+async function getComments(id){
+    return await func_getComments(id,TARGET);
+};
 class Product {
     constructor(data) {
         if (!data) {
@@ -104,12 +109,12 @@ class Product {
                 // 获取产品封面图片
                 if(result[i].coverId){
                     pics = result[i].coverId.split(",");
-                    result[i].coverPic = await getPictures(pics);
+                    result[i].coverPic = await FilesQuery(pics);
                 }else{
                     result[i].coverPic = [];
                 }
                 // 获取产品标签
-                result[i].tags = await getTags(result[i].id);
+                result[i].tags = await findByPid(result[i].id);
                 // 获取运营活动
                 result[i].operations = await db('t_hm101_product_operations').select('*')
                 .where({'targetId': result[i].id});
@@ -145,11 +150,11 @@ class Product {
                 // 获取产品封面图片
                 if(result.coverId){
                     pics = result.coverId.split(",");
-                    result.coverPic = await getPictures(pics);
+                    result.coverPic = await FilesQuery(pics);
                 }else{
                     result.coverPic = [];
                 }
-                result.tags = await getTags(result.id);
+                result.tags = await findByPid(result.id);
             }else{
                 return {}
             }
@@ -296,51 +301,59 @@ class Product {
         ];
         var experts = product.experts;
         var operations = product.operations;
-        //更新产品内容表
-        for(var i in contents){
-            await db('t_hm101_htmls').update(contents[i])
-                .where({id: contents[i].id})
-        };
-        if(experts){
-            await db('t_hm101_product_experts')
-                        .where({productId: product.id}).del();
-        };
-        // 更新产品专家表
-        for(var i in experts){
-            experts[i].productId = product.id;
-            await db('t_hm101_product_experts').insert(experts[i])
-                    .where({productId: product.id});
-        };
-        if(operations){
-            await db('t_hm101_product_operations')
-                        .where({targetId: product.id}).del();
-        };
-        // 更新产品运营表
-        for(var i in operations){
-            operations[i].target = '01';
-            operations[i].targetId = product.id;
-            await db('t_hm101_product_operations').insert(operations[i])
-                .where({targetId: product.id});
-        };
-        // 插入表时去掉数据中非字段项
-        delete product.commentNum;
-        delete product.thumbNum;
-        delete product.feature;
-        delete product.detail;
-        delete product.routine;
-        delete product.fee;
-        delete product.notice;
-        delete product.hospital;
-        delete product.item;
-        delete product.experts;
-        delete product.operations;
-        delete product.tags;
-        delete product.coverPic;
-        delete product.createdAt;
-        // delete product.updatedAt;
-        // 更新产品表
-        product.savePro();
-    }
+        await db.transaction(async function(trx){
+            try {
+                //更新产品内容表
+                for(var i in contents){
+                    await db('t_hm101_htmls').update(contents[i])
+                        .where({id: contents[i].id})
+                };
+                if(experts){
+                    await db('t_hm101_product_experts')
+                                .where({productId: product.id}).del();
+                };
+                // 更新产品专家表
+                for(var i in experts){
+                    experts[i].productId = product.id;
+                    await db('t_hm101_product_experts').insert(experts[i])
+                            .where({productId: product.id});
+                };
+                if(operations){
+                    await db('t_hm101_product_operations')
+                                .where({targetId: product.id}).del();
+                };
+                // 更新产品运营表
+                for(var i in operations){
+                    operations[i].target = '01';
+                    operations[i].targetId = product.id;
+                    await db('t_hm101_product_operations').insert(operations[i])
+                        .where({targetId: product.id});
+                };
+                // 插入表时去掉数据中非字段项
+                delete product.commentNum;
+                delete product.thumbNum;
+                delete product.feature;
+                delete product.detail;
+                delete product.routine;
+                delete product.fee;
+                delete product.notice;
+                delete product.hospital;
+                delete product.item;
+                delete product.experts;
+                delete product.operations;
+                delete product.tags;
+                delete product.coverPic;
+                delete product.createdAt;
+                // delete product.updatedAt;
+                // 更新产品表
+                await product.savePro();
+                return trx.commit();
+            } catch (error) {
+                console.log(error);
+                return trx.rollback(error);
+            };
+        });
+    };
     /**
      * 只存储产品本身信息
      * @return {[type]} [description]
@@ -358,34 +371,10 @@ class Product {
         } catch (error) {
             console.log(error);
             throw new Error('ERROR');
-        }
-    }
-}
+        };
+    };
+};
 
-/**
- * 根据文件id数组获取文件对象
- * @param {*} ids 
- */
-async function getPictures(ids) {
-    try {
-        return await FilesQuery(ids);
-    } catch (error) {
-        console.log(error);
-        throw new Error('ERROR');
-    }
-}
-/**
- * 根据文件id数组获取文件对象
- * @param {*} ids 
- */
-async function getTags(id) {
-    try {
-        return await findByPid(id);
-    } catch (error) {
-        console.log(error);
-        throw new Error('ERROR');
-    }
-}
 /**
  * 根据Id获取产品信息
  * @param {*} id 
@@ -423,8 +412,8 @@ async function findById(id) {
     } catch (error) {
         console.log(error)
         throw new Error('ERROR')
-    }
-}
+    };
+};
 /**
  * 更新并获取帖子观看数
  * @param  {[type]} id [description]
@@ -438,38 +427,23 @@ async function getViews(id,num) {
     } catch (error) {
         console.log(error)
         throw new Error('ERROR')
-    }
-}
+    };
+};
 
-/**
- * 获取点赞数
- * @param  {[type]} id [description]
- * @return {[type]}    [description]
- */
-// async function getThumbs(id) {
+// /**
+//  * 获取评论数
+//  * @param  {[type]} id [description]
+//  * @return {[type]}    [description]
+//  */
+// async function getComments(id) {
 //     try {
-//         return await db('t_hm101_thumbs')
+//         return await db('t_hm101_comments')
 //             .count('targetId as count')
 //             .where({ targetId: id })
 //     } catch (error) {
 //         console.log(error)
 //         throw new Error('ERROR')
 //     }
-// }
+// };
 
-/**
- * 获取评论数
- * @param  {[type]} id [description]
- * @return {[type]}    [description]
- */
-async function getComments(id) {
-    try {
-        return await db('t_hm101_comments')
-            .count('targetId as count')
-            .where({ targetId: id })
-    } catch (error) {
-        console.log(error)
-        throw new Error('ERROR')
-    }
-}
 export { Product, findById }
