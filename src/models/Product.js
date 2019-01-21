@@ -296,6 +296,7 @@ class Product {
         ];
         var experts = product.experts;
         var operations = product.operations;
+        
         //更新产品内容表
         for(var i in contents){
             await db('t_hm101_htmls').update(contents[i])
