@@ -13,11 +13,13 @@ const accessKeyId = process.env.ALI_ACCESSKEYID
 const secretAccessKey = process.env.ALI_SECRETACCESSKEY
 const region = process.env.FILE_REGION
 const bucket = process.env.FILE_BUKET
+const folder = process.env.FILE_FOLDER
+const region_internal = process.env.FILE_REGION_INTERNAL
 /**
  * 现在region是外网，部署后最好换成内网
  */
 let client = new AliOss({
-    region: region,
+    region: region_internal,
     //云账号AccessKey有所有API访问权限，建议遵循阿里云安全最佳实践，部署在服务端使用RAM子账号或STS，部署在客户端使用STS。
     accessKeyId: accessKeyId,
     accessKeySecret: secretAccessKey,
@@ -35,8 +37,8 @@ class FileController{
             let results = [];
 
             console.log(Object.prototype.toString(ctx.request.files.filex));
-
-            const curUser = ctx.state.user;
+            const curUser = {id:1}
+           // const curUser = ctx.state.user;
 
             if( Array.isArray(ctx.request.files.filex)){
                 for(let i = 0 ; i < ctx.request.files.filex.length ; ++i ){
@@ -76,15 +78,16 @@ class FileController{
     async upload_alioss_file(file){
         let result = {};
         try{
-            let key = UUID.v1()+Path.extname(file.name);
+            let key = folder +'/' + UUID.v1()+Path.extname(file.name);
             let stream = fs.createReadStream(file.path);
             let ali_result = await client.putStream(key, stream);
+            let url = ali_result.url.replace(region_internal,region);
             result={
                 name:file.name,
                 code:0,
                 message:"",
                 fileID:ali_result.name,
-                url:ali_result.url
+                url:url
             }
         }catch(e){
             //失败
