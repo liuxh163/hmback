@@ -30,7 +30,7 @@ router.post('/api/v1/orders', tokenMw, async (ctx, next) => {
     await orderController.create(ctx)
 })
 // 取消订单
-router.put('/api/v1/orders/:id/withdraw', tokenMw, async (ctx, next) => {
+router.post('/api/v1/orders/withdraw', tokenMw, async (ctx, next) => {
     await orderController.withdraw(ctx)
 })
 // 订单支付

@@ -5,6 +5,16 @@ const getServant = require('./Servant').findById
 const getProduct = require('./Product').findById
 const getAttentans = require('./Attendant').findById
 const pinyin = require('node-pinyin')
+import dateFormat from 'date-fns/format'
+function formatDate(str){
+    let date =  null;
+    if(str){
+        date = new Date(str);
+    }else{
+        date = new Date();
+    }
+    return  dateFormat(date, 'YYYY-MM-DD HH:mm:ss')
+}
 /**
  * 数据库修改
  * 
@@ -86,8 +96,11 @@ class Order {
         this.payedMoney = 0;
         this.operator = this.buyerId;
         this.operateFlag = 'A'
+        this.latestAt = formatDate(this.latestAt)
+        this.earliestAt = formatDate(this.earliestAt);
 
-        if(this.target == '01'){
+        if(this.target == '03'){
+            //03 表示翻译
             //这个时候要查库
             let servant = await getServant(this.targetId);
             if(this.servantType === '01'){
@@ -100,9 +113,15 @@ class Order {
             }else{
                 throw "unexcept servantType";
             }
-        }else{
+        }else if(this.target=='01'){
+            //表示产品
             //这个时候要查库+后续计算
             this.price = 0;
+        }else if(this.target == '02'){
+            //表示电影
+            this.price = 0;
+        }else{
+            throw "unexcept order type";
         }
     }
     async all(request) {
@@ -128,19 +147,19 @@ class Order {
     }
     async getDetails(){
         const targetTable = {
-            "01":"t_hm101_servants",
-            "02":"t_hm101_products"
+            "03":"t_hm101_servants",
+            "01":"t_hm101_products"
         }
         let tableName = targetTable[this.target];
         let db_details = await db(tableName)
-                .select('id','desc','name')
+                .select('id','desc')
                 .where({id:this.targetId});
         this.details = db_details;
     }
     async withdraw(){
         await  db(G_TABLE_NAME)
               .update({status:"10"})
-              .where({id:this.id})
+              .where({number:this.number})
     }
     async save(trx){
         let v = await trx(G_TABLE_NAME).insert(this);
@@ -213,7 +232,7 @@ class OrderPeople{
         this.orderNumber = order.number;
         this.operateFlag = 'A'
 
-        if(this.travelType === '01'){
+        if(this.travelType === '02'){
             order.price += product.companyPrice;
         }else{
             let birthday = new Date(this.birthday);
@@ -289,7 +308,7 @@ class OrderDBTranscation{
             try{
                 await order.fillForInsert();
                 await order.save(trx);
-                if(order.target == '02'){
+                if(order.target == '01'){
                     let product = await getProduct(order.targetId);
                     for(let idx_peo = 0 ; idx_peo < this.data.peoples.length; ++idx_peo){
                         let json_people = this.data.peoples[idx_peo];

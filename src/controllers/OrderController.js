@@ -28,8 +28,8 @@ class OrderController {
         }
     }
     async withdraw(ctx){
-        let params = ctx.params
-        if(!params.id){
+        let params = ctx.request.body
+        if(!params.number){
             ctx.throw(400, 'INVALID_DATA')
         }
         try{
