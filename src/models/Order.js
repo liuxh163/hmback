@@ -151,10 +151,12 @@ class Order {
             "01":"t_hm101_products"
         }
         let tableName = targetTable[this.target];
-        let db_details = await db(tableName)
-                .select('id','desc')
-                .where({id:this.targetId});
-        this.details = db_details;
+        if(tableName){
+            let db_details = await db(tableName)
+                    .select('id','desc')
+                    .where({id:this.targetId});
+            this.details = db_details;
+        }
     }
     async withdraw(){
         await  db(G_TABLE_NAME)
@@ -203,12 +205,12 @@ class Order {
 
 class OrderPeople{
     constructor(data){
-        this.birthday = data.birthday;
+        this.birthday = formatDate( data.birthday);
         this.firstName = data.firstName;
         this.lastName = data.lastName;
         this.gender = data.gender;
         this.passport = data.passport;
-        this.passExpir = data.passExpir;
+        this.passExpir = formatDate( data.passExpir);
 
         this.operator = data.operator;
         this.operateFlag = data.operateFlag;
