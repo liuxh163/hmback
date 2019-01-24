@@ -173,6 +173,7 @@ class PayController {
             //res.json({'appId':appid,'prepayId':prepay_id,'nonceStr':nonce_str,'timeStamp':timestamp,'package':'Sign=WXPay','sign':finalsign});
             let prepayId = prepay_id;
         }while(0);
+        prepayId = 100;
         if(!prepayId){
             throw new Error("can not get prepay id");
         }
