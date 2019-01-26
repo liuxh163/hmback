@@ -317,10 +317,12 @@ class OrderDBTranscation{
                         let people = new OrderPeople(json_people);
                         await people.fillForInsert(order,product);
                         await people.save(trx);
-                        for(let idx_att = 0 ; idx_att < json_people.attentants.length ; ++idx_att ){
-                            let att = new OrderAttendant(json_people.attentants[idx_att]);
-                            await att.fillForInsert(order,people);
-                            await att.save(trx);
+                        if(json_people.attentants){
+                            for(let idx_att = 0 ; idx_att < json_people.attentants.length ; ++idx_att ){
+                                let att = new OrderAttendant(json_people.attentants[idx_att]);
+                                await att.fillForInsert(order,people);
+                                await att.save(trx);
+                            }
                         }
                     }   
                 }
