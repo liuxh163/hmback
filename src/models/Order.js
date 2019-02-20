@@ -15,35 +15,7 @@ function formatDate(str){
     }
     return  dateFormat(date, 'YYYY-MM-DD HH:mm:ss')
 }
-/**
- * 数据库修改
- * 
- * t_hm101_orders{
- * telphone  varchar(2)=>varchar(11)
- * contact     varchar(2)=>varchar(10)
- * updatedAt DateTime=>TimeStamp
- * +earliestAt TimeStamp  NN
- * +latestAt   TimeStamp  NN
- * +confirmAt  TimeStamp
- * +payType     vchar(2)
- * +trade_no    vchar(45)
- * +servantType  vchar(2)
- * }
- * 
- * 
- * t_hm101_order_peoples{
- * birthday varchar=>TimeStamp
- * updatedAt DateTime=>TimeStamp
- * lastName int(20)=>vchar(20)
- * +travelType vchar(2)
- * }
- * 
- * t_hm101_order_attentants{
- * target => targetId
- * orderNumber del UQ
- * +ownerId int(11)  NN
- * }
- */
+
 
 /**
  * 订单数据模型
@@ -59,6 +31,11 @@ const G_TABLE_ORDER_PEOPLE_NAME = "t_hm101_order_peoples"
 const G_TABLE_ORDER_ATTENTANTS_NAME = "t_hm101_order_attentants"
 const G_MODULE_ORDERNUMBER_NAME = "ordernumber"
 const G_MODULE_ORDERPEOPLE_NAME = "orderpeople"
+
+/**
+ * 订单数据模型
+ */ 
+
 class Order {
     constructor(data) {
         if (!data) {

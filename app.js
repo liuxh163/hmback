@@ -12,6 +12,8 @@ const src = env === 'production' ? './build/index' : './src/index';
 require('babel-polyfill');
 if (env === 'development') { require('babel-register'); }
 
+
+
 const app = require(src).default;
 
 //Here we're assigning the server to a variable because
