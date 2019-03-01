@@ -18,7 +18,14 @@ var wxpay = {
     createTimeStamp: function () {
         return parseInt(new Date().getTime() / 1000) + '';
     },
- 
+    paysignapi: function(mchkey,params){
+        var string = raw(params);
+        var key = mchkey;
+        string = string + '&key=' + key;
+        console.log('string='+string);
+        var crypto = require('crypto');
+        return crypto.createHash('md5').update(string, 'utf8').digest('hex').toUpperCase();
+    },
     //签名加密算法
     paysignjsapi: function (appid, body, mch_id, nonce_str, notify_url, out_trade_no, spbill_create_ip, total_fee, trade_type, mchkey) {
         var ret = {
@@ -127,22 +134,33 @@ class PayController {
         let spbill_create_ip = getRemoteIP(ctx);
         let notify_url = "http://domain/api/v1/wx_notify";
         let trade_type = 'JSAPI';
+        let inParam = {
+            appid: appid,
+            mch_id: mch_id,
+            nonce_str: nonce_str,
+            body: body,
+            notify_url: notify_url,
+            out_trade_no: out_trade_no,
+            spbill_create_ip: spbill_create_ip,
+            total_fee: total_fee,
+            trade_type: trade_type
+        }
+        let sign = wxpay.paysignapi(mchkey,inParam);
+        //let sign = wxpay.paysignjsapi(appid,body,mch_id,nonce_str,notify_url,out_trade_no,spbill_create_ip,total_fee,trade_type,mchkey);
     
-        let sign = wxpay.paysignjsapi(appid,body,mch_id,nonce_str,notify_url,out_trade_no,spbill_create_ip,total_fee,trade_type,mchkey);
-    
-        console.log('sign==',sign);
+        console.log('sign=='+sign);
     
         //组装xml数据
         var formData  = "<xml>";
-        formData  += "<appid>"+appid+"</appid>";  //appid
-        formData  += "<body><![CDATA["+"测试微信支付"+"]]></body>";
-        formData  += "<mch_id>"+mch_id+"</mch_id>";  //商户号
-        formData  += "<nonce_str>"+nonce_str+"</nonce_str>"; //随机字符串，不长于32位。
-        formData  += "<notify_url>"+notify_url+"</notify_url>";
-        formData  += "<out_trade_no>"+out_trade_no+"</out_trade_no>";
-        formData  += "<spbill_create_ip>"+spbill_create_ip+"</spbill_create_ip>";
-        formData  += "<total_fee>"+total_fee+"</total_fee>";
-        formData  += "<trade_type>"+trade_type+"</trade_type>";
+        formData  += "<appid>"+inParam.appid+"</appid>";  //appid
+        formData  += "<body><![CDATA["+inParam.body+"]]></body>";
+        formData  += "<mch_id>"+inParam.mch_id+"</mch_id>";  //商户号
+        formData  += "<nonce_str>"+inParam.nonce_str+"</nonce_str>"; //随机字符串，不长于32位。
+        formData  += "<notify_url>"+inParam.notify_url+"</notify_url>";
+        formData  += "<out_trade_no>"+inParam.out_trade_no+"</out_trade_no>";
+        formData  += "<spbill_create_ip>"+inParam.spbill_create_ip+"</spbill_create_ip>";
+        formData  += "<total_fee>"+inParam.total_fee+"</total_fee>";
+        formData  += "<trade_type>"+inParam.trade_type+"</trade_type>";
         formData  += "<sign>"+sign+"</sign>";
         formData  += "</xml>";
 
@@ -152,6 +170,7 @@ class PayController {
         do{
             if(response.status != 200) break;
             let xmlobj = null;
+            console.log(response.data.toString('utf-8'));
             xmlreader.read(response.data.toString("utf-8"), function (errors, xml) {
                 if (null !== errors) {
                     console.log(errors)

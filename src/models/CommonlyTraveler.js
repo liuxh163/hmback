@@ -20,7 +20,7 @@ class CommonlyTraveler {
         this.passExpiry = data.passExpiry
         this.birthday = data.birthday
         this.gender = data.gender
-
+        this.travelType = data.travelType
 
         this.operator = data.operator
         this.operateFlag = data.operateFlag

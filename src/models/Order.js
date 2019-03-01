@@ -233,6 +233,7 @@ class OrderPeople{
         this.number = orderGood.number;
         this.operateFlag = 'A'
         let traveler = await getTraveler(this.travelerId);
+        this.travelType = this.travelType||traveler.travelType;
         if(this.travelType === '02'){
             this.originPrice = product.companyPrice;
         }else{
