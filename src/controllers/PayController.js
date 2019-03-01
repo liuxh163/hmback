@@ -108,10 +108,12 @@ function getRemoteIP(ctx){
     return ctx.headers['x-forwarded-for'] ||
         ctx.socket.remoteAddress 
 }
-const appid = "123";
-const mch_id = "商户ID";
+
+const appid = "wx0d83ef9bd8190fe0";
+const mch_id = "1501887481";
 //要在微信支付平台设置
-const mchkey = "不知道写啥";
+const mchkey = "q2eu8pxycp2018CP0418Irt1650BjLxh";
+
 class PayController {
     async wx_pay(ctx){
         await this.wx_unifiedorder(ctx);
@@ -133,7 +135,7 @@ class PayController {
  
         let spbill_create_ip = getRemoteIP(ctx);
         let notify_url = "http://domain/api/v1/wx_notify";
-        let trade_type = 'JSAPI';
+        let trade_type = 'APP';
         let inParam = {
             appid: appid,
             mch_id: mch_id,
@@ -185,7 +187,7 @@ class PayController {
             if( xmlobj.xml.result_code.text() === "FAIL") break;
 
             var prepay_id = xmlobj.xml.prepay_id.text();
-            console.log('解析后的prepay_id==',prepay_id);
+            console.log('解析后的prepay_id=='+prepay_id);
 
             //将预支付订单和其他信息一起签名后返回给前端
             //let finalsign = wxpay.paysignjsapifinal(appid,mch_id,prepay_id,nonce_str,timestamp,mchkey);

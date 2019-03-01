@@ -58,7 +58,7 @@ class CommonlyTraveler {
         delete this.id;
         delete this.userId;
         delete this.createdAt;
-
+        delete this.age;
 
         this.updatedAt = new Date();
         this.operator = userId;
@@ -79,6 +79,11 @@ class CommonlyTraveler {
     formatToClient(){
         this.birthday = dateFormat(new Date(this.birthday), 'YYYY-MM-DD HH:mm:ss');
         this.passExpiry = dateFormat(new Date(this.passExpiry), 'YYYY-MM-DD HH:mm:ss');
+        let birthday = new Date(this.birthday);
+        let age = Date.now() - birthday;
+        let date_age = new Date(age);
+        age = date_age.getFullYear()-1970;
+        this.age = age;
     }
 }
 
