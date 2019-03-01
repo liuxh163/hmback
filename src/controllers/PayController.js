@@ -2,108 +2,7 @@ import Axios from "axios";
 import {Order ,findByNumber} from '../models/Order'
 var xmlreader = require("xmlreader");
 
-var wxpay = {
- 
-    //把金额转为分
-    getmoney: function (money) {
-        return parseInt(money);
-    },
- 
-    // 随机字符串产生函数  
-    createNonceStr: function () {
-        return Math.random().toString(36).substr(2, 15);
-    },
- 
-    // 时间戳产生函数  
-    createTimeStamp: function () {
-        return parseInt(new Date().getTime() / 1000) + '';
-    },
-    paysignapi: function(mchkey,params){
-        var string = raw(params);
-        var key = mchkey;
-        string = string + '&key=' + key;
-        console.log('string='+string);
-        var crypto = require('crypto');
-        return crypto.createHash('md5').update(string, 'utf8').digest('hex').toUpperCase();
-    },
-    //签名加密算法
-    paysignjsapi: function (appid, body, mch_id, nonce_str, notify_url, out_trade_no, spbill_create_ip, total_fee, trade_type, mchkey) {
-        var ret = {
-            appid: appid,
-            mch_id: mch_id,
-            nonce_str: nonce_str,
-            body: body,
-            notify_url: notify_url,
-            out_trade_no: out_trade_no,
-            spbill_create_ip: spbill_create_ip,
-            total_fee: total_fee,
-            trade_type: trade_type
-        };
-
-        var string = raw(ret);
-        var key = mchkey;
-        string = string + '&key=' + key;
-        console.log('string=', string);
-        var crypto = require('crypto');
-        return crypto.createHash('md5').update(string, 'utf8').digest('hex').toUpperCase();
-    },
-    /**
-     *签名加密算法,第二次的签名
-     *看文档说5个参数https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=7_7&index=6
-     *这个别人写有6个参数
-     *多个 partnerid
-     *todo
-     */
-
-    paysignjsapifinal: function (appid,mch_id,prepayid,noncestr,timestamp,mchkey) {
-        var ret = {
-            appid: appid,
-            prepayid: prepayid,
-            package: 'Sign=WXPay',
-            noncestr: noncestr,
-            timestamp: timestamp,
-        };
-        console.log('retretret=='+ret);
-        var string = raw(ret);
-        var key = mchkey;
-        string = string + '&key=' + key;
-        console.log('stringstringstring=', string);
-        var crypto = require('crypto');
-        return crypto.createHash('md5').update(string, 'utf8').digest('hex').toUpperCase();
-    },
-    getXMLNodeValue: function (xml) {
-        // var tmp = xml.split("<"+node_name+">");
-        // console.log('tmp',tmp);
-        // var _tmp = tmp[1].split("</"+node_name+">");
-        // console.log('_tmp',_tmp);
-        // return _tmp[0];
-        xmlreader.read(xml, function (errors, response) {
-            if (null !== errors) {
-                console.log(errors)
-                return;
-            }
-            console.log('长度===', response.xml.prepay_id.text().length);
-            var prepay_id = response.xml.prepay_id.text();
-            console.log('解析后的prepay_id==',prepay_id);
-            return prepay_id;
-        });
-    }
- 
-}
-function raw(args) {
-    var keys = Object.keys(args);
-    keys = keys.sort()
-    var newArgs = {};
-    keys.forEach(function (key) {
-        newArgs[key] = args[key];
-    });
-    var string = '';
-    for (var k in newArgs) {
-        string += '&' + k + '=' + newArgs[k];
-    }
-    string = string.substr(1);
-    return string;
-}
+import {wxpay,WXPay} from '../models/WXPay'
 function getRemoteIP(ctx){
     return ctx.headers['x-forwarded-for'] ||
         ctx.socket.remoteAddress 
@@ -134,7 +33,7 @@ class PayController {
         let body = '商品名';
  
         let spbill_create_ip = getRemoteIP(ctx);
-        let notify_url = "http://domain/api/v1/wx_notify";
+        let notify_url = "http://49.72.131.110:24651/api/v1/wx_notify";
         let trade_type = 'APP';
         let inParam = {
             appid: appid,
@@ -147,6 +46,7 @@ class PayController {
             total_fee: total_fee,
             trade_type: trade_type
         }
+
         let sign = wxpay.paysignapi(mchkey,inParam);
         //let sign = wxpay.paysignjsapi(appid,body,mch_id,nonce_str,notify_url,out_trade_no,spbill_create_ip,total_fee,trade_type,mchkey);
     
@@ -195,7 +95,6 @@ class PayController {
             //res.json({'appId':appid,'prepayId':prepay_id,'nonceStr':nonce_str,'timeStamp':timestamp,'package':'Sign=WXPay','sign':finalsign});
             let prepayId = prepay_id;
         }while(0);
-        prepayId = 100;
         if(!prepayId){
             throw new Error("can not get prepay id");
         }

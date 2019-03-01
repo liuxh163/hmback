@@ -48,6 +48,7 @@ async function genOrderPeopleID(){
     return await genLongID(G_MODULE_ORDERNUMBER_NAME,'10',10);
 }
 module.exports = {
+    genLongID:genLongID,
     genOrderPeopleID:genOrderPeopleID,
     genOrderID:genOrderID
 }

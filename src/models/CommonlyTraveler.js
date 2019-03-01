@@ -77,8 +77,8 @@ class CommonlyTraveler {
         await db(G_TABLE_NAME).update({operateFlag:'D'}).where({id:this.id});
     }
     formatToClient(){
-        this.birthday = dateFormat(new Date(this.birthday), 'YYYY-MM-DD HH:mm:ss');
-        this.passExpiry = dateFormat(new Date(this.passExpiry), 'YYYY-MM-DD HH:mm:ss');
+        this.birthday = dateFormat(new Date(this.birthday), 'YYYY-MM-DD');
+        this.passExpiry = dateFormat(new Date(this.passExpiry), 'YYYY-MM-DD');
         let birthday = new Date(this.birthday);
         let age = Date.now() - birthday;
         let date_age = new Date(age);
