@@ -10,7 +10,8 @@
     "build": "NODE_ENV=production babel src -d build && npm run pretty",
     "pretty": "prettier --write --print-width 80 --single-quote --trailing-comma es5 --tab-width 4 --no-semi 'src/**/*.js' 'tests/**/*.js'",
     "start-production": "NODE_ENV=production pm2 start ecosystem.json",
-    "clean": "npm cache clean --force"
+    "clean": "npm cache clean --force",
+    "debug": "babel src -d dist --source-maps"
   },
   "license": "MIT",
   "homepage": "https://github.com/liuxh163/hmback#readme",

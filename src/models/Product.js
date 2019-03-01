@@ -1,6 +1,7 @@
 import db from '../db/db';
 import { findByPid } from '../models/Tag';
 import {FilesQuery} from '../models/File'
+import {getH5Content} from './H5Content'
 const func_getThumbs = require('./Thumb').getThumbs
 const TARGET = '01'
 async function getThumbs(id){
@@ -14,6 +15,24 @@ class Product {
         this.id = data.id;
         this.desc = data.desc;
         this.nation = data.nation;
+     
+        this.adultPrice = data.adultPrice;
+        this.womenPrice = data.womenPrice;
+        this.followPrice = data.followPrice;
+        this.childPrice = data.childPrice;
+        this.status = data.status;
+        this.coverId = data.coverId;
+        this.coverPic = data.coverPic;
+        this.viewNum = data.viewNum;
+
+        this.experts = data.experts;
+        this.operations = data.operations;
+        this.tags = data.tags;
+
+        this.category = data.category;
+        this.isMainPage = data.isMainPage;
+
+
         this.featureH5Id = data.featureH5Id;
         this.detailH5Id = data.detailH5Id;
         this.routineH5Id = data.routineH5Id;
@@ -28,22 +47,10 @@ class Product {
         this.notice = data.notice;
         this.hospital = data.hospital;
         this.item = data.item;
-        this.adultPrice = data.adultPrice;
-        this.womenPrice = data.womenPrice;
-        this.followPrice = data.followPrice;
-        this.childPrice = data.childPrice;
-        this.status = data.status;
-        this.coverId = data.coverId;
-        this.coverPic = data.coverPic;
-        this.viewNum = data.viewNum;
-        this.thumbNum = data.thumbNum;
-        this.commentNum = data.commentNum;
-        this.experts = data.experts;
-        this.operations = data.operations;
-        this.tags = data.tags;
+        this.displayUrl = data.displayUrl;
 
-        this.category = data.category;
-        this.isMainPage = data.isMainPage;
+        this.prepayExpiry = data.prepayExpiry;
+        this.postpayExpiry = data.postpayExpiry;
 
         this.operator = data.operator;
         this.operateFlag = data.operateFlag;
@@ -51,134 +58,138 @@ class Product {
         this.createdAt = data.createdAt;
     }
 
-    async all(request) {
-        try {
-            request.page = request.page || 1;
-            request.number = request.number || 10000;
-            // 构建查询where条件
-            let conditions = {
-                nation:request.nation,
-                isMainPage: request.isMainPage
-            };
-            let notConditions = {
-                "a.operateFlag":"D"
-            };
-            // 删除不存在的条件
-            Object.keys(conditions).forEach(function(param, index){
-                if(undefined === conditions[param]){
-                    delete conditions[param];
-                }
-            });
-            let result;
-            if("{}" !== JSON.stringify(conditions)){
-                result = await db.select('a.id','a.desc','a.nation',
-                    'a.status','a.coverId','a.adultPrice','a.viewNum',
-                    'a.isMainPage','a.category','b.content as detail')
-                .from('t_hm101_products as a')
-                .leftJoin('t_hm101_htmls as b','a.detailH5Id', 'b.id')
-                .where(conditions)
-                .whereNot(notConditions)
-                .orderBy('a.updatedAt', 'desc')
-                .offset(--request.page * +request.number)
-                .limit(+request.number);
-            }else{
-                result = await db.select('a.id','a.desc','a.nation','a.status','a.coverId','a.adultPrice','a.viewNum','b.content as detail')
-                .from('t_hm101_products as a')
-                .leftJoin('t_hm101_htmls as b','a.detailH5Id', 'b.id')
-                .whereNot(notConditions)
-                .orderBy('a.updatedAt', 'desc')
-                .offset(--request.page * +request.number)
-                .limit(+request.number);
-            }
-            // 获取点赞数及评论数
-            for(var i in result){
-                console.log("product-"+i+":"+result[i].detail)
-                // 获取点赞数
-                let thumbNum = await getThumbs(result[i].id)
-                result[i].thumbNum = thumbNum;
-                // 获取评论数
-                let commentNum = await getComments(result[i].id)
-                result[i].commentNum = commentNum[0].count;
+    static async all(request) {
 
-                let pics = undefined;
-                // 获取产品封面图片
-                if(result[i].coverId){
-                    pics = result[i].coverId.split(",");
-                    result[i].coverPic = await getPictures(pics);
-                }else{
-                    result[i].coverPic = [];
-                }
-                // 获取产品标签
-                result[i].tags = await getTags(result[i].id);
-                // 获取运营活动
-                result[i].operations = await db('t_hm101_product_operations').select('*')
-                .where({'targetId': result[i].id});
-            }
-            return result;
-        } catch (error) {
-            console.log(error)
-            throw new Error('ERROR')
+        request.page = request.page || 1;
+        request.number = request.number || 10000;
+        // 构建查询where条件
+        let conditions = {};
+        if(request.nation !== undefined) conditions.nation =  request.nation;
+        if(request.isMainPage !== undefined) conditions.isMainPage = request.isMainPage;
+        let notConditions = {
+            "operateFlag":"D"
+        };
+        let result = [];
+        let dbresult = await db('t_hm101_products').select('id','desc','nation','status',
+                                        'coverId','adultPrice','viewNum',
+                                        'isMainPage','category','displayUrl')
+                                        .where(conditions)
+                                        .whereNot(notConditions)
+                                        .orderBy('updatedAt', 'desc')
+                                        .offset(--request.page * +request.number)
+                                        .limit(+request.number);
+        for(let i = 0 ; i < dbresult.length ; ++i){
+            let product = new Product(dbresult[i]);
+            result.push(product);
         }
+        
+        // 获取点赞数及评论数
+        for(var i in result){
+            // 获取点赞数
+            
+            let product = result[i];
+            await product.fillBrief();
+        }
+        return result;
+
+    }
+    /**
+     * 获取点赞数与评论数
+     */
+    async  fillThumbsAndCommentsNum() {
+        let thumbNum = await getThumbs(this.id)
+        this.thumbNum = thumbNum;
+        // 获取评论数
+        let commentNum = await getComments(this.id)
+        this.commentNum = commentNum[0].count;
+    } 
+    /**
+     * 获取图片
+     */
+    async fillPictures(){
+        let pics = undefined;
+        if(this.coverId){
+            pics = this.coverId.split(",");
+            this.coverPic = await getPictures(pics);
+        }else{
+            this.coverPic = [];
+        }
+    }
+    async fillExperts(){
+        this.experts = await db('t_hm101_product_experts').select('*')
+                .where({'productId': this.id});
+    }
+    async fillH5(){
+        this.feature = await getH5Content(this.featureH5Id);
+        this.detail = await getH5Content(this.detailH5Id);
+        this.routine = await getH5Content(this.routineH5Id);
+        this.fee = await getH5Content(this.feeH5Id);
+        this.notice = await getH5Content(this.noticeH5Id);
+        this.hospital = await getH5Content(this.hospitalH5Id);
+        this.item = await getH5Content(this.itemH5Id);
+    }
+    /**
+     * 获取TAG
+     */
+    async fillTags(){
+        this.tags = await getTags(this.id);
+    }
+    /**
+     * 活动?
+     */
+    async fillOperations(){
+        this.operations = await db('t_hm101_product_operations').select('*')
+        .where({'targetId': this.id});
+    }
+    /**
+     * 获取摘要，外层使用
+     */
+    async fillBrief(){
+        await this.fillThumbsAndCommentsNum();
+        await this.fillPictures();
+        await this.fillTags();
+        await this.fillOperations();
+    }
+    /**
+     * 获取所有详情,连掉上面的,可优化为并行执行?
+     */
+    async fillFullInfo(){
+        await this.fillThumbsAndCommentsNum();
+        await this.fillPictures();
+        await this.fillTags();
+        await this.fillOperations();
+        await this.fillExperts();
+        await this.fillH5();
+    }
+    /**
+     * 除开点赞评论的,可优化为并行执行?
+     */
+    async fillSelf(){
+        await this.fillPictures();
+        await this.fillTags();
+        await this.fillOperations();
+        await this.fillExperts();
+        await this.fillH5();
     }
     /**
      * 查询产品详细信息，包含子表信息
      * @param  {[type]} id [description]
      * @return {[type]}    [description]
      */
-    async find(id) {
-        try {
-            let result = await findById(id)
-            if (result) {
-                // 增加并获取查看数
-                let viewNum = ++result.viewNum
-                await getViews(id,viewNum)//更新产品查看数
-                result.viewNum = viewNum
-                // 获取点赞数
-                let thumbNum = await getThumbs(id)
-                result.thumbNum = thumbNum;
-                // 获取评论数
-                let commentNum = await getComments(id)
-                result.commentNum = commentNum[0].count;
-                // await getComments(id);
-                // 获取产品标签
-                let pics = undefined;
-                // 获取产品封面图片
-                if(result.coverId){
-                    pics = result.coverId.split(",");
-                    result.coverPic = await getPictures(pics);
-                }else{
-                    result.coverPic = [];
-                }
-                result.tags = await getTags(result.id);
-            }else{
-                return {}
-            }
-            this.constructor(result)
-            console.log(" xxxx :"+this.id);
-        } catch (error) {
-            console.log(error)
-            throw new Error('ERROR')
-        }
+    static async find(id) {
+        let product = await findById(id);
+        await product.fillFullInfo();
+        return product;
     }
     /**
      * 查询产品本身信息
      * @param  {[type]} id [description]
      * @return {[type]}    [description]
      */
-    async findPro(id) {
-        try {
-            console.log("search id is "+id);
-            let result = await db('t_hm101_products').select('*')
-                    .where({id:id})
-            // Object.keys(result[0]).forEach(function(param,index){
-            //     console.log("result attr "+param+" is "+result[0][param])
-            // })
-            if (!result[0]) return {}
-            this.constructor(result[0])
-        } catch (error) {
-            console.log(error)
-            throw new Error('ERROR')
-        }
+    static async findPro(id) {
+        let product = await findById(id);
+        await product.fillSelf();
+        return product;
     }
 
     async store() {
@@ -187,13 +198,6 @@ class Product {
         delete product.commentNum;
         delete product.thumbNum;
         delete product.tags;
-        // var content = servant.intro
-        // delete servant.intro
-        // 遍历打印对象内容
-        // Object.keys(post).forEach(function(param,index){
-        //     console.log("post attr "+param+" is "+post[param])
-        // })
-        // 使用事务插入帖子信息及内容信息表
 
         var contents = [
             {content: product.feature},
@@ -204,17 +208,7 @@ class Product {
             {content: product.hospital},
             {content: product.item}
         ];
-        // Object.keys(product).forEach(function(param,index){
-        //     console.log("product attr "+param+" is "+product[param])
-        // })
-        // for (var i in contents){
-        //     Object.keys(contents[i]).forEach(function(param,index){
-        //         console.log("contents["+i+"] attr "+param+" is "+contents[i][param])
-        //     })
-        // }
-        // Object.keys(contents).forEach(function(param,index){
-        //     console.log("contents attr "+param+" is "+contents[param])
-        // })
+
         delete product.feature;
         delete product.detail;
         delete product.routine;
@@ -299,8 +293,10 @@ class Product {
         
         //更新产品内容表
         for(var i in contents){
-            await db('t_hm101_htmls').update(contents[i])
+            if(contents[i].content){
+                await db('t_hm101_htmls').update(contents[i])
                 .where({id: contents[i].id})
+            }
         };
         if(experts){
             await db('t_hm101_product_experts')
@@ -362,7 +358,18 @@ class Product {
         }
     }
 }
+//产品缓存，主要包括产品自身的全属性，对应上面的Pro
+class ProductCache{
+    static async get(id) {
+        
+    }
+    static async cache(product){
 
+    }
+    static async dirty(id){
+
+    }
+}
 /**
  * 根据文件id数组获取文件对象
  * @param {*} ids 
@@ -392,39 +399,18 @@ async function getTags(id) {
  * @param {*} id 
  */
 async function findById(id) {
-    try {
-        let product = await db.select('*').from('t_hm101_products')
-                    .where({ 'id': id});
-        Object.keys(product[0]).forEach(function(param,index){
-            console.log("product1 attr "+param+" is "+product[0][param]);
-        });
-        product[0].feature = (await db.select('content').from('t_hm101_htmls')
-                            .where({ 'id': product[0].featureH5Id}))[0].content;
-        product[0].detail = (await db.select('content').from('t_hm101_htmls')
-                            .where({ 'id': product[0].detailH5Id}))[0].content;
-        product[0].routine = (await db.select('content').from('t_hm101_htmls')
-                            .where({ 'id': product[0].routineH5Id}))[0].content;
-        product[0].fee = (await db.select('content').from('t_hm101_htmls')
-                            .where({ 'id': product[0].feeH5Id}))[0].content;
-        product[0].notice = (await db.select('content').from('t_hm101_htmls')
-                            .where({ 'id': product[0].noticeH5Id}))[0].content;
-        product[0].hospital = (await db.select('content').from('t_hm101_htmls')
-                            .where({ 'id': product[0].hospitalH5Id}))[0].content;
-        product[0].item = (await db.select('content').from('t_hm101_htmls')
-                            .where({ 'id': product[0].itemH5Id}))[0].content;
 
-        product[0].experts = await db('t_hm101_product_experts').select('*')
-                .where({'productId': product[0].id});
-        product[0].operations = await db('t_hm101_product_operations').select('*')
-                .where({'targetId': product[0].id});
-        Object.keys(product[0]).forEach(function(param,index){
-            console.log("product[0] attr "+param+" is "+product[0][param])
-        })
-        return product[0]
-    } catch (error) {
-        console.log(error)
-        throw new Error('ERROR')
+    let products = await db.select('*').from('t_hm101_products')
+                .where({ 'id': id});
+
+    if(products.length == 0) {
+        throw new Error("no product:"+id);
     }
+    let  product = new Product(products[0]);
+
+
+    return product;
+
 }
 /**
  * 更新并获取帖子观看数

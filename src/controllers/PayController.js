@@ -6,7 +6,7 @@ var wxpay = {
  
     //把金额转为分
     getmoney: function (money) {
-        return parseFloat(money) * 100;
+        return parseInt(money);
     },
  
     // 随机字符串产生函数  
@@ -32,7 +32,7 @@ var wxpay = {
             total_fee: total_fee,
             trade_type: trade_type
         };
-        console.log('ret==', ret);
+
         var string = raw(ret);
         var key = mchkey;
         string = string + '&key=' + key;
@@ -56,7 +56,7 @@ var wxpay = {
             noncestr: noncestr,
             timestamp: timestamp,
         };
-        console.log('retretret==', ret);
+        console.log('retretret=='+ret);
         var string = raw(ret);
         var key = mchkey;
         string = string + '&key=' + key;
@@ -111,13 +111,14 @@ class PayController {
     }
     async wx_unifiedorder(ctx){
         let params = ctx.request.body;
-        let number = params.orderNumber;
+        let number = params.number;
         let order = await findByNumber(number);
+        console.log(order);
         //从数据库取到对应的微信商品代码，商品价格
-        
-        let total_fee = wxpay.getmoney(order.price);
+        let payParams = order.getPayParamsForWX();
+        let total_fee = wxpay.getmoney(payParams.fee);
         //这个是我们自己的订单号，需要插库取ID
-        let out_trade_no = order.number;
+        let out_trade_no = payParams.trade_no;
 
         let nonce_str = wxpay.createNonceStr();
 

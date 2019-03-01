@@ -25,12 +25,12 @@ import filesRouter from './routes/files';
 import ordersRouter from './routes/orders';
 import commonsRouter from './routes/commons';
 import adminsRouter from './routes/admins';
-
-
-
+import commonlyTraverler from './routes/commonlytraveler'
+  
 console.log=function(logText){
     logger.info(logText);
 }
+
 //Initialize app
 const app = new Koa()
 
@@ -148,4 +148,8 @@ app.use(ordersRouter.allowedMethods())
 //管理员路由
 app.use(adminsRouter.routes())
 app.use(adminsRouter.allowedMethods())
+//出行人路由
+app.use(commonlyTraverler.routes())
+app.use(commonlyTraverler.allowedMethods())
+
 export default app

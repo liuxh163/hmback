@@ -17,6 +17,10 @@ log4js.configure({
             appenders: ['file', 'console'],
             level: 'all',
         },
+        testing:{
+            appenders: ['file', 'console'],
+            level: 'all',
+        },
         production: {
             appenders: ['file'],
             level: 'info',
@@ -27,9 +31,9 @@ log4js.configure({
         },
     },
 })
-const logger =
-    process.env.NODE_ENV === 'development'
-        ? log4js.getLogger('development')
-        : log4js.getLogger('production')
-
+// const logger = 
+//     process.env.NODE_ENV === 'development'
+//         ? log4js.getLogger('development')
+//         : log4js.getLogger('production')
+const logger = log4js.getLogger(process.env.NODE_ENV);
 export default logger

@@ -19,6 +19,9 @@ router.post('/api/v1/products', tokenMw, async (ctx, next) => {
 router.get('/api/v1/products/:id', tokenMw, async (ctx, next) => {
     await productController.show(ctx)
 })
+router.get('/api/v2/products', tokenMw, async (ctx, next) => {
+    await productController.getProduct(ctx)
+})
 // 更新指定产品
 router.put('/api/v1/products/:id', tokenMw, async (ctx, next) => {
     await productController.update(ctx)

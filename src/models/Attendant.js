@@ -88,15 +88,13 @@ class Attendant {
 }
 
 async function findById(id) {
-    try {
-        let [contentData] = await db('t_hm101_attendants')
-            .select('*')
-            .where({ id: id })
-        return contentData
-    } catch (error) {
-        console.log(error)
-        throw new Error('ERROR')
-    }
+   
+    let [contentData] = await db('t_hm101_attendants')
+        .select('*')
+        .where({ id: id })
+    if(!contentData) throw new Error("no attendants:"+id);
+    return contentData
+
 }
 
 export { Attendant, findById }

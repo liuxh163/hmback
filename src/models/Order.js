@@ -1,13 +1,16 @@
 import db from '../db/db'
 import rand from 'randexp'
-import redis from 'ioredis'
+
 const getServant = require('./Servant').findById
 const getProduct = require('./Product').findById
 const getAttentans = require('./Attendant').findById
-const pinyin = require('node-pinyin')
+const LongID = require('../genID/longID')
+const getTraveler = require('./CommonlyTraveler').findById
 import dateFormat from 'date-fns/format'
+import {OrderTargetCode,OrderTypeCode,OrderProductStatus} from '../codes'
+import { Codes } from './Codes';
 function formatDate(str){
-    let date =  null;
+    let date = null;
     if(str){
         date = new Date(str);
     }else{
@@ -16,19 +19,10 @@ function formatDate(str){
     return  dateFormat(date, 'YYYY-MM-DD HH:mm:ss')
 }
 
-
-/**
- * 订单数据模型
- */
-const redisdb = new redis( 33601,"47.92.131.110");
-
-async function genID(module_name) {
-    return 1000000000 + await redisdb.incr(module_name+"_id");
-}
-
 const G_TABLE_NAME = "t_hm101_orders"
-const G_TABLE_ORDER_PEOPLE_NAME = "t_hm101_order_peoples"
-const G_TABLE_ORDER_ATTENTANTS_NAME = "t_hm101_order_attentants"
+const G_TABLE_ORDER_PEOPLE_NAME = "t_hm101_order_product_peoples"
+const G_TABLE_ORDER_ATTENTANTS_NAME = "t_hm101_order_product_attentants"
+const G_TABLT_ORDER_GOODS = 't_hm101_order_goods'
 const G_MODULE_ORDERNUMBER_NAME = "ordernumber"
 const G_MODULE_ORDERPEOPLE_NAME = "orderpeople"
 
@@ -43,30 +37,34 @@ class Order {
         }
         this.id = data.id
         this.number = data.number
-        this.target = data.target
-        this.targetId = data.targetId
-        this.price = data.price
+
+        this.originPrice = data.originPrice
+        this.realPrice = data.realPrice
         this.payedMoney = data.payedMoney
+        this.prepayPrice = data.prepayPrice
+        this.prepayExpiry = data.prepayExpiry
+        this.postpayExpiry = data.postpayExpiry
+        this.payExpiry = data.payExpiry
+
         this.buyerId = data.buyerId
         this.contact = data.contact
         this.telephone = data.telephone
         this.status = data.status
-
 
         this.operator = data.operator
         this.operateFlag = data.operateFlag
         this.updatedAt = data.updatedAt
         this.createdAt = data.createdAt
         this.earliestAt = data.earliestAt
-        this.latestAt   = data.latestAt
+        this.latestAt = data.latestAt
         this.confirmAt = data.confirmAt
-        this.payType = data.payType;
-        this.trade_no = data.trade_no;
-        this.servantType = data.servantType;
+
+        this.type = data.type;
+        this.cancelCode = data.cancelCode;
         if(this.confirmAt === null) delete this.confirmAt
     }
     async fillForInsert(){
-        this.number = await genID(G_MODULE_ORDERNUMBER_NAME);
+        this.number = await LongID.genOrderID();
         this.createdAt = new Date();
         this.updatedAt = this.createdAt;
         this.status = '01';
@@ -76,32 +74,34 @@ class Order {
         this.latestAt = formatDate(this.latestAt)
         this.earliestAt = formatDate(this.earliestAt);
 
-        if(this.target == '03'){
-            //03 表示翻译
-            //这个时候要查库
-            let servant = await getServant(this.targetId);
-            if(this.servantType === '01'){
-                this.price = servant.literPrice
-            }else if(this.servantType === '02'){
-                this.price = servant.followPrice
+        this.originPrice = 0;
+        this.realPrice   = 0;
+    }
+    //暂定默认1分钟
+    fillForPruduct(product){
+        let date = new Date();
+        let productExpiry = +product.prepayExpiry;
+        productExpiry = productExpiry===0?60000:productExpiry;
+        let prepayExpiry = new Date(date.getTime() +productExpiry);
+        this.prepayExpiry = prepayExpiry;
+    }
+    computePrice(orderGoods){
 
-            }else if(this.servantType === '03'){
-                this.price = servant.recepPrice
-            }else{
-                throw "unexcept servantType";
-            }
-        }else if(this.target=='01'){
-            //表示产品
-            //这个时候要查库+后续计算
-            this.price = 0;
-        }else if(this.target == '02'){
-            //表示电影
-            this.price = 0;
-        }else{
-            throw "unexcept order type";
+        this.originPrice = 0;
+        this.realPrice = 0;
+        for(let i = 0 ; i < orderGoods.length ; ++i){
+            let orderGood = orderGoods[i];
+            
+            this.originPrice += orderGood.realPrice * orderGood.quantity;
+            this.realPrice = this.originPrice;
+        }
+        if(this.type == OrderTypeCode.Product){
+        //to do
+        //    this.prepayPrice = parseInt(this.realPrice * 0.3)
+            this.prepayPrice = 1;
         }
     }
-    async all(request) {
+    static async all(request) {
         try {
             let db_orders = await db(G_TABLE_NAME)
                 .select('*')
@@ -142,108 +142,129 @@ class Order {
     }
     async save(trx){
         let v = await trx(G_TABLE_NAME).insert(this);
-        //let v = await db(G_TABLE_NAME).insert(this);
         this.id = v[0];
     }
-    async find(id) {
-        try {
-            let result = await findById(id)
-            if (!result) return {}
-            this.constructor(result)
-        } catch (error) {
-            console.log(error)
-            throw new Error('ERROR')
-        }
+    static async find(id) {
+        let result = await findById(id)
+        return result;
     }
-
-    async store() {
-        try {
-            return await db('notes').insert(this)
-        } catch (error) {
-            console.log(error)
-            throw new Error('ERROR')
+    /**
+     * @returns 
+     * {
+     *     fee:123,
+     *     trade_no:123
+     * }
+     */
+    getPayParamsForWX(){
+        let params = {
+            fee:0,
+            trade_no:""
         }
-    }
-
-
-
-    async destroy(request) {
-        try {
-            return await db('notes')
-                .delete()
-                .where({ id: this.id })
-        } catch (error) {
-            console.log(error)
-            throw new Error('ERROR')
+        if(this.type == OrderTypeCode.Product){
+            if(this.status == OrderProductStatus.PREPAY){
+                params.fee = this.prepayPrice;
+                params.trade_no = this.number+'_1';
+            }
+            else if(this.status == OrderProductStatus.POSTPAY){
+                params.fee = this.realPrice - this.prepayPrice;
+                params.trade_no = this.number+'_2';
+            }else{
+                throw new Error('INVALID STATUS FOR PAY:'+this.status)
+            }
+        }else{
+            throw new Error('INVALID PAY ORDER:'+this.number);
         }
+        return params;
     }
 }
 
+class OrderGood{
+    constructor(data){
+        this.id = data.id
+        this.number = data.number
+        this.originPrice = data.originPrice
+        this.realPrice = data.realPrice
+       
+        this.quantity = data.quantity;
 
+        this.target = data.target;
+        this.targetId = data.targetId;
+
+        this.operator = data.operator
+        this.operateFlag = data.operateFlag
+        this.updatedAt = data.updatedAt
+        this.createdAt = data.createdAt
+    }
+    async save(trx){
+        let v = await trx(G_TABLT_ORDER_GOODS).insert(this);
+        this.id = v[0];
+    }
+    async fillForInsert(order){
+        this.number = order.number;
+        this.createdAt = new Date();
+        this.updatedAt = this.createdAt;
+
+        this.operator = order.buyerId;
+        this.operateFlag = 'A'
+
+        this.originPrice = 0;
+        this.realPrice = 0;
+    }
+}
 class OrderPeople{
     constructor(data){
-        this.birthday = formatDate( data.birthday);
-        this.firstName = data.firstName;
-        this.lastName = data.lastName;
-        this.gender = data.gender;
-        this.passport = data.passport;
-        this.passExpir = formatDate( data.passExpir);
-
+        this.id = data.id;
+        this.travelerId = data.travelerId;
         this.operator = data.operator;
         this.operateFlag = data.operateFlag;
         this.updatedAt = data.updatedAt;
         this.createdAt = data.createdAt;
 
-        this.firstPiyin = data.firstPiyin;
-        this.lastPiyin = data.lastPiyin;
-        this.orderNumber = data.orderNumber;
+        this.number = data.number;
 
         this.travelType = data.travelType;
-
+        this.originPrice = data.originPrice;
+        this.realPrice = data.realPrice;
     }
-    async fillForInsert(order,product) {
-        this.id = await genID(G_MODULE_ORDERPEOPLE_NAME);
-        this.firstPiyin = pinyin(this.firstName);
-        this.lastPiyin = pinyin(this.lastName);
+    async fillForInsert(orderGood,product) {
         this.createdAt = new Date();
         this.updatedAt = this.createdAt;
-        this.operator = order.buyerId;
-        this.orderNumber = order.number;
+        this.operator = orderGood.operator;
+        this.number = orderGood.number;
         this.operateFlag = 'A'
-
+        let traveler = await getTraveler(this.travelerId);
         if(this.travelType === '02'){
-            order.price += product.companyPrice;
+            this.originPrice = product.companyPrice;
         }else{
-            let birthday = new Date(this.birthday);
+            let birthday = new Date(traveler.birthday);
             let age = Date.now() - birthday;
             let date_age = new Date(age);
             age = date_age.getFullYear()-1970;
-            console.log("age"+age)
-            console.log("1111"+order.price)
             if(age<18){
-                order.price += product.childPrice;
+                this.originPrice = product.childPrice;
             }else{
-                if(this.gender === '01'){
-                    order.price += product.adultPrice;
+                if(traveler.gender === '01'){
+                    this.originPrice = product.adultPrice;
                 }else{
-                    order.price += product.womenPrice;
+                    this.originPrice = product.womenPrice;
                 }
             }
         }
-
-        console.log("1111"+order.price)
+        this.realPrice = this.originPrice;
+        orderGood.originPrice += this.originPrice;
+        orderGood.realPrice += this.realPrice;
     }
     async save(trx){
         await trx(G_TABLE_ORDER_PEOPLE_NAME).insert(this);
-      //  await db(G_TABLE_ORDER_PEOPLE_NAME).insert(this);
     }
 }
 class OrderAttendant{
     constructor(data){
         this.id = data.id;
+
+
         this.orderNumber = data.orderNumber;
         this.targetId = data.targetId;
-        this.price = data.price;
         this.quantity = data.quantity||1;
         this.name = data.name;
 
@@ -251,63 +272,69 @@ class OrderAttendant{
         this.operateFlag = data.operateFlag;
         this.updatedAt = data.updatedAt;
         this.createdAt = data.createdAt;
-
         this.ownerId = data.ownerId;
+
+        this.originPrice = data.originPrice;
+        this.realPrice = data.realPrice;
     }
-    async fillForInsert(order,people){
-        this.ownerId = people.id;
+    async fillForInsert(orderGood,people){
+        this.ownerId = people.travelerId;
         this.orderNumber = order.number;
         this.createdAt = new Date();
         this.updatedAt = this.createdAt;
-        this.operator = order.buyerId;
-        this.orderNumber = order.number;
+        this.operator = orderGood.operator;
+        this.orderNumber = orderGood.number;
         this.operateFlag = 'A'
         //这些是查库的
         let attentans = await getAttentans(this.targetId);
-        this.price = attentans.price;
-        order.price += this.price;
+        this.originPrice = attentans.price;
+        this.realPrice = this.originPrice;
+        orderGood.originPrice += this.originPrice;
+        orderGood.realPrice += this.realPrice;
+        console.log(attentans.price)
+        console.log(orderGood.originPrice)
         this.name = attentans.name; 
-        console.log("2222"+order.price)
     }
     async save(trx){
-       // this.bccc = 'c'
         await trx(G_TABLE_ORDER_ATTENTANTS_NAME).insert(this);
     }
 }
 
-class OrderDBTranscation{
+class ProductTranscation{
     constructor(data){
+        data.target = OrderTargetCode.Product;
+        data.type = OrderTypeCode.Product;
         this.data = data;
-
     }
     async save() {
         let order = new Order(this.data);
+        let orderGood = new OrderGood(this.data);
+        orderGood.quantity = 1;
         await db.transaction(async (trx)=>{
-            let isSuc = false;
             try{
                 await order.fillForInsert();
-                await order.save(trx);
-                if(order.target == '01'){
-                    let product = await getProduct(order.targetId);
-                    for(let idx_peo = 0 ; idx_peo < this.data.peoples.length; ++idx_peo){
-                        let json_people = this.data.peoples[idx_peo];
-                        let people = new OrderPeople(json_people);
-                        await people.fillForInsert(order,product);
-                        await people.save(trx);
-                        if(json_people.attentants){
-                            for(let idx_att = 0 ; idx_att < json_people.attentants.length ; ++idx_att ){
-                                let att = new OrderAttendant(json_people.attentants[idx_att]);
-                                await att.fillForInsert(order,people);
-                                await att.save(trx);
-                            }
+                await orderGood.fillForInsert(order);
+                let product = await getProduct(orderGood.targetId);
+                for(let idx_peo = 0 ; idx_peo < this.data.peoples.length; ++idx_peo){
+                    let json_people = this.data.peoples[idx_peo];
+                    let people = new OrderPeople(json_people);
+                    await people.fillForInsert(orderGood,product);
+                    await people.save(trx);
+                    if(json_people.attentants){
+                        for(let idx_att = 0 ; idx_att < json_people.attentants.length ; ++idx_att ){
+                            let att = new OrderAttendant(json_people.attentants[idx_att]);
+                            await att.fillForInsert(orderGood,people);
+                            await att.save(trx);
                         }
-                    }   
-                }
-               isSuc = true;
-               return trx.commit();
+                    }
+                }   
+                await orderGood.save(trx);
+                order.computePrice([orderGood]);
+                order.fillForPruduct(product);
+                await order.save(trx);
+                
+                return trx.commit();
             }catch(e){
-                isSuc = false;
-                console.log(e)
                 return trx.rollback(e);
             }
         })
@@ -327,14 +354,12 @@ async function findById(id) {
     }
 }
 async function findByNumber(number) {
-    try {
-        let db_order = await db(G_TABLE_NAME)
-            .select('*')
-            .where({ number: number })
-        return new Order(db_order[0]);
-    } catch (error) {
-        console.log(error)
-        throw new Error('ERROR')
-    }
+
+    let db_order = await db(G_TABLE_NAME)
+        .select('*')
+        .where({ number: number })
+    if(db_order.length != 1) throw new Error('no order :'+number);
+    return new Order(db_order[0]);
+
 }
-export { Order, OrderPeople , OrderAttendant, OrderDBTranscation,findByNumber,findById}
+export { Order, OrderPeople , OrderAttendant, ProductTranscation,findByNumber,findById}

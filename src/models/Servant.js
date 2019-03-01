@@ -1,20 +1,12 @@
 import db from '../db/db'
+import {getH5Content} from './H5Content'
 const func_getThumbs = require('./Thumb').getThumbs
 const TARGET = '03'
 async function getThumbs(id){
     return await func_getThumbs(id,TARGET);
 }
-async function getH5Content(id){
-    let x = await db('t_hm101_htmls').select('content').where({id:id});
-    console.log(x)
-    let retVal = "";
-    if(x.length >0 ){
-        retVal = x[0].content;
-    }
-    //let retVal = x.length>0?x[0].content:"";
-    console.log("ret val:"+retVal);
-    return retVal;
-}
+
+
 class Servant {
     constructor(data) {
         if (!data) {

@@ -1,6 +1,6 @@
 import dateFormat from 'date-fns/format'
 
-import { Product } from '../models/Product'
+import { Product ,findById} from '../models/Product'
 import {isLike} from '../models/Thumb'
 class ProductController {
     /**
@@ -11,8 +11,6 @@ class ProductController {
     async index(ctx) {
         const query = ctx.query
 
-        //Init a new product object
-        const product = new Product()
 
         //检测查询参数
         if (query.page&&!query.number) {
@@ -20,13 +18,10 @@ class ProductController {
         }
 
         //获取产品列表
-        try {
-            let result = await product.all(query)
-            ctx.body = {products:result}
-        } catch (error) {
-            console.log(error)
-            ctx.throw(400, 'INVALID_DATA' + error)
-        }
+
+        let result = await Product.all(query)
+        ctx.body = {products:result}
+
     }
     /**
      * 查询指定产品详情
@@ -35,21 +30,25 @@ class ProductController {
      */
     async show(ctx) {
         const params = ctx.params
-        if (!params.id) ctx.throw(400, 'INVALID_DATA')
+        if (!params.id) ctx.throw(500, 'INVALID_PARAM')
 
-        //Initialize product
-        const product = new Product()
+        let product = await Product.find(params.id)
+        product.isLike = await isLike(ctx.state.user.id,'01',product.id);
+        ctx.body = product
 
-        try {
-            //Find and show product
-            await product.find(params.id)
-            console.log(product.id)
+    }
+    /**
+     * v2
+     */
+    async getProduct(ctx){
+        const params = ctx.query
+        if (!params.id) ctx.throw(500, 'INVALID_PARAM')
+
+        let product = await Product.find(params.id)
+        if(params.getIsLike){
             product.isLike = await isLike(ctx.state.user.id,'01',product.id);
-            ctx.body = product
-        } catch (error) {
-            console.log(error)
-            ctx.throw(400, 'INVALID_DATA')
         }
+        ctx.body = product
     }
     /**
      * 创建产品
@@ -68,28 +67,24 @@ class ProductController {
         const product = new Product(request);
         product.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss');
 
-        try {
-            let result = await product.store(request);
-            ctx.body = { id: result };
-        } catch (error) {
-            console.log(error);
-            ctx.throw(400, 'INVALID_INSERT_PRODUCT_DATA');
-        }
+
+        let result = await product.store(request);
+        ctx.body = { id: result };
+
     }
 
     async update(ctx) {
         const params = ctx.params;
         const request = ctx.request.body;
 
-        if (!params.id) ctx.throw(400, 'INVALID_DATA');
+        if (!params.id) ctx.throw(500, 'INVALID_PARAM');
 
-        const product = new Product();
-        await product.find(params.id);
-        if (!product) ctx.throw(400, 'INVALID_DATA');
+
+        let product = await findById(params.id);
 
         //获取当前用户
         const curUser = ctx.state.user;
-        if ('02' !== curUser.type) ctx.throw(400, 'INVALID_PREVILEGE');
+        if ('02' !== curUser.type) ctx.throw(500, 'INVALID_PREVILEGE');
         // if (product.opeartor !== curUser.id) ctx.throw(400, 'INVALID_USER')
 
         //Replace the product data with the new updated product data
@@ -103,13 +98,10 @@ class ProductController {
         product.operateFlag = 'U';
         product.operator = curUser.id;
         delete product.isLike;
-        try {
-            await product.save();
-            ctx.body = { id: product.id };
-        } catch (error) {
-            console.log(error);
-            ctx.throw(400, 'INVALID_DATA');
-        }
+
+        await product.save();
+        ctx.body = { id: product.id };
+
     }
 
     async delete(ctx) {
@@ -117,12 +109,9 @@ class ProductController {
 
         //获取当前用户
         const curUser = ctx.state.user
-        if ('02' !== curUser.type) ctx.throw(400, 'INVALID_PREVILEGE');
+        if ('02' !== curUser.type) ctx.throw(500, 'INVALID_PREVILEGE');
 
-        const product = new Product()
-        await product.findPro(params.id)
-        if (!product) ctx.throw(400, 'INVALID_SERVANT_DATA')
-
+        let product = await findById(params.id);
         //Add the updated date value
         product.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
         product.operateFlag = 'D'
