@@ -21,4 +21,8 @@ const OrderProductStatus = {
     SUCCESS:OrderStatus.SUCCESS,
     CANCELED:OrderStatus.CANCELED
 }
-export  {OrderTargetCode,OrderTypeCode,OrderProductStatus}
+const PayTargetCode = {
+    PREPAY:'01',
+    POSTPAY:'02'
+}
+export  {OrderTargetCode,OrderTypeCode,OrderProductStatus,PayTargetCode}

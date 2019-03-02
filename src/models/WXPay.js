@@ -22,6 +22,7 @@ var wxpay = {
         var string = raw(params);
         var key = mchkey;
         string = string + '&key=' + key;
+        console.log(params);
         console.log('string='+string);
         var crypto = require('crypto');
         return crypto.createHash('md5').update(string, 'utf8').digest('hex').toUpperCase();
@@ -108,8 +109,7 @@ function raw(args) {
 class WXPay{
     constructor(data){
         this.id  = data.id;
-        this.appid = data.appid;
-        this.mch_id = data.mch_id;
+
         this.nonce_str = data.nonce_str;
         this.body = data.body;
         this.out_trade_no = data.out_trade_no;
@@ -117,6 +117,12 @@ class WXPay{
         this.total_fee = data.total_fee;
         this.trade_type = data.trade_type;
         this.userId = data.userId
+        this.notify_url = data.notify_url;
+        this.code = data.code;
+        this.number = data.number;
+        this.err_code = data.err_code;
+        this.err_code_desc = data.err_code_desc;
+        this.transcation_id = data.transcation_id;
         this.operator = data.operator
         this.operateFlag = data.operateFlag
         this.updatedAt = data.updatedAt
@@ -127,10 +133,19 @@ class WXPay{
         this.createdAt = new Date();
         this.updatedAt = this.createdAt;
         this.operator = this.userId;
+        //to do
+        this.status = '01';
         this.operateFlag = 'A';
+        this.out_trade_no = ''+this.id+"_"+this.number
     }
     async store(){
         await db(G_TABLE_NAME).insert(this);
+    }
+    static async find(id){
+        let db_results = await db(G_TABLE_NAME).select('*').where({id:id});
+        if(db_results[0].length != 1) throw new Error("微信支付未找到对账单:"+id);
+        let payObj = new WXPay(db_results[0]);
+        return payObj;
     }
 }
 export  {wxpay,WXPay};

@@ -7,7 +7,7 @@ const getAttentans = require('./Attendant').findById
 const LongID = require('../genID/longID')
 const getTraveler = require('./CommonlyTraveler').findById
 import dateFormat from 'date-fns/format'
-import {OrderTargetCode,OrderTypeCode,OrderProductStatus} from '../codes'
+import {OrderTargetCode,OrderTypeCode,OrderProductStatus,PayTargetCode} from '../codes'
 import { Codes } from './Codes';
 function formatDate(str){
     let date = null;
@@ -45,7 +45,7 @@ class Order {
         this.prepayExpiry = data.prepayExpiry
         this.postpayExpiry = data.postpayExpiry
         this.payExpiry = data.payExpiry
-
+        this.desc = data.desc;
         this.buyerId = data.buyerId
         this.contact = data.contact
         this.telephone = data.telephone
@@ -113,7 +113,7 @@ class Order {
             let orders = [];
             for(let i = 0 ; i < db_orders.length ; ++i){
                 let order = new Order(db_orders[i]);
-                await order.getDetails();
+                // await order.getDetails();
                 orders.push(order);
             }
             return orders;
@@ -152,22 +152,26 @@ class Order {
      * @returns 
      * {
      *     fee:123,
-     *     trade_no:123
+     *     trade_no:123,
+     *     code:"01"
      * }
      */
     getPayParamsForWX(){
         let params = {
             fee:0,
-            trade_no:""
+            trade_no:"",
+            code:""
         }
         if(this.type == OrderTypeCode.Product){
             if(this.status == OrderProductStatus.PREPAY){
-                params.fee = this.prepayPrice;
-                params.trade_no = this.number+'_1';
+                params.fee = this.prepayPrice
+                params.trade_no = this.number
+                params.code = PayTargetCode.PREPAY
             }
             else if(this.status == OrderProductStatus.POSTPAY){
-                params.fee = this.realPrice - this.prepayPrice;
-                params.trade_no = this.number+'_2';
+                params.fee = this.realPrice - this.prepayPrice
+                params.trade_no = this.number
+                params.code = PayTargetCode.POSTPAY
             }else{
                 throw new Error('INVALID STATUS FOR PAY:'+this.status)
             }
@@ -316,6 +320,7 @@ class ProductTranscation{
                 await order.fillForInsert();
                 await orderGood.fillForInsert(order);
                 let product = await getProduct(orderGood.targetId);
+                order.desc = product.desc;
                 for(let idx_peo = 0 ; idx_peo < this.data.peoples.length; ++idx_peo){
                     let json_people = this.data.peoples[idx_peo];
                     let people = new OrderPeople(json_people);
@@ -360,6 +365,7 @@ async function findByNumber(number) {
         .select('*')
         .where({ number: number })
     if(db_order.length != 1) throw new Error('no order :'+number);
+    console.log("number"+number+" vvv:"+db_order[0].number.toString());
     return new Order(db_order[0]);
 
 }

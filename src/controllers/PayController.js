@@ -46,7 +46,15 @@ class PayController {
             total_fee: total_fee,
             trade_type: trade_type
         }
-
+        let payObj = new WXPay(inParam);
+        payObj.code = payParams.code;
+        payObj.userId = ctx.state.user.id;
+        payObj.number = order.number;
+        await payObj.fillForInsert();
+        let attach = payObj.id;
+        
+        inParam.out_trade_no = payObj.out_trade_no;
+        console.log(payObj)
         let sign = wxpay.paysignapi(mchkey,inParam);
         //let sign = wxpay.paysignjsapi(appid,body,mch_id,nonce_str,notify_url,out_trade_no,spbill_create_ip,total_fee,trade_type,mchkey);
     
@@ -93,11 +101,13 @@ class PayController {
             //let finalsign = wxpay.paysignjsapifinal(appid,mch_id,prepay_id,nonce_str,timestamp,mchkey);
 
             //res.json({'appId':appid,'prepayId':prepay_id,'nonceStr':nonce_str,'timeStamp':timestamp,'package':'Sign=WXPay','sign':finalsign});
-            let prepayId = prepay_id;
+            prepayId = prepay_id;
         }while(0);
         if(!prepayId){
             throw new Error("can not get prepay id");
         }
+        payObj.sign = sign;
+        await payObj.store();
         ctx.body=prepayId;
     }
     /**
