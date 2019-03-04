@@ -123,20 +123,23 @@ class Order {
             .select('*')
             .where({ buyerId: request.userId })
             .where(function(){
+                this.where(function(){
                     for(let i = 0 ; i < statuss.length; ++i){
                         if(i == 0) this.where({status:statuss[i]})
                         else this.orWhere({status:statuss[i]})
                     }
-            })
-            .orWhere(function(){
+                })
+                .orWhere(function(){
                     for(let i = 0 ; i < substates.length; ++i){
                         if(i == 0) this.where({substate:substates[i]})
                         else this.orWhere({substate:substates[i]})
                     }
+                })
             })
             .orderBy('createdAt', request.order)
             .offset(request.page*request.pageNum)
             .limit(+request.pageNum);
+            console.log(db_orders)
 
             let orders = [];
             for(let i = 0 ; i < db_orders.length ; ++i){
