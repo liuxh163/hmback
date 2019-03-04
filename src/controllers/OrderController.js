@@ -17,6 +17,9 @@ class OrderController {
         //Get paginated list of notes
         try {
             let result = await Order.all(query)
+            for(let i = 0 ; i < result.length ; ++i){
+                result[i].formatForClient();
+            }
             ctx.body = result
         } catch (error) {
             console.log(error)
@@ -49,6 +52,7 @@ class OrderController {
         const query = ctx.query;
         let number = query.number;
         let order = await Order.findNumber(number);
+        order.formatForClient();
         await order.fillFullInfo();
         ctx.body = order;
     }

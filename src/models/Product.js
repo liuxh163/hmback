@@ -171,6 +171,11 @@ class Product {
         await this.fillExperts();
         await this.fillH5();
     }
+    formatForClient(){
+        this.adultPrice = this.adultPrice/100;
+        this.childPrice = this.childPrice/100;
+        this.womenPrice = this.womenPrice/100;
+    }
     /**
      * 查询产品详细信息，包含子表信息
      * @param  {[type]} id [description]

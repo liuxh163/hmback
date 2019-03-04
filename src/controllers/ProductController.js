@@ -20,6 +20,9 @@ class ProductController {
         //获取产品列表
 
         let result = await Product.all(query)
+        for(let i = 0 ; i < result.length ; ++i){
+            result[i].formatForClient();
+        }
         ctx.body = {products:result}
 
     }
@@ -33,6 +36,7 @@ class ProductController {
         if (!params.id) ctx.throw(500, 'INVALID_PARAM')
 
         let product = await Product.find(params.id)
+        product.formatForClient();
         product.isLike = await isLike(ctx.state.user.id,'01',product.id);
         ctx.body = product
 

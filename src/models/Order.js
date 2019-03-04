@@ -258,6 +258,16 @@ class Order {
                             .where({number:this.number});
         }
     }
+    async formatForClient(){
+        this.originPrice = this.originPrice/100;
+        this.realPrice = this.realPrice/100;
+        this.createdAt = formatDate(this.createdAt);
+        if(this.confirmAt) {
+            this.confirmAt = formatDate(this.confirmAt)
+        }else{
+            delete this.confirmAt;
+        }
+    }
 }
 
 class OrderGood{
