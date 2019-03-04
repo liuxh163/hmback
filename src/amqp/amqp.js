@@ -9,14 +9,14 @@ const config = {
     },
     development:{
         protocol:"amqp",
-        hostname:"47.92.131.110",
+        hostname:"localhost",
         port:"6752",
         username:"admin",
         password:"admin"
     },
     production:{
         protocol:"amqp",
-        hostname:"47.92.131.110",
+        hostname:"localhost",
         port:"6752",
         username:"admin",
         password:"admin"
