@@ -148,11 +148,7 @@ class UserController {
         // 根据请求中的手机号从redis缓存中获取有效短信验证码
         await ctx.redisdb.get('sms_verify_'+request.telephone).then(function (result) {
             if(result){
-                let redisSmsCode = JSON.parse(result).smscode
-                // 验证短信码
-                if(redisSmsCode && redisSmsCode == request.smscode){
-                    passed = true
-                }
+                passed = result == request.smscode
             }
         })
         return passed
@@ -164,8 +160,9 @@ class UserController {
 
         if(!request.telephone) ctx.throw(500,"INVALID PARAM");
 
-        let cnt = redisdb.exists('sms_verify_'+request.telephone);
+        let cnt = await redisdb.exists('sms_verify_'+request.telephone);
         if(cnt != 0 ){
+
             ctx.throw(500,'发送太频繁');
         }
         let verify = new rand(/[1-9]{6}/).gen();
@@ -179,7 +176,7 @@ class UserController {
             PhoneNumbers: request.telephone,
             SignName: '心意康旅',
             TemplateCode: 'SMS_153880263',
-            TemplateParam: '{"code":\'verify\'}'
+            TemplateParam: `{"code":${verify}}`
         }).then(async function (res) {
             let {Code}=res
             if (Code === 'OK') {
@@ -188,6 +185,7 @@ class UserController {
                 console.log(res)
             }
         }, function (err) {
+            console.log(err);
             ctx.throw(500,'短信发送失败')
         })
 
