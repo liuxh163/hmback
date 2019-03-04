@@ -13,6 +13,7 @@ async function startMQ(){
         registProcesser(QueueName.OrderDelayQueue,MsgNames.WXPayNotify,wxpay_notify)
         await initQueue();
         await initConsumer();
+        console.log('amqp stated')
         isMQStarted = true;
     }catch(error){
         console.error(error);
