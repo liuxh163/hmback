@@ -2,6 +2,7 @@
 
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
+import xmlParser from 'koa-xml-body'
 import cors from 'koa2-cors';
 import logger from './logs/log';
 import userAgent from 'koa-useragent';
@@ -26,11 +27,17 @@ import ordersRouter from './routes/orders';
 import commonsRouter from './routes/commons';
 import adminsRouter from './routes/admins';
 import commonlyTraverler from './routes/commonlytraveler'
-  
+import {startMQ} from './msgcenter/msgCenter'
+startMQ();
 console.log=function(logText){
     logger.info(logText);
 }
-
+console.error = function(logText){
+    logger.error(logText);
+}
+console.debug = function(logText){
+    logger.debug(logText);
+}
 //Initialize app
 const app = new Koa()
 
@@ -99,7 +106,11 @@ app.use(cors({ origin: '*' }))
 
 //For useragent detection
 app.use(userAgent)
-
+app.use(xmlParser({xmlOptions:{
+    explicitArray:false,
+    ignoreAttrs:true,
+    trim:true
+},encoding: 'utf8'}));
 //For managing body. We're only allowing json.
 app.use(bodyParser({jsonLimit:'10mb'}));
 

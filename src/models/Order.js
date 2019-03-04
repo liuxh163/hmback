@@ -9,6 +9,8 @@ const getTraveler = require('./CommonlyTraveler').findById
 import dateFormat from 'date-fns/format'
 import {OrderTargetCode,OrderTypeCode,OrderProductStatus,PayTargetCode} from '../codes'
 import { Codes } from './Codes';
+import {MsgNames,QueueName, sendToDelayMQ,sendToUNHandle} from '../msgcenter/msgCenter'
+
 function formatDate(str){
     let date = null;
     if(str){
@@ -23,6 +25,7 @@ const G_TABLE_NAME = "t_hm101_orders"
 const G_TABLE_ORDER_PEOPLE_NAME = "t_hm101_order_product_peoples"
 const G_TABLE_ORDER_ATTENTANTS_NAME = "t_hm101_order_product_attentants"
 const G_TABLT_ORDER_GOODS = 't_hm101_order_goods'
+const G_TABLT_ORDER_BILL = 't_hm101_order_bill'
 const G_MODULE_ORDERNUMBER_NAME = "ordernumber"
 const G_MODULE_ORDERPEOPLE_NAME = "orderpeople"
 
@@ -50,7 +53,7 @@ class Order {
         this.contact = data.contact
         this.telephone = data.telephone
         this.status = data.status
-
+        this.substate = data.substate
         this.operator = data.operator
         this.operateFlag = data.operateFlag
         this.updatedAt = data.updatedAt
@@ -60,7 +63,7 @@ class Order {
         this.confirmAt = data.confirmAt
 
         this.type = data.type;
-        this.cancelCode = data.cancelCode;
+        this.cancelReason = data.cancelCode;
         if(this.confirmAt === null) delete this.confirmAt
     }
     async fillForInsert(){
@@ -103,10 +106,26 @@ class Order {
     }
     static async all(request) {
         try {
+            if(!request.status) request.status = '';
+            if(!request.substate) request.substate = '';
+            let statuss = request.status.split(',');
+            let substates = request.substate.split(',')
             let db_orders = await db(G_TABLE_NAME)
                 .select('*')
                 .where({ buyerId: request.userId })
-                .where({ status: request.status })
+                .where(function(){
+                    this.where(function(){
+                        for(let i = 0 ; i < statuss.length; ++i){
+                            if(i == 0) this.where({status:statuss[i]})
+                            else this.orWhere({status:statuss[i]})
+                        }
+                    }).orWhere(function(){
+                        for(let i = 0 ; i < substates.length; ++i){
+                            if(i == 0) this.where({substate:substates[i]})
+                            else this.orWhere({substate:substates[i]})
+                        }
+                    })
+                })
                 .orderBy('createdAt', request.order)
                 .offset(request.page*request.pageNum)
                 .limit(+request.pageNum)
@@ -122,30 +141,34 @@ class Order {
             throw new Error('ERROR')
         }
     }
-    async getDetails(){
-        const targetTable = {
-            "03":"t_hm101_servants",
-            "01":"t_hm101_products"
+    async fillFullInfo(){
+        console.log(this)
+        let goods = await OrderGood.all(this.number);
+        for(let i = 0 ; i < goods.length ; ++i){
+            let orderGood = goods[i]
+            if(orderGood.target == OrderTargetCode.Product){
+                let peoples = await OrderPeople.all(this.number);
+                orderGood.peoples = peoples;
+            }
         }
-        let tableName = targetTable[this.target];
-        if(tableName){
-            let db_details = await db(tableName)
-                    .select('id','desc')
-                    .where({id:this.targetId});
-            this.details = db_details;
-        }
+        this.goods = goods;
     }
+
     async withdraw(){
         await  db(G_TABLE_NAME)
-              .update({status:"10"})
+              .update({status:"98"})
               .where({number:this.number})
     }
     async save(trx){
         let v = await trx(G_TABLE_NAME).insert(this);
         this.id = v[0];
     }
-    static async find(id) {
-        let result = await findById(id)
+    static async find(id,allowNonExist = false) {
+        let result = await findById(id,allowNonExist)
+        return result;
+    }
+    static async findNumber(number,allowNonExist = false){
+        let result = await findByNumber(number,allowNonExist);
         return result;
     }
     /**
@@ -153,25 +176,25 @@ class Order {
      * {
      *     fee:123,
      *     trade_no:123,
-     *     code:"01"
+     *     type:"01"
      * }
      */
     getPayParamsForWX(){
         let params = {
             fee:0,
             trade_no:"",
-            code:""
+            type:""
         }
         if(this.type == OrderTypeCode.Product){
             if(this.status == OrderProductStatus.PREPAY){
                 params.fee = this.prepayPrice
                 params.trade_no = this.number
-                params.code = PayTargetCode.PREPAY
+                params.type = PayTargetCode.PREPAY
             }
             else if(this.status == OrderProductStatus.POSTPAY){
                 params.fee = this.realPrice - this.prepayPrice
                 params.trade_no = this.number
-                params.code = PayTargetCode.POSTPAY
+                params.type = PayTargetCode.POSTPAY
             }else{
                 throw new Error('INVALID STATUS FOR PAY:'+this.status)
             }
@@ -179,6 +202,53 @@ class Order {
             throw new Error('INVALID PAY ORDER:'+this.number);
         }
         return params;
+    }
+    async updatePayedMoney(payedMoney,payType,checkId,paymentType,trx){
+        trx = trx||db;
+        let isSuccess = false;
+        let msg = '未知错误';
+        do{
+            if(payType == PayTargetCode.PREPAY){
+                if(this.status == OrderProductStatus.PREPAY){
+                    this.status = OrderProductStatus.PREPAID;
+                }else{
+                    msg = "错误的订单状态流:"+this.status+" 支付目标:"+payType+" 金额"+payedMoney;
+                    break;
+                }
+            }else if(payType == PayTargetCode.POSTPAY){
+                if(this.status == OrderProductStatus.POSTPAY){
+                    this.status = OrderProductStatus.TOTRAVEL;
+                }else{
+                    msg = "错误的订单状态流:"+this.status+" 支付目标:"+payType+" 金额"+payedMoney;
+                    break;
+                }
+            }
+            this.payedMoney = parseInt(this.payedMoney)+parseInt(payedMoney);
+            let updateData = {
+                payedMoney:this.payedMoney,
+                status:this.status,
+                updatedAt:new Date(),
+                operator:'system',
+                operateFlag:'U'
+            }
+            await trx(G_TABLE_NAME).update(updateData).where({number:this.number});
+            isSuccess = true;
+        }while(0);
+        if(!isSuccess){
+            sendToUNHandle(MsgNames.OrderStatusFlowException,
+                {number:this.number,paymentType:paymentType,checkId:checkId},
+                msg);
+        }
+    }
+    /**
+     * 预支付过期
+     * 需加锁
+     */
+    async prepayExpire(){
+        if(this.status === OrderProductStatus.PREPAY){
+            await db(G_TABLE_NAME).update({status:OrderProductStatus.CANCELED,cancelReason:"预支付过期"})
+                            .where({number:this.number});
+        }
     }
 }
 
@@ -213,6 +283,14 @@ class OrderGood{
 
         this.originPrice = 0;
         this.realPrice = 0;
+    }
+    static async all(number){
+        let db_goods = await db(G_TABLT_ORDER_GOODS).select('*').where({number:number});
+        let goods = [];
+        for(let i = 0 ; i < db_goods.length ; ++i){
+            goods.push(new OrderGood(db_goods[i]));
+        }
+        return goods;
     }
 }
 class OrderPeople{
@@ -261,6 +339,14 @@ class OrderPeople{
     }
     async save(trx){
         await trx(G_TABLE_ORDER_PEOPLE_NAME).insert(this);
+    }
+    static async all(number){
+        let db_people = await db(G_TABLE_ORDER_PEOPLE_NAME).select('*').where({number:number});
+        let peoples = [];
+        for(let i = 0 ; i < db_people.length ; ++i){
+            peoples.push(new OrderPeople(db_people[i]));
+        }
+        return peoples;
     }
 }
 class OrderAttendant{
@@ -338,7 +424,10 @@ class ProductTranscation{
                 order.computePrice([orderGood]);
                 order.fillForPruduct(product);
                 await order.save(trx);
-                
+                let qret = await sendToDelayMQ(QueueName.OrderDelayQueue,MsgNames.PrepayExpire,{
+                    number:order.number
+                },10000)
+                if(!qret) throw new error('cant send queue');
                 return trx.commit();
             }catch(e){
                 return trx.rollback(e);
@@ -348,25 +437,57 @@ class ProductTranscation{
     }
 }
 
-async function findById(id) {
-    try {
-        let db_order = await db(G_TABLE_NAME)
-            .select('*')
-            .where({ id: id })
-        return new Order(db_order);
-    } catch (error) {
-        console.log(error)
-        throw new Error('ERROR')
+
+
+
+
+class OrderBill{
+    constructor(data){
+        this.id = data.id;
+        this.type = data.type;
+        this.number = data.number;
+        this.fee = data.fee;
+        this.paymentType = data.paymentType;
+        this.transaction_id = data.transaction_id
+        this.out_trade_no = data.out_trade_no;
+        this.status = data.status;
+        this.checkId = data.checkId
+        
+        this.operator = data.operator;
+        this.operateFlag = data.operateFlag;
+        this.updatedAt = data.updatedAt;
+        this.createdAt = data.createdAt;
+    }
+    async fillForInsert(){
+        this.createdAt = new Date();
+        this.updatedAt = this.createdAt;
+        this.operator = 'system';
+
+        this.operateFlag = 'A'
+    }
+    async save(trx) {
+        trx = trx||db;
+        await trx(G_TABLT_ORDER_BILL).insert(this);
     }
 }
-async function findByNumber(number) {
 
-    let db_order = await db(G_TABLE_NAME)
+async function findById(id,allowNonExist = false) {
+
+    let [db_order] = await db(G_TABLE_NAME)
+        .select('*')
+        .where({ id: id })
+    if(!db_order && !allowNonExist) throw  new Error('no order id:'+id); 
+    if(!db_order) return null;   
+    return new Order(db_order);
+}
+async function findByNumber(number,allowNonExist = false) {
+
+    let [db_order] = await db(G_TABLE_NAME)
         .select('*')
         .where({ number: number })
-    if(db_order.length != 1) throw new Error('no order :'+number);
-    console.log("number"+number+" vvv:"+db_order[0].number.toString());
-    return new Order(db_order[0]);
-
+    if(!db_order && !allowNonExist ) throw new Error('no order :'+number);
+    if(!db_order) return null;   
+    return new Order(db_order);
 }
-export { Order, OrderPeople , OrderAttendant, ProductTranscation,findByNumber,findById}
+
+export { Order, OrderPeople , OrderAttendant, ProductTranscation,findByNumber,findById,OrderBill}

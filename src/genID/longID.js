@@ -1,7 +1,7 @@
 
 import redisdb from '../db/redis'
 import dateFormat from 'date-fns/format'
-
+import {sendToMQ,MsgNames,QueueName} from '../msgcenter/msgCenter'
 //订单号
 const G_MODULE_ORDERNUMBER_NAME = "ordernumber"
 //出行订单人员号
@@ -25,6 +25,7 @@ async function genLongID(module_name,prefix,digit){
     let incID = await redisdb.incr(key);
     idStr += prefixInteger(incID,digit-idStr.length);
     console.log('genid:'+idStr+" key:"+key);
+    sendToMQ(QueueName.LongIDQueue,MsgNames.SaveID,{name:key});
     return idStr;
 }
 /**

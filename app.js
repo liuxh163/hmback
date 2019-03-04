@@ -23,5 +23,6 @@ const server = app.listen(port);
 console.log('Server running at ' + port);
 console.log("Running in "  + process.env.NODE_ENV + " v" + process.env.npm_package_version);
 
+
 //Exporting the actual server here for testing availability
 module.exports = {server: server}

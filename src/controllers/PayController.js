@@ -3,6 +3,8 @@ import {Order ,findByNumber} from '../models/Order'
 var xmlreader = require("xmlreader");
 
 import {wxpay,WXPay} from '../models/WXPay'
+import { loadavg } from "os";
+
 function getRemoteIP(ctx){
     return ctx.headers['x-forwarded-for'] ||
         ctx.socket.remoteAddress 
@@ -33,7 +35,7 @@ class PayController {
         let body = '商品名';
  
         let spbill_create_ip = getRemoteIP(ctx);
-        let notify_url = "http://49.72.131.110:24651/api/v1/wx_notify";
+        let notify_url = "http://49.72.131.110:24651/api/v1/orders/wx_notify";
         let trade_type = 'APP';
         let inParam = {
             appid: appid,
@@ -47,13 +49,14 @@ class PayController {
             trade_type: trade_type
         }
         let payObj = new WXPay(inParam);
-        payObj.code = payParams.code;
+        payObj.type = payParams.type;
         payObj.userId = ctx.state.user.id;
         payObj.number = order.number;
         await payObj.fillForInsert();
         let attach = payObj.id;
         
         inParam.out_trade_no = payObj.out_trade_no;
+        inParam.attach = attach;
         console.log(payObj)
         let sign = wxpay.paysignapi(mchkey,inParam);
         //let sign = wxpay.paysignjsapi(appid,body,mch_id,nonce_str,notify_url,out_trade_no,spbill_create_ip,total_fee,trade_type,mchkey);
@@ -72,11 +75,11 @@ class PayController {
         formData  += "<total_fee>"+inParam.total_fee+"</total_fee>";
         formData  += "<trade_type>"+inParam.trade_type+"</trade_type>";
         formData  += "<sign>"+sign+"</sign>";
+        formData  += "<attach>"+attach+"</attach>"
         formData  += "</xml>";
 
         let response = await  Axios.post('https://api.mch.weixin.qq.com/pay/unifiedorder',formData,{headers: {'Content-Type': 'text/xml'}});
-        let result = {};
-        let prepayId = null; 
+        let result = null;
         do{
             if(response.status != 200) break;
             let xmlobj = null;
@@ -98,17 +101,15 @@ class PayController {
             console.log('解析后的prepay_id=='+prepay_id);
 
             //将预支付订单和其他信息一起签名后返回给前端
-            //let finalsign = wxpay.paysignjsapifinal(appid,mch_id,prepay_id,nonce_str,timestamp,mchkey);
+            result = wxpay.paysignjsapifinal(appid,mch_id,prepay_id,nonce_str,mchkey);
 
-            //res.json({'appId':appid,'prepayId':prepay_id,'nonceStr':nonce_str,'timeStamp':timestamp,'package':'Sign=WXPay','sign':finalsign});
-            prepayId = prepay_id;
         }while(0);
-        if(!prepayId){
+        if(!result){
             throw new Error("can not get prepay id");
         }
         payObj.sign = sign;
         await payObj.store();
-        ctx.body=prepayId;
+        ctx.body=result;
     }
     /**
      * 查询支付状态
@@ -125,9 +126,90 @@ class PayController {
      * 取出  out_trade_no=> 表ID
      * 写入=>transaction_id
      */
-    
-    wx_notify(ctx){
-        
+    checkWXNotifySign(xmlObj, PAY_API_KEY) {
+        let string = ''
+        const keys = Object.keys(xmlObj)
+        //keys.sort()
+        keys.forEach(key => {
+            if (xmlObj[key] && key !== 'sign') {
+                string = string + key + '=' + xmlObj[key] + '&'
+            }
+        })
+        string = string + 'key=' + PAY_API_KEY
+        console.debug(string)
+        var crypto = require('crypto');
+        let localSign = crypto.createHash('md5').update(string, 'utf8').digest('hex').toUpperCase();
+        console.log(localSign);
+        console.log(xmlObj.sign);
+        return localSign === xmlObj.sign
+    }
+    async wx_notify(ctx){
+        console.debug(ctx.request.body.xml)
+        let wx_code = 'FAIL';
+        let wx_msg = '系统处理异常';
+        let wx_isResend = false;
+        let xmlobj = ctx.request.body.xml;
+        let v = this.checkWXNotifySign(xmlobj,mchkey)
+        //测试代码
+        //todo
+        //v = true;
+        if(!v){
+            wx_code = 'FAIL'
+            wx_msg = '签名校验失败'
+        }else{
+            let inParam = {
+                return_code:xmlobj.return_code,
+                return_msg:xmlobj.return_msg
+            }
+            if(inParam.return_code == 'SUCCESS'){
+                inParam.attach=xmlobj.attach;
+
+                inParam.result_code=xmlobj.result_code;
+                inParam.openid=xmlobj.openid;
+                inParam.is_subscribe=xmlobj.is_subscribe;
+                inParam.trade_type=xmlobj.trade_type;
+                inParam.bank_type=xmlobj.bank_type;
+                inParam.total_fee=xmlobj.total_fee;
+                inParam.cash_fee=xmlobj.cash_fee;
+                inParam.transaction_id=xmlobj.transaction_id;
+                inParam.out_trade_no=xmlobj.out_trade_no;
+                inParam.time_end=xmlobj.time_end;
+                if(inParam.result_code === 'FAIL'){
+                    inParam.err_code = xmlobj.err_code
+                    inParam.err_code_des = xmlobj.err_code_des
+                }
+            }else{
+                console.error("微信支付，没值掉你妈呢");
+                wx_msg = "这是什么意思";
+                var formData  = "<xml>";
+                formData += "<return_code><![CDATA["+wx_code+"]]></return_code>";  //appid
+                formData += "<return_msg><![CDATA["+wx_msg+"]]></return_msg>";
+                formData += "</xml>";
+                ctx.set('Content-Type', 'application/xml')
+                ctx.body = formData;
+                return;
+            }
+
+            console.log(inParam);
+ 
+            //核心原则就是
+            //在处理失败并且入队失败的情况下
+            await WXPay.checkFromWX(inParam,function(code,msg,isResend){
+                wx_code = code;
+                wx_msg =  msg;
+                wx_isResend = isResend;
+            });
+        }
+        //收到 就尽量回吧
+        var formData  = "<xml>";
+        formData += "<return_code><![CDATA["+wx_code+"]]></return_code>";  //appid
+        formData += "<return_msg><![CDATA["+wx_msg+"]]></return_msg>";
+        formData += "</xml>";
+        ctx.set('Content-Type', 'application/xml')
+        if(wx_isResend){
+            ctx.body = '瞎回点让微信重发吧';
+        }
+        ctx.body = formData;
     }
 }
 

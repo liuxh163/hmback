@@ -11,10 +11,15 @@ class OrderController {
         
 
         //Let's check that the sort options were set. Sort can be empty
-        if (!query.status || !query.page || !query.pageNum) {
-            ctx.throw(400, 'INVALID_ROUTE_OPTIONS')
+        if ( !query.page || !query.pageNum) {
+            ctx.throw(500, 'INVALID_PARAM')
         }
-
+        if(query.substate && query.status){
+            ctx.throw(500, 'INVALID_PARAM')
+        }
+        if(!query.substate && !query.status){
+            ctx.throw(500, 'INVALID_PARAM')
+        }
         //Get paginated list of notes
         try {
             let result = await Order.all(query)
@@ -44,6 +49,13 @@ class OrderController {
         params.buyerId = ctx.state.user.id;
         let productTranscation = new ProductTranscation(params);
         let order = await productTranscation.save();
+        ctx.body = order;
+    }
+    async getOrderFullInfo(ctx){
+        const query = ctx.query;
+        let number = query.number;
+        let order = await Order.findNumber(number);
+        await order.fillFullInfo();
         ctx.body = order;
     }
 }

@@ -6,10 +6,20 @@ import redis from 'ioredis'
 //记录登录用户数据
 // const redisdb = new redis(process.env.REDIS_PORT, process.env.REDIS_HOST);
 const redisdb = require('../db/redis')
-// 错误处理中间件
+const EscapePath = ['/api/v1/orders/wx_notify']
 async function outHandler(ctx, next) {
     ctx.redisdb = redisdb
     await next();
+    //跳过部分url
+    console.log(ctx.path);
+    try{
+        let idx = EscapePath.findIndex((value)=>{return value === ctx.path});
+        if(idx != -1){
+            return;
+        }
+    }catch(error){
+        console.log(error);
+    }
     // ctx.redisdb.get('dd114f80-05a6-11e9-bf02-7780a1cd7342').then(function (result) {
     //     let test = JSON.parse(result)
     //     console.log("1-1-1-1"+test.telephone);
