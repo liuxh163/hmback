@@ -256,6 +256,7 @@ class UserController {
         let userid = ctx.state.user.id;
         let user = await findById(userid);
         let nums = await getThumbNumAndCommentNumForUser(userid);
+
         ctx.body = {
             user:user,
             thumbNum:nums.thumbNum,

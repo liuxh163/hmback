@@ -76,7 +76,7 @@ class Comment {
                 result[i].thumbNum = thumbNum;
                 // 获取评论数
                 let commentNum = await getComments(result[i].id)
-                result[i].commentNum = commentNum[0].count;
+                result[i].commentNum = commentNum;
 
                 let comment = new Comment(result[i]);
                 comments.push(comment);
@@ -102,7 +102,7 @@ class Comment {
                 result.thumbNum = thumbNum;
                 // 获取评论数
                 let commentNum = await getComments(id)
-                result.commentNum = commentNum[0].count;
+                result.commentNum = commentNum;
                 // await getComments(id);
             }else{
                 return {}
@@ -225,7 +225,7 @@ async function findById(id) {
         comment.thumbNum = thumbNum;
         // 获取评论数
         let commentNum = await getComments(comment.id)
-        comment.commentNum = commentNum[0].count;
+        comment.commentNum = commentNum;
         return comment;
     } catch (error) {
         console.log(error)
@@ -253,14 +253,12 @@ async function findById(id) {
  * @param  {[type]} id [description]
  * @return {[type]}    [description]
  */
-async function getComments(id) {
-    try {
-        return await db('t_hm101_comments')
-            .count('targetId as count')
-            .where({ targetId: id })
-    } catch (error) {
-        console.log(error)
-        throw new Error('ERROR')
-    }
+async function getComments(id,target=TARGET) {
+    let rows = await db('t_hm101_comments')
+        .count('targetId as count')
+        .where({ targetId: id ,target:target})
+        return parseInt(rows[0].count);
+
 }
-export { Comment ,findById}
+
+export { Comment ,findById,getComments}

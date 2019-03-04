@@ -14,12 +14,6 @@ class OrderController {
         if ( !query.page || !query.pageNum) {
             ctx.throw(500, 'INVALID_PARAM')
         }
-        if(query.substate && query.status){
-            ctx.throw(500, 'INVALID_PARAM')
-        }
-        if(!query.substate && !query.status){
-            ctx.throw(500, 'INVALID_PARAM')
-        }
         //Get paginated list of notes
         try {
             let result = await Order.all(query)

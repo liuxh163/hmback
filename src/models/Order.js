@@ -84,9 +84,10 @@ class Order {
     fillForPruduct(product){
         let date = new Date();
         let productExpiry = +product.prepayExpiry;
-        productExpiry = productExpiry===0?60000:productExpiry;
+        productExpiry = productExpiry===0?3600000:productExpiry;
         let prepayExpiry = new Date(date.getTime() +productExpiry);
         this.prepayExpiry = prepayExpiry;
+        this.productExpiry = productExpiry;
     }
     computePrice(orderGoods){
 
@@ -110,25 +111,32 @@ class Order {
             if(!request.substate) request.substate = '';
             let statuss = request.status.split(',');
             let substates = request.substate.split(',')
+            if(statuss.length == 1 && statuss[0] == ''){
+                statuss = [];
+            } 
+            if(substates.length == 1 && substates[0] == ''){
+                substates = [];
+            } 
+
             let db_orders = await db(G_TABLE_NAME)
-                .select('*')
-                .where({ buyerId: request.userId })
-                .where(function(){
-                    this.where(function(){
-                        for(let i = 0 ; i < statuss.length; ++i){
-                            if(i == 0) this.where({status:statuss[i]})
-                            else this.orWhere({status:statuss[i]})
-                        }
-                    }).orWhere(function(){
-                        for(let i = 0 ; i < substates.length; ++i){
-                            if(i == 0) this.where({substate:substates[i]})
-                            else this.orWhere({substate:substates[i]})
-                        }
-                    })
-                })
-                .orderBy('createdAt', request.order)
-                .offset(request.page*request.pageNum)
-                .limit(+request.pageNum)
+            .select('*')
+            .where({ buyerId: request.userId })
+            .where(function(){
+                    for(let i = 0 ; i < statuss.length; ++i){
+                        if(i == 0) this.where({status:statuss[i]})
+                        else this.orWhere({status:statuss[i]})
+                    }
+            })
+            .orWhere(function(){
+                    for(let i = 0 ; i < substates.length; ++i){
+                        if(i == 0) this.where({substate:substates[i]})
+                        else this.orWhere({substate:substates[i]})
+                    }
+            })
+            .orderBy('createdAt', request.order)
+            .offset(request.page*request.pageNum)
+            .limit(+request.pageNum);
+
             let orders = [];
             for(let i = 0 ; i < db_orders.length ; ++i){
                 let order = new Order(db_orders[i]);
@@ -423,10 +431,12 @@ class ProductTranscation{
                 await orderGood.save(trx);
                 order.computePrice([orderGood]);
                 order.fillForPruduct(product);
+                let productExpiry = order.productExpiry;
+                delete order.productExpiry;
                 await order.save(trx);
                 let qret = await sendToDelayMQ(QueueName.OrderDelayQueue,MsgNames.PrepayExpire,{
                     number:order.number
-                },10000)
+                },productExpiry)
                 if(!qret) throw new error('cant send queue');
                 return trx.commit();
             }catch(e){

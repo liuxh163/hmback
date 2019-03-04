@@ -27,6 +27,7 @@ import ordersRouter from './routes/orders';
 import commonsRouter from './routes/commons';
 import adminsRouter from './routes/admins';
 import commonlyTraverler from './routes/commonlytraveler'
+import updateRouter from './routes/update'
 import {startMQ} from './msgcenter/msgCenter'
 startMQ();
 console.log=function(logText){
@@ -162,5 +163,7 @@ app.use(adminsRouter.allowedMethods())
 //出行人路由
 app.use(commonlyTraverler.routes())
 app.use(commonlyTraverler.allowedMethods())
-
+//版本更新服务
+app.use(updateRouter.routes())
+app.use(updateRouter.allowedMethods())
 export default app

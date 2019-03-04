@@ -101,7 +101,7 @@ class Product {
         this.thumbNum = thumbNum;
         // 获取评论数
         let commentNum = await getComments(this.id)
-        this.commentNum = commentNum[0].count;
+        this.commentNum = commentNum;
     } 
     /**
      * 获取图片

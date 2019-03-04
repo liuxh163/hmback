@@ -1,9 +1,13 @@
 import db from '../db/db'
 import { FilesQuery } from '../models/File'
 const func_getThumbs = require('./Thumb').getThumbs
+const func_getComments = require('./Comment').getComments
 const TARGET = '02'
 async function getThumbs(id){
     return await func_getThumbs(id,TARGET);
+}
+async function getComments(id){
+    return await func_getComments(id,TARGET);
 }
 class Post {
     constructor(data) {
@@ -75,7 +79,7 @@ class Post {
                 result[i].thumbNum = thumbNum;
                 // 获取评论数
                 let commentNum = await getComments(result[i].id)
-                result[i].commentNum = commentNum[0].count;
+                result[i].commentNum = commentNum;
 
                 // 获取帖子图片
                 console.log("post-"+i+":"+result[i]);
@@ -113,7 +117,7 @@ class Post {
                 result.thumbNum = thumbNum;
                 // 获取评论数
                 let commentNum = await getComments(id)
-                result.commentNum = commentNum[0].count;
+                result.commentNum = commentNum;
 
                 let pics = undefined;
                 if(result.picIds){
@@ -286,21 +290,7 @@ async function getViews(id,num) {
 //     }
 // }
 
-/**
- * 获取帖子评论数
- * @param  {[type]} id [description]
- * @return {[type]}    [description]
- */
-async function getComments(id) {
-    try {
-        return await db('t_hm101_comments')
-            .count('targetId as count')
-            .where({ targetId: id })
-    } catch (error) {
-        console.log(error)
-        throw new Error('ERROR')
-    }
-}
+
 /**
  * 根据文件id数组获取文件对象
  * @param {*} ids 
@@ -338,7 +328,7 @@ async function getThumbNumAndCommentNumForUser(userId){
         let db_response = await getThumbs(db_posts[i].id);
         thumbNum += db_response;
         db_response = await getComments(db_posts[i].id);
-        commentNum += db_response[0].count;
+        commentNum += db_response;
     }
     return {
         thumbNum:thumbNum,
