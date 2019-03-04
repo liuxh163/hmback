@@ -10,6 +10,7 @@ import dateFormat from 'date-fns/format'
 import {OrderTargetCode,OrderTypeCode,OrderProductStatus,PayTargetCode} from '../codes'
 import { Codes } from './Codes';
 import {MsgNames,QueueName, sendToDelayMQ,sendToUNHandle} from '../msgcenter/msgCenter'
+import { CommonlyTraveler } from './CommonlyTraveler';
 
 function formatDate(str){
     let date = null;
@@ -150,13 +151,15 @@ class Order {
         }
     }
     async fillFullInfo(){
-        console.log(this)
         let goods = await OrderGood.all(this.number);
         for(let i = 0 ; i < goods.length ; ++i){
             let orderGood = goods[i]
             if(orderGood.target == OrderTargetCode.Product){
                 let peoples = await OrderPeople.all(this.number);
-                orderGood.peoples = peoples;
+                for(let pidx = 0 ; pidx < peoples.length ; ++pidx){
+                    await peoples[pidx].fillFullInfo();
+                }
+                this.peoples = peoples;
             }
         }
         this.goods = goods;
@@ -362,9 +365,23 @@ class OrderPeople{
         let db_people = await db(G_TABLE_ORDER_PEOPLE_NAME).select('*').where({number:number});
         let peoples = [];
         for(let i = 0 ; i < db_people.length ; ++i){
-            peoples.push(new OrderPeople(db_people[i]));
+            let people = new OrderPeople(db_people[i])
+            peoples.push(people);
         }
+        
         return peoples;
+    }
+    async fillFullInfo(){
+        let ct = await CommonlyTraveler.find(this.travelerId);
+        ct.formatToClient();
+        this.firstName = ct.firstName
+        this.lastName = ct.lastName
+        this.firstPinyin = ct.firstPinyin
+        this.lastPinyin = ct.lastPinyin
+        this.passport = ct.passport
+        this.passExpiry = ct.passExpiry
+        this.birthday = ct.birthday
+        this.gender = ct.gender
     }
 }
 class OrderAttendant{
@@ -400,8 +417,6 @@ class OrderAttendant{
         this.realPrice = this.originPrice;
         orderGood.originPrice += this.originPrice;
         orderGood.realPrice += this.realPrice;
-        console.log(attentans.price)
-        console.log(orderGood.originPrice)
         this.name = attentans.name; 
     }
     async save(trx){

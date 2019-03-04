@@ -3,9 +3,13 @@ import { findByPid } from '../models/Tag';
 import {FilesQuery} from '../models/File'
 import {getH5Content} from './H5Content'
 const func_getThumbs = require('./Thumb').getThumbs
+const func_getComments = require('./Comment').getComments
 const TARGET = '01'
 async function getThumbs(id){
     return await func_getThumbs(id,TARGET);
+}
+async function getComments(id){
+    return await func_getComments(id,TARGET)
 }
 class Product {
     constructor(data) {
@@ -449,19 +453,5 @@ async function getViews(id,num) {
 //     }
 // }
 
-/**
- * 获取评论数
- * @param  {[type]} id [description]
- * @return {[type]}    [description]
- */
-async function getComments(id) {
-    try {
-        return await db('t_hm101_comments')
-            .count('targetId as count')
-            .where({ targetId: id })
-    } catch (error) {
-        console.log(error)
-        throw new Error('ERROR')
-    }
-}
+
 export { Product, findById }

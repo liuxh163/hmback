@@ -1,7 +1,7 @@
 import db from '../db/db'
 import dateFormat from 'date-fns/format'
 const getUser = require('../models/User').findById
-const getH5Content = require('./Servant').getH5Content
+import {getH5Content} from './H5Content'
 const func_getThumbs = require('./Thumb').getThumbs
 const TARGET = '05'
 async function getThumbs(id){
@@ -257,7 +257,8 @@ async function getComments(id,target=TARGET) {
     let rows = await db('t_hm101_comments')
         .count('targetId as count')
         .where({ targetId: id ,target:target})
-        return parseInt(rows[0].count);
+
+    return parseInt(rows[0].count);
 
 }
 

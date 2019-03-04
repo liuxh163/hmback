@@ -85,14 +85,18 @@ class CommonlyTraveler {
         age = date_age.getFullYear()-1970;
         this.age = age;
     }
+    static async find(id,allowNonExist = false){
+        return await findById(id);
+    }
 }
 
-async function findById(id) {
+async function findById(id,allowNonExist = false) {
    
     let [dbct] = await db(G_TABLE_NAME)
         .select('*')
         .where({ id: id })
-    if(!dbct) throw new Error("no commonlyTraveler:"+id);
+    if(!dbct && !allowNonExist) throw new Error("no commonlyTraveler:"+id);
+    if(!dbct) return null;
     let ct = new CommonlyTraveler(dbct);
     return ct;
 

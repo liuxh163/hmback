@@ -1,11 +1,16 @@
 import db from '../db/db'
 import {getH5Content} from './H5Content'
 const func_getThumbs = require('./Thumb').getThumbs
-const func_getComments = require('./Comment').getComments
+
+
+const func_getComments = require('./Comment').getComments;
+
 const TARGET = '03'
+
 async function getThumbs(id){
     return await func_getThumbs(id,TARGET);
 }
+
 async function getComments(id){
     return await func_getComments(id,TARGET);
 }

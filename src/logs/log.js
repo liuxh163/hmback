@@ -23,7 +23,7 @@ log4js.configure({
         },
         production: {
             appenders: ['file'],
-            level: 'info',
+            level: 'info'
         },
         default: {
             appenders: ['file'],

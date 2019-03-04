@@ -22,7 +22,7 @@ async function sendToDelayMQ(qName,msgName,data,expiration){
             name:msgName,
             data:data
         }
-        console.log(param)
+        console.debug(param)
         result = await channel.sendToQueue(qName,Buffer.from(JSON.stringify(param)),
         {expiration:expiration});
     }catch(error){

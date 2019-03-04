@@ -3,6 +3,7 @@ import dateFormat from 'date-fns/format';
 
 import { User,findById } from '../models/User'
 import {getThumbNumAndCommentNumForUser} from '../models/Post'
+import redisdb from '../db/redis'
 if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
 require('dotenv').config();
 
@@ -145,7 +146,7 @@ class UserController {
         //验证手机短信
         let passed = false;
         // 根据请求中的手机号从redis缓存中获取有效短信验证码
-        await ctx.redisdb.get(request.telephone).then(function (result) {
+        await ctx.redisdb.get('sms_verify_'+request.telephone).then(function (result) {
             if(result){
                 let redisSmsCode = JSON.parse(result).smscode
                 // 验证短信码
@@ -160,40 +161,37 @@ class UserController {
     //发送短信验证码
     async sendSms(ctx) {
         const request = ctx.request.body
-        //检查新注册用户手机号是否重复
-        // var [result] = await db('t_hm101_users')
-        //     .where({telephone: request.telephone})
-        //     .count('id as id');
-        // if (result.id) {
-        //     ctx.throw(400, 'INVALID_TELEPHONE_NUMBER')
-        // };
+
+        if(!request.telephone) ctx.throw(500,"INVALID PARAM");
+
+        let cnt = redisdb.exists('sms_verify_'+request.telephone);
+        if(cnt != 0 ){
+            ctx.throw(500,'发送太频繁');
+        }
         let verify = new rand(/[1-9]{6}/).gen();
 
         //初始化sms_client
-        // let smsClient = new SMSClient({accessKeyId,secretAccessKey});
+        let smsClient = new SMSClient({accessKeyId,secretAccessKey});
 
-        let sms = {smscode:verify}
 
-        ctx.redisdb.set(request.telephone,JSON.stringify(sms),'EX',sms_expire)
 
-        ctx.body = sms
+        await smsClient.sendSMS({
+            PhoneNumbers: request.telephone,
+            SignName: '心意康旅',
+            TemplateCode: 'SMS_153880263',
+            TemplateParam: '{"code":\'verify\'}'
+        }).then(async function (res) {
+            let {Code}=res
+            if (Code === 'OK') {
+                await ctx.redisdb.set('sms_verify_'+request.telephone,verify,'EX',sms_expire)
+                //处理返回参数
+                console.log(res)
+            }
+        }, function (err) {
+            ctx.throw(500,'短信发送失败')
+        })
 
-        //发送短信
-        // smsClient.sendSMS({
-        //     PhoneNumbers: request.telephone,
-        //     SignName: '海马医疗',
-        //     TemplateCode: 'SMS_153880263',
-        //     TemplateParam: '{"code":\'verify\'}'
-        // }).then(function (res) {
-        //     let {Code}=res
-        //     if (Code === 'OK') {
-        //         ctx.redisdb.set(request.telephone,verify,'EX',sms_expire)
-        //         //处理返回参数
-        //         console.log(res)
-        //     }
-        // }, function (err) {
-        //     console.log(err)
-        // })
+        ctx.body = {}
     }
 
     async update(ctx) {

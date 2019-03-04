@@ -30,7 +30,8 @@ import commonlyTraverler from './routes/commonlytraveler'
 import updateRouter from './routes/update'
 import {startMQ} from './msgcenter/msgCenter'
 startMQ();
-console.log=function(logText){
+
+console.log = function(logText){
     logger.info(logText);
 }
 console.error = function(logText){
