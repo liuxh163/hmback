@@ -177,7 +177,7 @@ class Order {
             .where({'buyerId':userId})
             .count('number as count')
             .where({status:'01'})
-            .orWhere({status:'02'});
+            .orWhere({status:'03'});
         return parseInt(db_ret[0].count);
     }
     static async getBeCommentNum(userId){

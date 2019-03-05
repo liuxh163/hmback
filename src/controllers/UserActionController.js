@@ -255,13 +255,13 @@ class UserController {
         let user = await findById(userid);
         let nums = await getThumbNumAndCommentNumForUser(userid);
         let beCommentOrderNum = await Order.getBeCommentNum(userid);
-        let  pendingPaymentNu = await Order.getPendingPaymentNum(userid);
+        let  pendingPaymentNum = await Order.getPendingPaymentNum(userid);
         ctx.body = {
             user:user,
             thumbNum:nums.thumbNum,
             commentNum:nums.commentNum,
             beCommentOrderNum:beCommentOrderNum,
-            pendingPaymentNu:pendingPaymentNu
+            pendingPaymentNum:pendingPaymentNum
         }
     }
 }
