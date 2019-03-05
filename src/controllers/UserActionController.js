@@ -3,7 +3,9 @@ import dateFormat from 'date-fns/format';
 
 import { User,findById } from '../models/User'
 import {getThumbNumAndCommentNumForUser} from '../models/Post'
+import {Order} from '../models/Order'
 import redisdb from '../db/redis'
+import { isIterable } from 'core-js';
 if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
 require('dotenv').config();
 
@@ -252,11 +254,14 @@ class UserController {
         let userid = ctx.state.user.id;
         let user = await findById(userid);
         let nums = await getThumbNumAndCommentNumForUser(userid);
-
+        let beCommentOrderNum = await Order.getBeCommentNum(userid);
+        let  pendingPaymentNu = await Order.getPendingPaymentNum(userid);
         ctx.body = {
             user:user,
             thumbNum:nums.thumbNum,
-            commentNum:nums.commentNum
+            commentNum:nums.commentNum,
+            beCommentOrderNum:beCommentOrderNum,
+            pendingPaymentNu:pendingPaymentNu
         }
     }
 }

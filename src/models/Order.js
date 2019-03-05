@@ -172,6 +172,21 @@ class Order {
               .update({status:"98"})
               .where({number:this.number})
     }
+    static async getPendingPaymentNum(userId){
+        let db_ret = await db(G_TABLE_NAME)
+            .where({'buyerId':userId})
+            .count('number as count')
+            .where({status:'01'})
+            .orWhere({status:'02'});
+        return parseInt(db_ret[0].count);
+    }
+    static async getBeCommentNum(userId){
+        let db_ret = await db(G_TABLE_NAME)
+            .where({'buyerId':userId})
+            .count('number as count')
+            .where({substate:'04'});
+        return parseInt(db_ret[0].count);
+    }
     async save(trx){
         let v = await trx(G_TABLE_NAME).insert(this);
         this.id = v[0];
@@ -271,6 +286,22 @@ class Order {
             this.confirmAt = formatDate(this.confirmAt)
         }else{
             delete this.confirmAt;
+        }
+        if(this.type == OrderTypeCode.Product){
+            if(this.prepayExpiry && this.status == OrderProductStatus.PREPAY){
+                let date_now = new Date();
+                let time =new Date(this.prepayExpiry).getTime() - date_now.getTime();
+                time = parseInt(time/1000);
+                if(time < 0) time = 0;
+                this.cd = time;
+            }
+            if(this.postpayExpiry && this.status == OrderProductStatus.POSTPAY){
+                let date_now = new Date();
+                let time = new Date(this.postpayExpiry).getTime()-date_now.getTime();
+                time = parseInt(time/1000);
+                if(time < 0) time = 0;
+                this.cd = time;
+            }   
         }
     }
 }
