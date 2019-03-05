@@ -14,6 +14,7 @@ const secretAccessKey = process.env.ALI_SECRETACCESSKEY
 const UUID = require('uuid');
 const token_expire = process.env.TOKEN_EXPIRATION_TIME;
 const sms_expire = process.env.SMS_EXPIRATION_TIME;
+const sms_interval = process.env.SMS_INTERVAL
 class UserController {
     constructor() {}
 
@@ -146,11 +147,15 @@ class UserController {
         //验证手机短信
         let passed = false;
         // 根据请求中的手机号从redis缓存中获取有效短信验证码
-        await ctx.redisdb.get('sms_verify_'+request.telephone).then(function (result) {
-            if(result){
-                passed = result == request.smscode
-            }
-        })
+        let key = 'sms_verify_'+request.telephone;
+        let smsCode =  await ctx.redisdb.get(key);
+        console.log(smsCode);
+        console.log(request.smscode);
+        console.log(smsCode == request.smscode );
+        if(smsCode && smsCode == request.smscode ) {
+            passed = true;
+            await redisdb.del(key)
+        }
         return passed
     }
 
@@ -159,10 +164,9 @@ class UserController {
         const request = ctx.request.body
 
         if(!request.telephone) ctx.throw(500,"INVALID PARAM");
-
-        let cnt = await redisdb.exists('sms_verify_'+request.telephone);
+        let interval_key = 'sms_interval_'+request.telephone;
+        let cnt = await redisdb.exists(interval_key);
         if(cnt != 0 ){
-
             ctx.throw(500,'发送太频繁');
         }
         let verify = new rand(/[1-9]{6}/).gen();
@@ -181,6 +185,7 @@ class UserController {
             let {Code}=res
             if (Code === 'OK') {
                 await ctx.redisdb.set('sms_verify_'+request.telephone,verify,'EX',sms_expire)
+                await ctx.redisdb.set(interval_key,'1','EX',sms_interval);
                 //处理返回参数
                 console.log(res)
             }
