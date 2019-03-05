@@ -22,7 +22,7 @@ async function FileStore(file) {
         return ids[0];
         //return await db('t_hm101_files').insert(file).returning('id');
     } catch (error) {
-        console.log(error)
+        console.error(error)
         throw new Error('ERROR')
     }
 }
@@ -39,7 +39,7 @@ async function FilesQuery(ids) {
             .orderBy('updatedAt', 'desc');
         
     } catch (error) {
-        console.log(error)
+        console.error(error)
         throw new Error('ERROR')
     }
 }

@@ -30,7 +30,7 @@ class UserController {
         var user = new User()
         await user.findPhone(request.telephone)
         if (!user.telephone){
-            console.log("create new user by "+request.telephone)
+            console.debug("create new user by "+request.telephone)
             // 用户不存在则创建新用户
             request.loginId = new rand(/[0-9]{9}/).gen();
             request.ipAddress = ctx.request.ip
@@ -43,7 +43,7 @@ class UserController {
             try {
                 let userid = await user.store();
                 user.id = userid[0];
-                console.log("hahahahah"+userid[0]);
+                console.debug("hahahahah"+userid[0]);
             } catch (error) {
                 ctx.throw(400, 'INVALID_DATA_IN_INSERT')
             }
@@ -68,14 +68,14 @@ class UserController {
         }else{
             //已有用户但未登录，则基于时间戳生成新token
             var token = UUID.v1();
-            console.log("before="+Object.keys(user))
+            console.debug("before="+Object.keys(user))
             Object.keys(user).forEach(function(param){
                 if('id' != param && 'telephone' != param && 'type' != param 
                     && 'userName' != param && 'iconPath' != param){
                     delete user[param];
                 }
             });
-            console.log("after="+Object.keys(user))
+            console.debug("after="+Object.keys(user))
             // 设置redis双向绑定
             ctx.redisdb.set(token, JSON.stringify(user), 'EX', token_expire);
             ctx.redisdb.set('login-'+request.telephone, token, 'EX', token_expire);
@@ -105,7 +105,7 @@ class UserController {
             await user.save()
             ctx.body = { id: user.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
         // TODO:用户登录缓存状态改成无效
@@ -133,7 +133,7 @@ class UserController {
             await user.save()
             ctx.body = { id: user.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -149,9 +149,7 @@ class UserController {
         // 根据请求中的手机号从redis缓存中获取有效短信验证码
         let key = 'sms_verify_'+request.telephone;
         let smsCode =  await ctx.redisdb.get(key);
-        console.log(smsCode);
-        console.log(request.smscode);
-        console.log(smsCode == request.smscode );
+
         if(smsCode && smsCode == request.smscode ) {
             passed = true;
             await redisdb.del(key)
@@ -187,10 +185,10 @@ class UserController {
                 await ctx.redisdb.set('sms_verify_'+request.telephone,verify,'EX',sms_expire)
                 await ctx.redisdb.set(interval_key,'1','EX',sms_interval);
                 //处理返回参数
-                console.log(res)
+                console.debug(res)
             }
         }, function (err) {
-            console.log(err);
+            console.error(err);
             ctx.throw(500,'短信发送失败')
         })
 
@@ -216,19 +214,16 @@ class UserController {
                 user.birthday = dateFormat(new Date(request[param]),'YYYY-MM-DD');
             }else{
                 user[param] = request[param];
-                // console.log('param-'+param+'-is:'+user[param])
             }
             
             
         })
-        Object.keys(user).forEach(function(param) {
-            console.log('user param-'+param+'-is:'+user[param])
-        });
+
         try {
             await user.save()
             ctx.body = { id: user.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -249,7 +244,7 @@ class UserController {
             let result = await user.all(query)
             ctx.body = {users:result}
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA' + error)
         }
     }

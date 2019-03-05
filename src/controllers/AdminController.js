@@ -30,7 +30,7 @@ class UserController {
                 ctx.throw(400, 'WRONE_PASSWORD')
             }
         } catch (error) {
-            console.log('here', error)
+            console.error(error)
                 ctx.throw(400, 'WRONE_PASSWORD')
         }
         // 判断管理员登录状态
@@ -103,7 +103,7 @@ class UserController {
         if (admin.telephone){
             ctx.throw(401, 'TELEPHONE_ALREADY_REGISTRY')
         }
-        console.log("create new user by "+request.telephone)
+        console.debug("create new user by "+request.telephone)
         request.loginId = new rand(/[0-9]{9}/).gen();
         request.ipAddress = ctx.request.ip
         delete request.smscode
@@ -155,7 +155,7 @@ class UserController {
             await admin.save()
             ctx.body = { telephone: admin.telephone }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }

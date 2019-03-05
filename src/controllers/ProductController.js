@@ -124,7 +124,7 @@ class ProductController {
             await product.savePro()
             ctx.body = { id: product.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -148,14 +148,12 @@ class ProductController {
         // 设置启用状态
         product.status = '02'
 
-        // Object.keys(product).forEach(function(param,index){
-        //     console.log("product attr "+param+" is "+product[param])
-        // })
+
         try {
             await product.savePro()
             ctx.body = { id: product.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -182,7 +180,7 @@ class ProductController {
             await product.savePro()
             ctx.body = { id: product.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }

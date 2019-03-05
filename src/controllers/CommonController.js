@@ -1,7 +1,7 @@
 
 class CommonController {
     async codesIndex(ctx) {
-        console.log("in codes index")
+        console.debug("in codes index")
         const codes = ctx.state.codes;
         if (!codes) {
             ctx.throw(400, 'NO_VALID_CODES')

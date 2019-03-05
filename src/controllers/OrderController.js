@@ -22,7 +22,7 @@ class OrderController {
             }
             ctx.body = result
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA' + error)
         }
     }
@@ -36,7 +36,7 @@ class OrderController {
             order.withdraw();
             ctx.body = {}
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA' + error)
         }
     }

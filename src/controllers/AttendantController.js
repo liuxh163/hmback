@@ -18,7 +18,7 @@ class AttendantController {
             let result = await attendant.all(query);
             ctx.body = {attendants:result};
         } catch (error) {
-            console.log(error);
+            console.error(error);
             ctx.throw(400, 'INVALID_DATA' + error);
         }
     }
@@ -43,7 +43,7 @@ class AttendantController {
             let result = await attendant.store()
             ctx.body = { id: result[0] }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -82,7 +82,7 @@ class AttendantController {
             await attendant.save()
             ctx.body = { id: attendant.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -109,7 +109,7 @@ class AttendantController {
             await attendant.save()
             ctx.body = { id: attendant.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -136,7 +136,7 @@ class AttendantController {
             await attendant.save()
             ctx.body = { id: attendant.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }

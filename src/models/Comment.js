@@ -69,7 +69,6 @@ class Comment {
             let comments = [];
             // 获取点赞数及评论数
             for(var i in result){
-                console.log("comment-"+i+":"+result[i])
                 // 获取点赞数
                 result[i].content = await getH5Content(result[i].contentH5Id);
                 let thumbNum = await getThumbs(result[i].id)
@@ -83,7 +82,7 @@ class Comment {
             }
             return comments;
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -95,7 +94,7 @@ class Comment {
     async find(id) {
         try {
             let result = await findById(id)
-            console.log("check comment :"+result.name)
+            console.debug("check comment :"+result.name)
             if (result) {
                 // 获取点赞数
                 let thumbNum = await getThumbs(id)
@@ -107,12 +106,10 @@ class Comment {
             }else{
                 return {}
             }
-            // Object.keys(result).forEach(function(param,index){
-            //     console.log("find result attr "+param+" is "+result[param])
-            // })
+
             this.constructor(result)
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -128,10 +125,7 @@ class Comment {
         var content = comment.content
         delete comment.content
         comment.createdAt = new Date();
-        // 遍历打印对象内容
-        Object.keys(comment).forEach(function(param,index){
-            console.log("comment attr "+param+" is "+comment[param])
-        })
+
         // 使用事务插入帖子信息及内容信息表
         return await db.transaction(function(trx) {
           return db('t_hm101_htmls').insert({content: content}, 'id')
@@ -147,7 +141,7 @@ class Comment {
             return inserts;
         })
         .catch(function(error) {
-            console.log("error is---"+error)
+            console.error(error)
             throw new Error('ERROR')
         });
     }
@@ -163,16 +157,14 @@ class Comment {
         content.operator = comment.operator
         delete comment.content
 
-        Object.keys(content).forEach(function(param,index){
-            console.log("model save attr "+param+" is "+content[param])
-        })
+
         // 使用事务插入帖子信息及内容信息表
         return await db.transaction(function(trx) {
           return db('t_hm101_htmls').update(content)
             .transacting(trx)
             .where({id: comment.contentH5Id})
             .then(function(ids) {
-                console.log("content id is :"+ids[0])
+                console.debug("content id is :"+ids[0])
                 return db('t_hm101_comments')
                     .update(comment)
                     .transacting(trx)
@@ -185,7 +177,7 @@ class Comment {
             return inserts;
         })
         .catch(function(error) {
-            console.log("error is---"+error)
+            console.error("error is---"+error)
           throw new Error('ERROR')
         });
     }
@@ -196,7 +188,7 @@ class Comment {
                 .update({operateFlag : 'D'})
                 .where({ id: this.id })
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -228,25 +220,11 @@ async function findById(id) {
         comment.commentNum = commentNum;
         return comment;
     } catch (error) {
-        console.log(error)
+        console.error(error)
         throw new Error('ERROR')
     }
 }
-// /**
-//  * 获取点赞数
-//  * @param  {[type]} id [description]
-//  * @return {[type]}    [description]
-//  */
-// async function getThumbs(id) {
-//     try {
-//         return await db('t_hm101_thumbs')
-//             .count('targetId as count')
-//             .where({ targetId: id ,status:'01'})
-//     } catch (error) {
-//         console.log(error)
-//         throw new Error('ERROR')
-//     }
-// }
+
 
 /**
  * 获取评论数

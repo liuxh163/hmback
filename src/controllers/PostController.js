@@ -32,7 +32,7 @@ class PostController {
             }
             ctx.body = {posts:result}
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA' + error)
         }
     }
@@ -49,7 +49,7 @@ class PostController {
             await post.find(params.id)
             ctx.body = post
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -74,7 +74,7 @@ class PostController {
             let result = await post.store()
             ctx.body = { id: result[0] }
         } catch (error) {
-            console.log(error)
+            console.error(error);
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -99,9 +99,7 @@ class PostController {
         const curUser = new User(ctx.state.user)
         if (post.posterId !== curUser.id ||
             "02" !== curUser.type) ctx.throw(400, 'INVALID_OPERATOR')
-        // Object.keys(post).forEach(function(param,index){
-        //     console.log("controller1 post attr "+param+" is "+post[param])
-        // })
+
         //Add the updated date value
         post.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
         post.operateFlag = 'U'
@@ -111,14 +109,12 @@ class PostController {
         Object.keys(ctx.request.body).forEach(function(parameter, index) {
             post[parameter] = request[parameter]
         })
-        // Object.keys(post).forEach(function(param,index){
-        //     console.log("controller2 post attr "+param+" is "+post[param])
-        // })
+ 
         try {
             await post.save()
             ctx.body = { id: post.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -132,11 +128,7 @@ class PostController {
         await post.find(params.id)
         if (!post.id) ctx.throw(400, 'INVALID_DATA');
 
-        // console.log("post object "+Object.keys(post))
-        // // 遍历打印对象内容
-        // Object.keys(post).forEach(function(param,index){
-        //     console.log("post attr "+param+" is "+post[param])
-        // })
+
         //判断操作用户是否发帖人，不是发帖人不允许删除
         const user = new User(ctx.state.user)
         if (post.posterId !== user.id) ctx.throw(400, 'INVALID_POSTER');
@@ -145,7 +137,7 @@ class PostController {
             await post.destroy()
             ctx.body = { id: params.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }

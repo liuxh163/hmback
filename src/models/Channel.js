@@ -55,7 +55,7 @@ class Channel {
             };
             
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -66,7 +66,7 @@ class Channel {
             if (!result) return {}
             this.constructor(result)
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -75,7 +75,7 @@ class Channel {
         try {
             return await db('t_hm101_channels').insert(this)
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -86,7 +86,7 @@ class Channel {
                 .update(this)
                 .where({ id: this.id })
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -100,7 +100,7 @@ async function findById(id) {
             .where({ id: id })
         return channelData
     } catch (error) {
-        console.log(error)
+        console.error(error)
         throw new Error('ERROR')
     }
 }

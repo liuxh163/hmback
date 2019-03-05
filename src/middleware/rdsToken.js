@@ -37,7 +37,7 @@ module.exports = (opts = {}) => {
                         }// end of for loop
                     }// end of set function
                     // 如何读取码表信息
-                    // console.log("码表信息是--"+ctx.state.getCode("MBZLBM","03"));
+                    // console.debug("码表信息是--"+ctx.state.getCode("MBZLBM","03"));
                 }
             }
             // 根据token从redis缓存中读取用户信息保存在上下文中
@@ -51,7 +51,6 @@ module.exports = (opts = {}) => {
 
             
         } catch (error) {
-            console.log('123')
             //If it's an expiration error, let's report that specifically.
             if (error.name === 'TokenExpiredError') {
                 ctx.throw(401, 'TOKEN_EXPIRED')

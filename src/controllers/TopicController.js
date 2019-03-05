@@ -12,7 +12,7 @@ class TopicController {
             let result = await topic.all(query);
             ctx.body = {topics:result};
         } catch (error) {
-            console.log(error);
+            console.error(error);
             ctx.throw(400, 'INVALID_DATA' + error);
         }
     }
@@ -29,14 +29,12 @@ class TopicController {
         const topic = new Topic(request)
         topic.operator = curUser.id
         topic.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
-        // Object.keys(topic).forEach(function(param, index){
-        //     console.log("topic atrr "+param+" is:"+topic[param]);
-        // });
+
         try {
             let result = await topic.store()
             ctx.body = { id: result[0] }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -65,14 +63,13 @@ class TopicController {
         //Replace the topic data with the new updated topic data
         Object.keys(request).forEach(function(parameter, index) {
             topic[parameter] = request[parameter]
-            // console.log("param is include "+parameter)
         })
 
         try {
             await topic.save()
             ctx.body = { id: topic.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -103,7 +100,7 @@ class TopicController {
             await topic.save()
             ctx.body = { id: topic.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -130,7 +127,7 @@ class TopicController {
             await topic.save()
             ctx.body = { id: topic.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }

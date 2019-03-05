@@ -47,7 +47,7 @@ class Tag {
             };
             
         } catch (error) {
-            console.log(error)
+            console.loerrorg(error)
             throw new Error('ERROR')
         }
     }
@@ -57,7 +57,7 @@ class Tag {
             if (!result) return {}
             this.constructor(result)
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -65,7 +65,7 @@ class Tag {
         try {
             return await db('t_hm101_tags').insert(this)
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -78,7 +78,7 @@ class Tag {
                     operator:this.operator})
                 .where({ id: this.id })
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -91,7 +91,7 @@ async function findById(id) {
             .where({ id: id })
         return tagData
     } catch (error) {
-        console.log(error)
+        console.error(error)
         throw new Error('ERROR')
     }
 }
@@ -103,7 +103,7 @@ async function findByPid(pid) {
             .where({ targetId: pid });
         return tagData;
     } catch (error) {
-        console.log(error)
+        console.error(error)
         throw new Error('ERROR')
     }
 }

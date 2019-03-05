@@ -19,7 +19,7 @@ class ExpertController {
             let result = await expert.all(query)
             ctx.body = result
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA' + error)
         }
     }
@@ -36,7 +36,7 @@ class ExpertController {
             await expert.find(params.id)
             ctx.body = expert
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -51,7 +51,7 @@ class ExpertController {
             let result = await expert.store()
             ctx.body = { message: 'SUCCESS', id: result }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -84,7 +84,7 @@ class ExpertController {
             await expert.save()
             ctx.body = { id: expert.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -106,7 +106,7 @@ class ExpertController {
             await expert.destroy()
             ctx.body = { id: params.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }

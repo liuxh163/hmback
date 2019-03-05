@@ -19,7 +19,7 @@ class ChannelController {
             let result = await channel.all(query)
             ctx.body = {channels:result}
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA' + error)
         }
     }
@@ -37,7 +37,7 @@ class ChannelController {
             let result = await channel.store()
             ctx.body = { id: result[0] }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -61,9 +61,7 @@ class ChannelController {
         channel.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
         channel.operateFlag = 'U'
         channel.operator = curUser.id
-        // Object.keys(channel).forEach(function(param,index){
-        //     console.log("controller1 channel attr "+param+" is "+channel[param])
-        // })
+
         //Replace the channel data with the new updated channel data
         Object.keys(ctx.request.body).forEach(function(parameter, index) {
             channel[parameter] = request[parameter]
@@ -73,7 +71,7 @@ class ChannelController {
             await channel.save()
             ctx.body = { id: channel.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -100,7 +98,7 @@ class ChannelController {
             await channel.save()
             ctx.body = { id: channel.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -127,7 +125,7 @@ class ChannelController {
             await channel.save()
             ctx.body = { id: channel.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }

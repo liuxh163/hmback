@@ -23,7 +23,7 @@ class LoanController {
             let result = await note.all(query)
             ctx.body = result
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA' + error)
         }
     }
@@ -40,7 +40,7 @@ class LoanController {
             await note.find(params.id)
             ctx.body = note
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -66,7 +66,7 @@ class LoanController {
             let result = await note.store()
             ctx.body = { message: 'SUCCESS', id: result }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -102,7 +102,7 @@ class LoanController {
             await note.save()
             ctx.body = { message: 'SUCCESS' }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -124,7 +124,7 @@ class LoanController {
             await note.destroy()
             ctx.body = { message: 'SUCCESS' }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }

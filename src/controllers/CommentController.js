@@ -44,7 +44,7 @@ class CommentController {
             }
             ctx.body = result
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA' + error)
         }
     }
@@ -77,7 +77,7 @@ class CommentController {
             await sendedComment.formatForClient();
             ctx.body =  sendedComment;
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -108,14 +108,11 @@ class CommentController {
             comment[parameter] = request[parameter]
         })
 
-        // Object.keys(comment).forEach(function(param,index){
-        //     console.log("controller update attr "+param+" is "+comment[param])
-        // })
         try {
             await comment.save()
             ctx.body = { id: comment.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -137,7 +134,7 @@ class CommentController {
             await comment.destroy()
             ctx.body = { id: params.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }

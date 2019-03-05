@@ -14,14 +14,10 @@ class CommonlyTravelerController{
         ctx.body = ct.id;
     }
     async update(ctx){
-        console.log('1');
         let userId = ctx.state.user.id;
-        console.log(ctx.request.body);
         let ct = new CommonlyTraveler(ctx.request.body);
         await ct.store(userId);
-        console.log(ct.id);
         ctx.body = ct.id;
-        console.log('3');
     }
     async del(ctx){
         let params = ctx.request.body;

@@ -11,21 +11,14 @@ async function outHandler(ctx, next) {
     ctx.redisdb = redisdb
     await next();
     //跳过部分url
-    console.log(ctx.path);
     try{
         let idx = EscapePath.findIndex((value)=>{return value === ctx.path});
         if(idx != -1){
             return;
         }
     }catch(error){
-        console.log(error);
+        console.error(error);
     }
-    // ctx.redisdb.get('dd114f80-05a6-11e9-bf02-7780a1cd7342').then(function (result) {
-    //     let test = JSON.parse(result)
-    //     console.log("1-1-1-1"+test.telephone);
-    // });
-
-    // ctx.redisdb.expire('dd114f80-05a6-11e9-bf02-7780a1cd7342', 1000)
 
     var result
     if('200'!=ctx.status){

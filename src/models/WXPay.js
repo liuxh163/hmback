@@ -25,8 +25,7 @@ var wxpay = {
         var string = raw(params);
         var key = mchkey;
         string = string + '&key=' + key;
-        console.log(params);
-        console.log('string='+string);
+        console.debug('string='+string);
         var crypto = require('crypto');
         return crypto.createHash('md5').update(string, 'utf8').digest('hex').toUpperCase();
     },
@@ -47,7 +46,7 @@ var wxpay = {
         var string = raw(ret);
         var key = mchkey;
         string = string + '&key=' + key;
-        console.log('string=', string);
+        console.debug('string=', string);
         var crypto = require('crypto');
         return crypto.createHash('md5').update(string, 'utf8').digest('hex').toUpperCase();
     },
@@ -78,34 +77,16 @@ var wxpay = {
             partnerid:mch_id,
             timestamp: timestamp,
         };
-        console.log('retretret=='+ret);
         var string = raw(ret);
         var key = mchkey;
         string = string + '&key=' + key;
-        console.log('stringstringstring=', string);
+        console.debug('stringstringstring=', string);
         var crypto = require('crypto');
         let sign = crypto.createHash('md5').update(string, 'utf8').digest('hex').toUpperCase();
         ret.sign = sign;
         return ret;
-    },
-    getXMLNodeValue: function (xml) {
-        // var tmp = xml.split("<"+node_name+">");
-        // console.log('tmp',tmp);
-        // var _tmp = tmp[1].split("</"+node_name+">");
-        // console.log('_tmp',_tmp);
-        // return _tmp[0];
-        xmlreader.read(xml, function (errors, response) {
-            if (null !== errors) {
-                console.log(errors)
-                return;
-            }
-            console.log('长度===', response.xml.prepay_id.text().length);
-            var prepay_id = response.xml.prepay_id.text();
-            console.log('解析后的prepay_id==',prepay_id);
-            return prepay_id;
-        });
     }
- 
+
 }
 function raw(args) {
     var keys = Object.keys(args);

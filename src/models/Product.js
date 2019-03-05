@@ -251,7 +251,7 @@ class Product {
                     .returning('id')
                     .transacting(trx)
                     .then(function(ids){
-                        console.log("expert insert product id:"+ids[0])
+                        console.debug("expert insert product id:"+ids[0])
                         proudctId = ids[0]
                         for(var i in experts){
                             experts[i].productId = proudctId
@@ -277,7 +277,7 @@ class Product {
             return proudctId;
         })
         .catch(function(error) {
-            console.log("error is---"+error)
+            console.error("error is---"+error)
             throw new Error('ERROR')
         });
     }
@@ -353,16 +353,12 @@ class Product {
      */
     async savePro() {
         try {
-            console.log('123');
-            // Object.keys(this).forEach(function(param){
-            //     // console.log("product attr:"+param);
-            //     console.log("product attr-"+param+" is-"+this[param]);
-            // })
+
             return await db('t_hm101_products')
                 .update(this)
                 .where({ id: this.id });
         } catch (error) {
-            console.log(error);
+            console.error(error);
             throw new Error('ERROR');
         }
     }
@@ -387,7 +383,7 @@ async function getPictures(ids) {
     try {
         return await FilesQuery(ids);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         throw new Error('ERROR');
     }
 }
@@ -399,7 +395,7 @@ async function getTags(id) {
     try {
         return await findByPid(id);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         throw new Error('ERROR');
     }
 }
@@ -432,26 +428,11 @@ async function getViews(id,num) {
             .update({viewNum:num})
             .where({ id: id })
     } catch (error) {
-        console.log(error)
+        console.error(error)
         throw new Error('ERROR')
     }
 }
 
-/**
- * 获取点赞数
- * @param  {[type]} id [description]
- * @return {[type]}    [description]
- */
-// async function getThumbs(id) {
-//     try {
-//         return await db('t_hm101_thumbs')
-//             .count('targetId as count')
-//             .where({ targetId: id })
-//     } catch (error) {
-//         console.log(error)
-//         throw new Error('ERROR')
-//     }
-// }
 
 
 export { Product, findById }

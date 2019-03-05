@@ -73,7 +73,7 @@ class Post {
             }
             // 获取帖子点赞数及评论数
             for(var i in result){
-                console.log("post-"+i+":"+result[i])
+                console.debug("post-"+i+":"+result[i])
                 // 获取点赞数
                 let thumbNum = await getThumbs(result[i].id)
                 result[i].thumbNum = thumbNum;
@@ -82,7 +82,7 @@ class Post {
                 result[i].commentNum = commentNum;
 
                 // 获取帖子图片
-                console.log("post-"+i+":"+result[i]);
+                console.debug("post-"+i+":"+result[i]);
                 let pics = undefined;
                 if(result[i].picIds){
                     pics = result[i].picIds.split(",");
@@ -95,7 +95,7 @@ class Post {
             
             return result
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -131,12 +131,10 @@ class Post {
             }else{
                 return {}
             }
-            // Object.keys(result).forEach(function(param,index){
-            //     console.log("find result attr "+param+" is "+result[param])
-            // })
+
             this.constructor(result)
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -151,30 +149,9 @@ class Post {
         delete post.commentNum;
         delete post.thumbNum;
         delete post.pictures;
-        // 遍历打印对象内容
-        // Object.keys(post).forEach(function(param,index){
-        //     console.log("post attr "+param+" is "+post[param])
-        // })
+
         return await db('t_hm101_posts').insert(post);
-        // 使用事务插入帖子信息及内容信息表
-        // return await db.transaction(function(trx) {
-        //   return db('t_hm101_htmls').insert({content: content}, 'id')
-        //     .transacting(trx)
-        //     .then(function(ids) {
-        //         console.log("content id is :"+ids[0])
-        //         post.contentH5Id = ids[0];
-        //         return db('t_hm101_posts').insert(post).transacting(trx);
-        //     })
-        //     .then(trx.commit)
-        //     .catch(trx.rollback);
-        // })
-        // .then(function(inserts) {
-        //     return inserts;
-        // })
-        // .catch(function(error) {
-        //     console.log("error is---"+error)
-        //   throw new Error('ERROR')
-        // });
+
     }
     /**
      * 更新帖子相关信息
@@ -187,41 +164,9 @@ class Post {
         delete post.commentNum;
         delete post.thumbNum;
         delete post.pictures;
-        // var content = {content:post.content}
-        // content.updatedAt = post.updatedAt
-        // content.operateFlag = post.operateFlag
-        // content.operator = post.posterId
-        // delete post.content
-        // 遍历打印对象内容
-        // Object.keys(content).forEach(function(param,index){
-        //     console.log("content attr "+param+" is "+content[param])
-        // })
-        // Object.keys(post).forEach(function(param,index){
-        //     console.log("post attr "+param+" is "+post[param])
-        // })
+
         return db('t_hm101_posts').update(post).where({id: post.id});
-        // 使用事务插入帖子信息及内容信息表
-        // return await db.transaction(function(trx) {
-        //   return db('t_hm101_htmls').update(content)
-        //     .transacting(trx)
-        //     .where({id: post.contentH5Id})
-        //     .then(function(ids) {
-        //         console.log("content id is :"+ids[0])
-        //         return db('t_hm101_posts')
-        //             .update(post)
-        //             .transacting(trx)
-        //             .where({id: post.id});
-        //     })
-        //     .then(trx.commit)
-        //     .catch(trx.rollback);
-        // })
-        // .then(function(inserts) {
-        //     return inserts;
-        // })
-        // .catch(function(error) {
-        //     console.log("error is---"+error)
-        //   throw new Error('ERROR')
-        // });
+
     }
     /**
      * 删除指定的帖子
@@ -234,7 +179,7 @@ class Post {
                 .update({operateFlag : 'D'})
                 .where({ id: this.id })
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -248,12 +193,10 @@ async function findById(id) {
     try {
         let [result] = await db('t_hm101_posts').select('*')
                     .where({ 'id': id});
-        // Object.keys(result).forEach(function(param,index){
-        //     console.log("return post attr "+param+" is "+result[param])
-        // })
+
         return result
     } catch (error) {
-        console.log(error)
+        console.error(error)
         throw new Error('ERROR')
     }
 }
@@ -268,27 +211,11 @@ async function getViews(id,num) {
             .update({viewNum:num})
             .where({ id: id })
     } catch (error) {
-        console.log(error)
+        console.error(error)
         throw new Error('ERROR')
     }
 }
 
-/**
- * 获取帖子点赞数
- * @param  {[type]} id [description]
- * @return {[type]}    [description]
- */
-// async function getThumbs(id) {
-//     try {
-//         let x = await db('t_hm101_thumbs')
-//             .count('targetId as count')
-//             .where({ targetId: id })
-//             return x;
-//     } catch (error) {
-//         console.log(error)
-//         throw new Error('ERROR')
-//     }
-// }
 
 
 /**
@@ -299,7 +226,7 @@ async function getPictures(ids) {
     try {
         return await FilesQuery(ids);
     } catch (error) {
-        console.log(error)
+        console.error(error)
         throw new Error('ERROR')
     }
 }
@@ -316,7 +243,6 @@ async function findByUserAndTopic(userId,topicId){
         await post.find(db_posts[i].id);
         posts.push(post);
     }
-    console.log(posts)
     return posts;
 }
 

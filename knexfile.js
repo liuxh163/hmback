@@ -29,7 +29,7 @@ module.exports = {
     },
     development: {
         client: 'mysql',
-        debug: true,
+        debug: false,
         connection: {
             host: process.env.DB_HOST,
             port: process.env.DB_PORT,
@@ -47,7 +47,7 @@ module.exports = {
         },
         seeds: {
             directory: './src/db/seeds/dev',
-        },
+        }
     },
     production: {
         client: 'mysql',
@@ -66,6 +66,6 @@ module.exports = {
         },
         migrations: {
             directory: './src/db/migrations',
-        },
+        }
     }
 }

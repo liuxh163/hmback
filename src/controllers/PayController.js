@@ -23,7 +23,7 @@ class PayController {
         let params = ctx.request.body;
         let number = params.number;
         let order = await findByNumber(number);
-        console.log(order);
+
         //从数据库取到对应的微信商品代码，商品价格
         let payParams = order.getPayParamsForWX();
         let total_fee = wxpay.getmoney(payParams.fee);
@@ -57,11 +57,10 @@ class PayController {
         
         inParam.out_trade_no = payObj.out_trade_no;
         inParam.attach = attach;
-        console.log(payObj)
         let sign = wxpay.paysignapi(mchkey,inParam);
         //let sign = wxpay.paysignjsapi(appid,body,mch_id,nonce_str,notify_url,out_trade_no,spbill_create_ip,total_fee,trade_type,mchkey);
     
-        console.log('sign=='+sign);
+        console.debug('sign=='+sign);
     
         //组装xml数据
         var formData  = "<xml>";
@@ -83,10 +82,9 @@ class PayController {
         do{
             if(response.status != 200) break;
             let xmlobj = null;
-            console.log(response.data.toString('utf-8'));
             xmlreader.read(response.data.toString("utf-8"), function (errors, xml) {
                 if (null !== errors) {
-                    console.log(errors)
+                    console.debug(errors)
                     return;
                 }
                 xmlobj = xml;
@@ -98,7 +96,7 @@ class PayController {
             if( xmlobj.xml.result_code.text() === "FAIL") break;
 
             var prepay_id = xmlobj.xml.prepay_id.text();
-            console.log('解析后的prepay_id=='+prepay_id);
+            console.debug('解析后的prepay_id=='+prepay_id);
 
             //将预支付订单和其他信息一起签名后返回给前端
             result = wxpay.paysignjsapifinal(appid,mch_id,prepay_id,nonce_str,mchkey);
@@ -139,8 +137,6 @@ class PayController {
         console.debug(string)
         var crypto = require('crypto');
         let localSign = crypto.createHash('md5').update(string, 'utf8').digest('hex').toUpperCase();
-        console.log(localSign);
-        console.log(xmlObj.sign);
         return localSign === xmlObj.sign
     }
     async wx_notify(ctx){
@@ -189,8 +185,6 @@ class PayController {
                 ctx.body = formData;
                 return;
             }
-
-            console.log(inParam);
  
             //核心原则就是
             //在处理失败并且入队失败的情况下

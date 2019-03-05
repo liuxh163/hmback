@@ -24,7 +24,7 @@ async function genLongID(module_name,prefix,digit){
     let key = module_name+"_"+prefix+"_id";
     let incID = await redisdb.incr(key);
     idStr += prefixInteger(incID,digit-idStr.length);
-    console.log('genid:'+idStr+" key:"+key);
+    console.debug('genid:'+idStr+" key:"+key);
     sendToMQ(QueueName.LongIDQueue,MsgNames.SaveID,{name:key});
     return idStr;
 }

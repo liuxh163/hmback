@@ -52,7 +52,7 @@ class Thumb {
             if (!result) return {}
             this.constructor(result[0])
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -62,7 +62,7 @@ class Thumb {
             return await db('t_hm101_thumbs')
                 .insert(this)
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -73,7 +73,7 @@ class Thumb {
                 .update(this)
                 .where({ id: this.id })
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }

@@ -47,10 +47,9 @@ class Codes {
                     .whereNot(notConditions);
             };
  
-            // console.log('object codes === '+JSON.stringify(result))
             return  result
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }

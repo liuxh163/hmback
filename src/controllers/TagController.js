@@ -5,7 +5,6 @@ import { Tag } from '../models/Tag'
 
 class TagController {
     async index(ctx) {
-        console.log("in tag controller index")
         const query = ctx.query
 
         const tag = new Tag()
@@ -19,7 +18,7 @@ class TagController {
             let result = await tag.all(query)
             ctx.body = {tags:result}
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA' + error)
         }
     }
@@ -46,7 +45,7 @@ class TagController {
             let result = await tag.store()
             ctx.body = { id: result[0] }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -62,8 +61,7 @@ class TagController {
 
         //只能删除自己打的标签
         const curUser = new User(ctx.state.user)
-        console.log("curUser is:"+curUser.id)
-        console.log("tag user is:"+tag.tagerId)
+
         if (tag.tagerId !== curUser.id) ctx.throw(400, 'INVALID_USER_DATA')
 
         //Add the updated date value
@@ -74,7 +72,7 @@ class TagController {
             await tag.destroy()
             ctx.body = { id: params.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }

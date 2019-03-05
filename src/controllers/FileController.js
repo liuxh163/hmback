@@ -36,7 +36,6 @@ class FileController{
        try{
             let results = [];
 
-            console.log(Object.prototype.toString(ctx.request.files.filex));
             const curUser = {id:1}
            // const curUser = ctx.state.user;
 
@@ -70,7 +69,7 @@ class FileController{
             }
             ctx.body = {files: files};
         }catch(error){
-            console.log(error)
+            console.error(error)
             ctx.throw(400, error)
         }
     }
@@ -91,7 +90,7 @@ class FileController{
             }
         }catch(e){
             //失败
-            console.log("catch exception:"+e.message+" code:"+e.code)
+            console.error("catch exception:"+e.message+" code:"+e.code)
             result = {
                 name:file.name,
                 code:1,

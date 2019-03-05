@@ -25,7 +25,7 @@ class ServantController {
             let result = await servant.all(query)
             ctx.body = {servants:result}
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA' + error)
         }
     }
@@ -44,12 +44,10 @@ class ServantController {
             //Find and show servant
             await servant.find(params.id)
             servant.isLike = await isLike(ctx.state.user.id,'03',servant.id);
-            // Object.keys(servant).forEach(function(param,index){
-            //     console.log("controller show attr "+param+" is "+servant[param])
-            // })
+
             ctx.body = servant
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -66,14 +64,11 @@ class ServantController {
 
         request.operator = curUser.id
         const servant = new Servant(request)
-        Object.keys(request).forEach(function(param,index){
-            console.log("request attr "+param+" is "+request[param])
-        })
         try {
             let result = await servant.store()
             ctx.body = { id: result }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -123,7 +118,7 @@ class ServantController {
             await servant.save()
             ctx.body = { id: servant.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -154,7 +149,7 @@ class ServantController {
             await servant.save()
             ctx.body = { id: servant.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -185,7 +180,7 @@ class ServantController {
             await servant.save()
             ctx.body = { id: servant.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }

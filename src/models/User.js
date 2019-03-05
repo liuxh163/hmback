@@ -67,7 +67,7 @@ class User {
             };
             
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -78,7 +78,7 @@ class User {
             if (!result) return {}
             this.constructor(result)
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -89,7 +89,7 @@ class User {
             if (!result) return {}
             this.constructor(result)
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -102,7 +102,7 @@ class User {
             this.type = type;
             return await db('t_hm101_users').insert(this)
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -112,7 +112,7 @@ class User {
                 .update(this)
                 .where({ id: this.id })
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -125,7 +125,7 @@ async function findById(id,type="01") {
             .where({ id: id, type: type })
         return new User(result)
     } catch (error) {
-        console.log(error)
+        console.error(error)
         throw new Error('ERROR')
     }
 }
@@ -136,7 +136,7 @@ async function findByPhone(telephone, type="01") {
             .where({ telephone: telephone, status: '01', type: type })
         return result
     } catch (error) {
-        console.log(error)
+        console.error(error)
         throw new Error('ERROR')
     }
 }

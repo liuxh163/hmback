@@ -13,7 +13,7 @@ router.post('/api/v1/upload', tokenMw, koaBody({
     formidable:{
         multipart:true,
         onFileBegin(name,file){
-            console.log(file.name);
+            console.debug(file.name);
         }
     },
     onError:()=>{

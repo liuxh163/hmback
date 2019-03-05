@@ -139,7 +139,6 @@ class Order {
             .orderBy('createdAt', request.order)
             .offset(request.page*request.pageNum)
             .limit(+request.pageNum);
-            console.log(db_orders)
 
             let orders = [];
             for(let i = 0 ; i < db_orders.length ; ++i){
@@ -149,7 +148,7 @@ class Order {
             }
             return orders;
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }

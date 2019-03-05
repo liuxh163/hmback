@@ -16,7 +16,7 @@ class CarouselController {
             let result = await carousel.all(query);
             ctx.body = {carousels:result};
         } catch (error) {
-            console.log(error);
+            console.error(error);
             ctx.throw(400, 'INVALID_DATA' + error);
         }
     }
@@ -41,7 +41,7 @@ class CarouselController {
             let result = await carousel.store()
             ctx.body = { id: result[0] }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -81,7 +81,7 @@ class CarouselController {
             await carousel.save()
             ctx.body = { id: carousel.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -102,7 +102,7 @@ class CarouselController {
             await carousel.destroy()
             ctx.body = { id: params.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -129,7 +129,7 @@ class CarouselController {
             await carousel.save()
             ctx.body = { id: carousel.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }
@@ -156,7 +156,7 @@ class CarouselController {
             await carousel.save()
             ctx.body = { id: carousel.id }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             ctx.throw(400, 'INVALID_DATA')
         }
     }

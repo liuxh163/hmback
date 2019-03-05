@@ -95,7 +95,6 @@ class Servant {
             for(var i in result){
                 result[i].car = await getH5Content(result[i].carH5Id);
                 result[i].feedesc =await  getH5Content(result[i].feedescH5Id);
-                console.log("servant-"+i+":"+result[i])
                 // 获取点赞数
                 let thumbNum = await getThumbs(result[i].id)
                 result[i].thumbNum = thumbNum;
@@ -105,7 +104,7 @@ class Servant {
             }
             return result;
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -117,7 +116,6 @@ class Servant {
     async find(id) {
         try {
             let result = await findById(id)
-            console.log("check servant :"+result.name)
             if (result) {
                 // 增加并获取查看数
                 let viewNum = ++result.viewNum
@@ -133,12 +131,10 @@ class Servant {
             }else{
                 return {}
             }
-            // Object.keys(result).forEach(function(param,index){
-            //     console.log("find result attr "+param+" is "+result[param])
-            // })
+
             this.constructor(result)
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -158,10 +154,7 @@ class Servant {
         delete servant.intro
         delete servant.car
         delete servant.feedesc
-        // 遍历打印对象内容
-        Object.keys(servant).forEach(function(param,index){
-            console.log("servant attr "+param+" is "+servant[param])
-        })
+
         // 使用事务插入帖子信息及内容信息表
         let dbresult = 0;
         await db.transaction(async function(trx) {
@@ -176,29 +169,13 @@ class Servant {
                 dbresult =  x[0];
                 return trx.commit();
             } catch (error) {
-                console.log(error);
+                console.error(error);
                 return trx.rollback(error);
             }
             
         });
         return dbresult;
-        //     return db('t_hm101_servants').insert(servant).transacting(trx);
-        //   return db('t_hm101_htmls').insert({content: content}, 'id')
-        //     .transacting(trx)
-        //     .then(function(ids) {
-        //         servant.introH5Id = ids[0];
-        //         return db('t_hm101_servants').insert(servant).transacting(trx);
-        //     })
-        //     .then(trx.commit)
-        //     .catch(trx.rollback);
-        // })
-        // .then(function(inserts) {
-        //     return inserts;
-        // })
-        // .catch(function(error) {
-        //     console.log("error is---"+error)
-        //     throw new Error('ERROR')
-        // });
+
     }
     /**
      * 更新服务人员信息
@@ -234,37 +211,11 @@ class Servant {
                     .where({id:servant.id});
                 return trx.commit();
             } catch (error) {
-                console.log(error)
+                console.error(error)
                 return trx.rollback(error);
             };  
         });
-        // .then(function(inserts) {
-        //     return inserts;
-        // })
-        // .catch(function(error) {
-        //     console.log("error is---"+error)
-        //   throw new Error('ERROR')
-        // });
-        //  return db('t_hm101_htmls').update(content)
-        //    .transacting(trx)
-        //     .where({id: servant.introH5Id})
-        //     .then(function(ids) {
-        //         console.log("content id is :"+ids[0])
-        //         return db('t_hm101_servants')
-        //             .update(servant)
-        //             .transacting(trx)
-        //             .where({id: servant.id});
-        //     })
-        //     .then(trx.commit)
-        //     .catch(trx.rollback);
-        // })
-        // .then(function(inserts) {
-        //     return inserts;
-        // })
-        // .catch(function(error) {
-        //     console.log("error is---"+error)
-        //   throw new Error('ERROR')
-        // });
+
     }
 
     async destroy() {
@@ -273,7 +224,7 @@ class Servant {
                 .update({operateFlag : 'D'})
                 .where({ id: this.id })
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -295,7 +246,7 @@ async function findById(id) {
         }
         return servantData
     } catch (error) {
-        console.log(error)
+        console.error(error)
         throw new Error('ERROR')
     }
 }
@@ -310,26 +261,12 @@ async function getViews(id,num) {
             .update({viewNum:num})
             .where({ id: id })
     } catch (error) {
-        console.log(error)
+        console.error(error)
         throw new Error('ERROR')
     }
 }
 
-/**
- * 获取点赞数
- * @param  {[type]} id [description]
- * @return {[type]}    [description]
- */
-// async function getThumbs(id) {
-//     try {
-//         return await db('t_hm101_thumbs')
-//             .count('targetId as count')
-//             .where({ targetId: id })
-//     } catch (error) {
-//         console.log(error)
-//         throw new Error('ERROR')
-//     }
-// }
+
 
 
 export { Servant, findById ,getH5Content}

@@ -19,9 +19,7 @@ class ThumbController {
         thumb.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
         thumb.operator = curUser.id
 
-        Object.keys(thumb).forEach(function(param,index){
-            console.log("controller toggle attr "+param+" is "+thumb[param])
-        })
+
         // 没有点过赞
         if (!thumb.status){
             //Replace the data
@@ -29,19 +27,15 @@ class ThumbController {
                 thumb[parameter] = request[parameter]
             })
 
-            // Object.keys(thumb).forEach(function(param,index){
-            //     console.log("controller1 thumb attr "+param+" is "+thumb[param])
-            // })
                 thumb.status = '01';
             try {
                 let result = await thumb.store()
                 ctx.body = { id: result[0] }
             } catch (error) {
-                console.log(error)
+                console.error(error)
                 ctx.throw(400, 'INVALID_DATA')
             }
         }else{
-            console.log("rigth branch ,haha ")
             thumb.operateFlag = 'U'
             // 设置状态
             if('01' === thumb.status){
@@ -53,7 +47,7 @@ class ThumbController {
             try {
                 await thumb.save()
             } catch (error) {
-                console.log(error)
+                console.error(error)
                 ctx.throw(400, 'INVALID_DATA')
             }
             ctx.body = { id: thumb.id }

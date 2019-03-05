@@ -53,7 +53,7 @@ class Carousel {
             }
             
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -64,7 +64,7 @@ class Carousel {
             if (!result) return {}
             this.constructor(result)
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -73,7 +73,7 @@ class Carousel {
         try {
             return await db('t_hm101_carousels').insert(this)
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -84,7 +84,7 @@ class Carousel {
                 .update(this)
                 .where({ id: this.id })
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -95,7 +95,7 @@ class Carousel {
                 .update({operateFlag: 'D'})
                 .where({ id: this.id })
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -108,7 +108,7 @@ async function findById(id) {
             .where({ id: id })
         return carouselData
     } catch (error) {
-        console.log(error)
+        console.error(error)
         throw new Error('ERROR')
     }
 }

@@ -50,7 +50,7 @@ class Attendant {
             };
             
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -60,7 +60,7 @@ class Attendant {
             if (!result) return {}
             this.constructor(result)
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -69,7 +69,7 @@ class Attendant {
         try {
             return await db('t_hm101_attendants').insert(this)
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
@@ -80,7 +80,7 @@ class Attendant {
                 .update(this)
                 .where({ id: this.id })
         } catch (error) {
-            console.log(error)
+            console.error(error)
             throw new Error('ERROR')
         }
     }
