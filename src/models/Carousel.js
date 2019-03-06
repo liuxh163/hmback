@@ -106,9 +106,9 @@ class Carousel {
         }
     }
     formatForClient(){
-        if(this.picFileId && this.picFileId != ''){
-            this.picFileId = OssFileUtil.absPath(this.picFileId)
-        }
+        // if(this.picFileId && this.picFileId != ''){
+        //     this.picFileId = OssFileUtil.absPath(this.picFileId)
+        // }
     }
 }
 
