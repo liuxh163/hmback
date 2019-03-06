@@ -130,8 +130,8 @@ class Product {
         this.hospital = db_hospital.desc;
         this.item = db_hospital.items;
     }
-    async fillAttentants(){
-        this.attentants = await Attendant.all({hospitalId:this.hospitalId})
+    async fillAttendants(){
+        this.attendants = await Attendant.all({hospitalId:this.hospitalId})
     }
     /**
      * 获取摘要，外层使用
@@ -153,7 +153,7 @@ class Product {
         await this.fillH5();
         await this.fillPictures();
         await this.fillHospital();
-        await this.fillAttentants();
+        await this.fillAttendants();
     }
     /**
      * 除开点赞评论的,可优化为并行执行?

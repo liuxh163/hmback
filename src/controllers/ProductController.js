@@ -38,8 +38,8 @@ class ProductController {
         let product = await Product.find(params.id)
         product.formatForClient();
         product.isLike = await isLike(ctx.state.user.id,'01',product.id);
-        for(let i = 0 ; i < product.attentants.length ; ++i){
-            product.attentants[i].formatForClient();
+        for(let i = 0 ; i < product.attendants.length ; ++i){
+            product.attendants[i].formatForClient();
         }
         ctx.body = product
     }
