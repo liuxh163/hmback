@@ -124,6 +124,11 @@ class Product {
         this.operations = await db('t_hm101_product_operations').select('*')
         .where({'targetId': this.id});
     }
+    async fillHospital(){
+        let [db_hospital] = await db('t_hm101_hospital').select('*').where({id:this.hospitalId});
+        this.hospital = db_hospital.desc;
+        this.items = db_hospital.items;
+    }
     /**
      * 获取摘要，外层使用
      */
@@ -143,6 +148,7 @@ class Product {
         await this.fillExperts();
         await this.fillH5();
         await this.fillPictures();
+        await this.fillHospital();
     }
     /**
      * 除开点赞评论的,可优化为并行执行?
@@ -153,6 +159,7 @@ class Product {
         await this.fillExperts();
         await this.fillH5();
         await this.fillPictures();
+        await this.fillHospital();
     }
     formatForClient(){
         this.adultPrice = this.adultPrice/100;
