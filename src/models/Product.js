@@ -25,9 +25,10 @@ class Product {
         this.followPrice = data.followPrice;
         this.childPrice = data.childPrice;
         this.status = data.status;
-        this.coverId = data.coverId;
         this.coverPic = data.coverPic;
         this.viewNum = data.viewNum;
+
+        this.hospitalId = data.hospitalId;
 
         this.experts = data.experts;
         this.operations = data.operations;
@@ -37,20 +38,6 @@ class Product {
         this.isMainPage = data.isMainPage;
 
 
-        this.featureH5Id = data.featureH5Id;
-        this.detailH5Id = data.detailH5Id;
-        this.routineH5Id = data.routineH5Id;
-        this.feeH5Id = data.feeH5Id;
-        this.noticeH5Id = data.noticeH5Id;
-        this.hospitalH5Id = data.hospitalH5Id;
-        this.itemH5Id = data.itemH5Id;
-        this.feature = data.feature;
-        this.detail = data.detail;
-        this.routine = data.routine;
-        this.fee = data.fee;
-        this.notice = data.notice;
-        this.hospital = data.hospital;
-        this.item = data.item;
         this.displayUrl = data.displayUrl;
 
         this.prepayExpiry = data.prepayExpiry;
@@ -75,8 +62,8 @@ class Product {
         };
         let result = [];
         let dbresult = await db('t_hm101_products').select('id','desc','nation','status',
-                                        'coverId','adultPrice','viewNum',
-                                        'isMainPage','category','displayUrl')
+                                        'coverPic','adultPrice','viewNum',
+                                        'isMainPage','category','hospitalId','displayUrl')
                                         .where(conditions)
                                         .whereNot(notConditions)
                                         .orderBy('updatedAt', 'desc')
@@ -111,26 +98,23 @@ class Product {
      * 获取图片
      */
     async fillPictures(){
-        let pics = undefined;
-        if(this.coverId){
-            pics = this.coverId.split(",");
-            this.coverPic = await getPictures(pics);
-        }else{
-            this.coverPic = [];
-        }
+        this.coverPic = [{
+            id: '',
+            name:'',
+            type:'',
+            path:this.coverPic
+        }]
     }
     async fillExperts(){
-        this.experts = await db('t_hm101_product_experts').select('*')
-                .where({'productId': this.id});
+        this.experts = await db('t_hm101_hospital_experts').select('*')
+                .where({'hospitalId': this.hospitalId});
     }
     async fillH5(){
-        this.feature = await getH5Content(this.featureH5Id);
-        this.detail = await getH5Content(this.detailH5Id);
-        this.routine = await getH5Content(this.routineH5Id);
-        this.fee = await getH5Content(this.feeH5Id);
-        this.notice = await getH5Content(this.noticeH5Id);
-        this.hospital = await getH5Content(this.hospitalH5Id);
-        this.item = await getH5Content(this.itemH5Id);
+        let db_fields = await db('t_hm101_product_fields').select('name','value')
+                .where({target:TARGET,targetId:this.id});
+        for(let i = 0 ; i < db_fields.length ; ++i){
+            this[db_fields[i].name] = db_fields[i].value
+        }
     }
     /**
      * 获取TAG
