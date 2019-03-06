@@ -6,6 +6,7 @@ import {getThumbNumAndCommentNumForUser} from '../models/Post'
 import {Order} from '../models/Order'
 import redisdb from '../db/redis'
 import { isIterable } from 'core-js';
+import IntervalLock from '../lock/intervallock'
 if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
 require('dotenv').config();
 
@@ -164,11 +165,17 @@ class UserController {
         const request = ctx.request.body
 
         if(!request.telephone) ctx.throw(500,"INVALID PARAM");
-        let interval_key = 'sms_interval_'+request.telephone;
-        let cnt = await redisdb.exists(interval_key);
-        if(cnt != 0 ){
-            ctx.throw(500,'发送太频繁');
-        }
+        let itlLock = new IntervalLock({
+            key:'sms_interval:'+request.telephone,
+            interval:sms_interval,
+            lockedMsg: '发送太频繁'
+        })
+        await itlLock.lock();
+        // let interval_key = 'sms_interval_'+request.telephone;
+        // let cnt = await redisdb.exists(interval_key);
+        // if(cnt != 0 ){
+        //     ctx.throw(500,'发送太频繁');
+        // }
         let verify = new rand(/[1-9]{6}/).gen();
 
         //初始化sms_client
@@ -185,7 +192,6 @@ class UserController {
             let {Code}=res
             if (Code === 'OK') {
                 await ctx.redisdb.set('sms_verify_'+request.telephone,verify,'EX',sms_expire)
-                await ctx.redisdb.set(interval_key,'1','EX',sms_interval);
                 //处理返回参数
                 console.debug(res)
             }

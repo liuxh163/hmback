@@ -2,6 +2,7 @@ import dateFormat from 'date-fns/format'
 
 import { Order, OrderPeople , OrderAttendant, ProductTranscation } from '../models/Order'
 import {User} from '../models/User'
+
 class OrderController {
     async index(ctx) {
         const query = ctx.query
@@ -14,6 +15,9 @@ class OrderController {
         if ( !query.page || !query.pageNum) {
             ctx.throw(500, 'INVALID_PARAM')
         }
+
+
+
         //Get paginated list of notes
         try {
             let result = await Order.all(query)

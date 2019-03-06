@@ -35,14 +35,16 @@ console.log = function(logText){
     logger.info(logText);
 }
 console.error = function(logText){
+    if(!logText) console.trace();
     logger.error(logText);
 }
+
 console.debug = function(logText){
     logger.debug(logText);
 }
 //Initialize app
 const app = new Koa()
-
+app.silent = true
 if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
 require('dotenv').config();
 
@@ -71,7 +73,8 @@ app.use(async (ctx, next) => {
     try {
         await next()
         logger.info(
-            ctx.method + ' ' + ctx.url + ' RESPONSE: ' + ctx.response.status
+            
+            ctx.method + ' ' + ctx.url + ' RESPONSE: ' + ctx.response.status+ " "+ctx.response.get('X-Response-Time')
         )
     } catch (error) {}
 })
@@ -79,8 +82,7 @@ app.use(async (ctx, next) => {
 //Apply error json handling
 let errorOptions = {
     postFormat: (e, obj) => {
-        //Here's where we'll stick our error logger.
-        logger.info(obj)
+        console.error(e)
         if (process.env.NODE_ENV !== 'production') {
             return obj
         } else {

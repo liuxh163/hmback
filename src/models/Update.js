@@ -1,5 +1,16 @@
 const db = require('../db/db');
 const G_TABLE_NAME = "t_hm101_appupgrade";
+import dateFormat from 'date-fns/format'
+
+function formatDate(str){
+    let date = null;
+    if(str){
+        date = new Date(str);
+    }else{
+        date = new Date();
+    }
+    return  dateFormat(date, 'YYYY-MM-DD HH:mm:ss')
+}
 class Update{
     constructor(data){
         this.id = data.id
@@ -14,15 +25,15 @@ class Update{
         this.update_introduce = data.update_introduce
         this.operator = data.operator
         this.operateFlag = data.operateFlag
-        this.createdAt = data.createdAt
-        this.updatedAt = data.updatedAt
-
+        this.createdAt = formatDate(data.createdAt)
+        this.updatedAt = formatDate(data.updatedAt)
     }
     static async getNewest(app_package,app_version){
-        let [result] = db(G_TABLE_NAME).select('*').
+        let [result] = await db(G_TABLE_NAME).select('*').
             where({app_package:app_package}).
             where('app_version','>',app_version).
             orderBy('app_version','desc').offset(0).limit(1);
+        console.log(result);
         if(result) return new Update(result);
         return null;
     }
