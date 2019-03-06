@@ -1,4 +1,3 @@
-import { FileStore } from '../models/File'
 import dateFormat from 'date-fns/format';
 
 if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
@@ -65,7 +64,8 @@ class FileController{
                 }
                 files[index].updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')
                 files[index].operator = curUser.id
-                files[index].id = await FileStore(files[index]);
+                files[index].id = 1
+                //files[index].id = await FileStore(files[index]);
             }
             ctx.body = {files: files};
         }catch(error){

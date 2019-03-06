@@ -14,6 +14,9 @@ class CarouselController {
         // 获取carousels列表
         try {
             let result = await carousel.all(query);
+            for(let i = 0 ; i < result.length ; ++i){
+                result[i].formatForClient();
+            }
             ctx.body = {carousels:result};
         } catch (error) {
             console.error(error);

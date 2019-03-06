@@ -1,6 +1,6 @@
 import db from '../db/db'
 import rand from 'randexp'
-
+import {OssFileUtil} from './File'
 class Carousel {
     constructor(data) {
         if (!data) {
@@ -39,19 +39,25 @@ class Carousel {
                     delete conditions[param];
                 }
             });
+            let db_result = [];
             if("{}" !== JSON.stringify(conditions)){
-                return await db('t_hm101_carousels')
+                db_result= await db('t_hm101_carousels')
                 .select('*')
                 .where(conditions)
                 .whereNot(notConditions)
                 .orderBy('updatedAt', 'desc')
             }else{
-                return await db('t_hm101_carousels')
+                db_result = await db('t_hm101_carousels')
                 .select('*')
                 .whereNot(notConditions)
                 .orderBy('updatedAt', 'desc')
             }
-            
+            let results = [];
+            for(let i = 0 ; i < db_result.length ; ++i){
+                let carousel = new Carousel(db_result[i]);
+                results.push(carousel);
+            }
+            return results;
         } catch (error) {
             console.error(error)
             throw new Error('ERROR')
@@ -97,6 +103,11 @@ class Carousel {
         } catch (error) {
             console.error(error)
             throw new Error('ERROR')
+        }
+    }
+    formatForClient(){
+        if(this.picFileId && this.picFileId != ''){
+            this.picFileId = OssFileUtil.absPath(this.picFileId)
         }
     }
 }

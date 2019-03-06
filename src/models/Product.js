@@ -1,7 +1,6 @@
 import db from '../db/db';
 import { findByPid } from '../models/Tag';
-import {FilesQuery} from '../models/File'
-import {getH5Content} from './H5Content'
+import {OssFileUtil} from '../models/File'
 const func_getThumbs = require('./Thumb').getThumbs
 const func_getComments = require('./Comment').getComments
 const TARGET = '01'
@@ -102,7 +101,7 @@ class Product {
             id: '',
             name:'',
             type:'',
-            path:this.coverPic
+            path:OssFileUtil.absPath(this.coverPic)
         }]
     }
     async fillExperts(){
@@ -134,7 +133,6 @@ class Product {
      */
     async fillBrief(){
         await this.fillThumbsAndCommentsNum();
-        await this.fillPictures();
         await this.fillTags();
         await this.fillOperations();
     }
@@ -143,7 +141,6 @@ class Product {
      */
     async fillFullInfo(){
         await this.fillThumbsAndCommentsNum();
-        await this.fillPictures();
         await this.fillTags();
         await this.fillOperations();
         await this.fillExperts();
@@ -153,7 +150,6 @@ class Product {
      * 除开点赞评论的,可优化为并行执行?
      */
     async fillSelf(){
-        await this.fillPictures();
         await this.fillTags();
         await this.fillOperations();
         await this.fillExperts();
@@ -163,6 +159,7 @@ class Product {
         this.adultPrice = this.adultPrice/100;
         this.childPrice = this.childPrice/100;
         this.womenPrice = this.womenPrice/100;
+        this.fillPictures();
     }
     /**
      * 查询产品详细信息，包含子表信息
@@ -186,165 +183,21 @@ class Product {
     }
 
     async store() {
-        var product = this
-        // 插入表时去掉数据中非字段项
-        delete product.commentNum;
-        delete product.thumbNum;
-        delete product.tags;
-
-        var contents = [
-            {content: product.feature},
-            {content: product.detail},
-            {content: product.routine},
-            {content: product.fee},
-            {content: product.notice},
-            {content: product.hospital},
-            {content: product.item}
-        ];
-
-        delete product.feature;
-        delete product.detail;
-        delete product.routine;
-        delete product.fee;
-        delete product.notice;
-        delete product.hospital;
-        delete product.item;
-
-        var experts = product.experts||[];
-        var operations = product.operations||[];
-        delete product.experts;
-        delete product.operations;
-        delete product.coverPic;
-
-        var proudctId
-
-        return await db.transaction(function(trx) {
-          return db.batchInsert('t_hm101_htmls', contents, 7)
-            .returning('id')
-            .transacting(trx)
-            .then(function(ids) {
-                product.featureH5Id = ids[0];
-                product.detailH5Id = ids[0]+1;
-                product.routineH5Id = ids[0]+2;
-                product.feeH5Id = ids[0]+3;
-                product.noticeH5Id = ids[0]+4;
-                product.hospitalH5Id = ids[0]+5;
-                product.itemH5Id = ids[0]+6;
-
-                return db('t_hm101_products').insert(product)
-                    .returning('id')
-                    .transacting(trx)
-                    .then(function(ids){
-                        console.debug("expert insert product id:"+ids[0])
-                        proudctId = ids[0]
-                        for(var i in experts){
-                            experts[i].productId = proudctId
-                        };
-
-                        for(var i in operations){
-                            operations[i].target = '01';
-                            operations[i].targetID = proudctId;
-                        };
-                        return db.batchInsert('t_hm101_product_experts', 
-                            experts).transacting(trx);
-                    })
-                    .then(function(ids){
-                        return db.batchInsert('t_hm101_product_operations',
-                             operations).transacting(trx);
-                    })
-
-            })
-            .then(trx.commit)
-            .catch(trx.rollback);
-        })
-        .then(function(inserts) {
-            return proudctId;
-        })
-        .catch(function(error) {
-            console.error("error is---"+error)
-            throw new Error('ERROR')
-        });
+   
     }
     /**
      * 存储全部产品信息
      * @return {[type]} [description]
      */
     async save() {
-        var product = this
 
-        var contents = [
-            {content: product.feature, id: product.featureH5Id},
-            {content: product.detail, id: product.detailH5Id},
-            {content: product.routine, id: product.routineH5Id},
-            {content: product.fee, id: product.feeH5Id},
-            {content: product.notice, id: product.noticeH5Id},
-            {content: product.hospital, id: product.hospitalH5Id},
-            {content: product.item, id: product.itemH5Id}
-        ];
-        var experts = product.experts;
-        var operations = product.operations;
-        
-        //更新产品内容表
-        for(var i in contents){
-            if(contents[i].content){
-                await db('t_hm101_htmls').update(contents[i])
-                .where({id: contents[i].id})
-            }
-        };
-        if(experts){
-            await db('t_hm101_product_experts')
-                        .where({productId: product.id}).del();
-        };
-        // 更新产品专家表
-        for(var i in experts){
-            experts[i].productId = product.id;
-            await db('t_hm101_product_experts').insert(experts[i])
-                    .where({productId: product.id});
-        };
-        if(operations){
-            await db('t_hm101_product_operations')
-                        .where({targetId: product.id}).del();
-        };
-        // 更新产品运营表
-        for(var i in operations){
-            operations[i].target = '01';
-            operations[i].targetId = product.id;
-            await db('t_hm101_product_operations').insert(operations[i])
-                .where({targetId: product.id});
-        };
-        // 插入表时去掉数据中非字段项
-        delete product.commentNum;
-        delete product.thumbNum;
-        delete product.feature;
-        delete product.detail;
-        delete product.routine;
-        delete product.fee;
-        delete product.notice;
-        delete product.hospital;
-        delete product.item;
-        delete product.experts;
-        delete product.operations;
-        delete product.tags;
-        delete product.coverPic;
-        delete product.createdAt;
-        // delete product.updatedAt;
-        // 更新产品表
-        product.savePro();
     }
     /**
      * 只存储产品本身信息
      * @return {[type]} [description]
      */
     async savePro() {
-        try {
-
-            return await db('t_hm101_products')
-                .update(this)
-                .where({ id: this.id });
-        } catch (error) {
-            console.error(error);
-            throw new Error('ERROR');
-        }
+        
     }
 }
 //产品缓存，主要包括产品自身的全属性，对应上面的Pro
