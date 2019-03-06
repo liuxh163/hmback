@@ -37,7 +37,7 @@ class CommonlyTraveler {
         let dbResult = await db(G_TABLE_NAME).select('*').where({userId:userId}).whereNot({operateFlag:'D'});
         for(let i = 0 ; i < dbResult.length ; ++i){
             let ct = new CommonlyTraveler(dbResult[i]);
-            ct.formatToClient();
+            ct.formatForClient();
             result.push(ct);
         }
         return result;
