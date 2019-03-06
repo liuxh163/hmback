@@ -23,46 +23,30 @@ class Attendant {
      * @param  {[type]} request [description]
      * @return {[type]}         [description]
      */
-    async all(request) {
-        try {
-            // 构建查询where条件
-            let conditions = {
-                status:request.status
-            };
-            let notConditions = {
-                operateFlag:"D"
-            };
-            // 删除不存在的条件
-            Object.keys(conditions).forEach(function(param, index){
-                if(undefined === conditions[param]){
-                    delete conditions[param];
-                }
-            });
-            if("{}" !== JSON.stringify(conditions)){
-                return await db('t_hm101_attendants')
-                    .select('*')
-                    .where(conditions)
-                    .whereNot(notConditions);
-            }else{
-                return await db('t_hm101_attendants')
-                    .select('*')
-                    .whereNot(notConditions);
-            };
-            
-        } catch (error) {
-            console.error(error)
-            throw new Error('ERROR')
+    static async all(request) {
+        // 构建查询where条件
+        let conditions = {
+            status:'01',
+            hospitalId:request.hospitalId
+        };
+        let notConditions = {
+            operateFlag:"D"
+        };
+        
+        let db_results = await db('t_hm101_attendants')
+                .select('*')
+                .where(conditions)
+                .whereNot(notConditions);
+        let results = [];
+        for(let i = 0 ; i < db_results.length ; ++i){
+            let att = new Attendant(db_results[i]);
+            results.push(att);
         }
+        return results;
+
     }
-    async find(id) {
-        try {
-            let result = await findById(id)
-            if (!result) return {}
-            this.constructor(result)
-        } catch (error) {
-            console.error(error)
-            throw new Error('ERROR')
-        }
+    static async find(id,allowNonExist = false) {
+        return await findById(id,allowNonExist);
     }
 
     async store() {
@@ -85,15 +69,21 @@ class Attendant {
         }
     }
 
+    formatForClient() {
+        this.price = this.price/100;
+    }
+
 }
 
-async function findById(id) {
+async function findById(id,allowNonExist = false) {
    
     let [contentData] = await db('t_hm101_attendants')
         .select('*')
         .where({ id: id })
-    if(!contentData) throw new Error("no attendants:"+id);
-    return contentData
+    if(!contentData && !allowNonExist) throw new Error("no attendants:"+id);
+    if(!contentData) return null;
+
+    return new Attendant(contentData);
 
 }
 

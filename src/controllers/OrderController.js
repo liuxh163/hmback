@@ -2,6 +2,7 @@ import dateFormat from 'date-fns/format'
 
 import { Order, OrderPeople , OrderAttendant, ProductTranscation } from '../models/Order'
 import {User} from '../models/User'
+import IntervalLock from '../lock/intervallock'
 
 class OrderController {
     async index(ctx) {
@@ -46,6 +47,12 @@ class OrderController {
     }
 
     async productOrder(ctx){
+        let itlLock = new IntervalLock({
+            key:'order:'+ctx.state.user.id,
+            interval:10,
+            lockedMsg: '下单太频繁'
+        })
+        await itlLock.lock();
         let params = ctx.request.body;
         params.buyerId = ctx.state.user.id;
         let productTranscation = new ProductTranscation(params);
@@ -56,8 +63,8 @@ class OrderController {
         const query = ctx.query;
         let number = query.number;
         let order = await Order.findNumber(number);
-        order.formatForClient();
         await order.fillFullInfo();
+        order.formatForClient();
         ctx.body = order;
     }
 }

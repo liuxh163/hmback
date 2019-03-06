@@ -11,6 +11,7 @@ import {OrderTargetCode,OrderTypeCode,OrderProductStatus,PayTargetCode} from '..
 import { Codes } from './Codes';
 import {MsgNames,QueueName, sendToDelayMQ,sendToUNHandle} from '../msgcenter/msgCenter'
 import { CommonlyTraveler } from './CommonlyTraveler';
+import { Attendant } from './Attendant';
 
 function formatDate(str){
     let date = null;
@@ -160,6 +161,8 @@ class Order {
                 let peoples = await OrderPeople.all(this.number);
                 for(let pidx = 0 ; pidx < peoples.length ; ++pidx){
                     await peoples[pidx].fillFullInfo();
+                    let atts = await OrderAttendant.all(this.number,peoples[pidx].travelerId);
+                    peoples[pidx].attendants  =  atts;
                 }
                 this.peoples = peoples;
             }
@@ -287,6 +290,11 @@ class Order {
         }else{
             delete this.confirmAt;
         }
+        if(this.goods){
+            for(let i = 0 ; i < this.goods.length ; ++i){
+                this.goods[i].formatForClient();
+            }
+        }
         if(this.type == OrderTypeCode.Product){
             if(this.prepayExpiry && this.status == OrderProductStatus.PREPAY){
                 let date_now = new Date();
@@ -302,6 +310,16 @@ class Order {
                 if(time < 0) time = 0;
                 this.cd = time;
             }   
+            if(this.peoples){
+                for(let i = 0 ; i < this.peoples.length  ; ++i){
+                    let people = this.peoples[i];
+                    people.formatForClient();
+                    for(let aidx = 0 ; aidx< people.attendants.length ; ++aidx){
+                        let att = people.attendants[aidx];
+                        att.formatForClient();
+                    }
+                }
+            }
         }
     }
 }
@@ -345,6 +363,10 @@ class OrderGood{
             goods.push(new OrderGood(db_goods[i]));
         }
         return goods;
+    }
+    formatForClient(){
+        this.originPrice = this.originPrice/100
+        this.realPrice = this.realPrice/100
     }
 }
 class OrderPeople{
@@ -406,7 +428,7 @@ class OrderPeople{
     }
     async fillFullInfo(){
         let ct = await CommonlyTraveler.find(this.travelerId);
-        ct.formatToClient();
+        ct.formatForClient();
         this.firstName = ct.firstName
         this.lastName = ct.lastName
         this.firstPinyin = ct.firstPinyin
@@ -416,13 +438,17 @@ class OrderPeople{
         this.birthday = ct.birthday
         this.gender = ct.gender
     }
+    async formatForClient(){
+        this.originPrice = this.originPrice/100;
+        this.realPrice = this.realPrice/100;
+    }
 }
 class OrderAttendant{
     constructor(data){
         this.id = data.id;
 
 
-        this.orderNumber = data.orderNumber;
+        this.number = data.number;
         this.targetId = data.targetId;
         this.quantity = data.quantity||1;
         this.name = data.name;
@@ -438,14 +464,15 @@ class OrderAttendant{
     }
     async fillForInsert(orderGood,people){
         this.ownerId = people.travelerId;
-        this.orderNumber = order.number;
+        this.number = orderGood.number;
         this.createdAt = new Date();
         this.updatedAt = this.createdAt;
         this.operator = orderGood.operator;
-        this.orderNumber = orderGood.number;
         this.operateFlag = 'A'
+        
         //这些是查库的
         let attentans = await getAttentans(this.targetId);
+        this.name = attentans.name
         this.originPrice = attentans.price;
         this.realPrice = this.originPrice;
         orderGood.originPrice += this.originPrice;
@@ -454,6 +481,19 @@ class OrderAttendant{
     }
     async save(trx){
         await trx(G_TABLE_ORDER_ATTENTANTS_NAME).insert(this);
+    }
+    static async all(number,peopleId){
+        let db_results = await db(G_TABLE_ORDER_ATTENTANTS_NAME).select('*').where({number:number,ownerId:peopleId});
+        let results = [];
+        for(let i = 0 ; i < db_results.length ; ++i){
+            let att = new OrderAttendant(db_results[i]);
+            results.push(att);
+        }
+        return results;
+    }
+    formatForClient(){
+        this.originPrice = this.originPrice/100;
+        this.realPrice = this.realPrice/100;
     }
 }
 
@@ -478,9 +518,9 @@ class ProductTranscation{
                     let people = new OrderPeople(json_people);
                     await people.fillForInsert(orderGood,product);
                     await people.save(trx);
-                    if(json_people.attentants){
-                        for(let idx_att = 0 ; idx_att < json_people.attentants.length ; ++idx_att ){
-                            let att = new OrderAttendant(json_people.attentants[idx_att]);
+                    if(json_people.attendants){
+                        for(let idx_att = 0 ; idx_att < json_people.attendants.length ; ++idx_att ){
+                            let att = new OrderAttendant(json_people.attendants[idx_att]);
                             await att.fillForInsert(orderGood,people);
                             await att.save(trx);
                         }

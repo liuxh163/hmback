@@ -1,6 +1,7 @@
 import db from '../db/db';
 import { findByPid } from '../models/Tag';
-import {OssFileUtil,FilesQuery} from '../models/File'
+import {FilesQuery} from '../models/File'
+import {Attendant} from './Attendant'
 const func_getThumbs = require('./Thumb').getThumbs
 const func_getComments = require('./Comment').getComments
 const TARGET = '01'
@@ -129,6 +130,9 @@ class Product {
         this.hospital = db_hospital.desc;
         this.item = db_hospital.items;
     }
+    async fillAttentants(){
+        this.attentants = await Attendant.all({hospitalId:this.hospitalId})
+    }
     /**
      * 获取摘要，外层使用
      */
@@ -149,6 +153,7 @@ class Product {
         await this.fillH5();
         await this.fillPictures();
         await this.fillHospital();
+        await this.fillAttentants();
     }
     /**
      * 除开点赞评论的,可优化为并行执行?
@@ -245,18 +250,20 @@ async function getTags(id) {
  * 根据Id获取产品信息
  * @param {*} id 
  */
-async function findById(id) {
+async function findById(id,allowNonExist = false) {
 
-    let products = await db.select('*').from('t_hm101_products')
+    let [products] = await db.select('*').from('t_hm101_products')
                 .where({ 'id': id});
 
-    if(products.length == 0) {
+    if(!products && ! allowNonExist) {
         throw new Error("no product:"+id);
     }
-    let  product = new Product(products[0]);
+    if(products){
+        let  product = new Product(products);
+        return product;
+    }
 
-
-    return product;
+    return null;
 
 }
 /**
