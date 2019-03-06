@@ -127,7 +127,7 @@ class Product {
     async fillHospital(){
         let [db_hospital] = await db('t_hm101_hospital').select('*').where({id:this.hospitalId});
         this.hospital = db_hospital.desc;
-        this.items = db_hospital.items;
+        this.item = db_hospital.items;
     }
     /**
      * 获取摘要，外层使用
