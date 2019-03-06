@@ -1,6 +1,6 @@
 import db from '../db/db';
 import { findByPid } from '../models/Tag';
-import {OssFileUtil} from '../models/File'
+import {OssFileUtil,FilesQuery} from '../models/File'
 const func_getThumbs = require('./Thumb').getThumbs
 const func_getComments = require('./Comment').getComments
 const TARGET = '01'
@@ -25,6 +25,7 @@ class Product {
         this.childPrice = data.childPrice;
         this.status = data.status;
         this.coverPic = data.coverPic;
+        this.coverPicId = data.coverPicId
         this.viewNum = data.viewNum;
 
         this.hospitalId = data.hospitalId;
@@ -61,7 +62,7 @@ class Product {
         };
         let result = [];
         let dbresult = await db('t_hm101_products').select('id','desc','nation','status',
-                                        'coverPic','adultPrice','viewNum',
+                                        'coverPicId','adultPrice','viewNum',
                                         'isMainPage','category','hospitalId','displayUrl')
                                         .where(conditions)
                                         .whereNot(notConditions)
@@ -97,12 +98,7 @@ class Product {
      * 获取图片
      */
     async fillPictures(){
-        this.coverPic = [{
-            id: '',
-            name:'',
-            type:'',
-            path:OssFileUtil.absPath(this.coverPic)
-        }]
+        this.coverPic = await getPictures([this.coverPicId])
     }
     async fillExperts(){
         this.experts = await db('t_hm101_hospital_experts').select('*')
@@ -135,6 +131,7 @@ class Product {
         await this.fillThumbsAndCommentsNum();
         await this.fillTags();
         await this.fillOperations();
+        await this.fillPictures();
     }
     /**
      * 获取所有详情,连掉上面的,可优化为并行执行?
@@ -145,6 +142,7 @@ class Product {
         await this.fillOperations();
         await this.fillExperts();
         await this.fillH5();
+        await this.fillPictures();
     }
     /**
      * 除开点赞评论的,可优化为并行执行?
@@ -154,12 +152,12 @@ class Product {
         await this.fillOperations();
         await this.fillExperts();
         await this.fillH5();
+        await this.fillPictures();
     }
     formatForClient(){
         this.adultPrice = this.adultPrice/100;
         this.childPrice = this.childPrice/100;
         this.womenPrice = this.womenPrice/100;
-        this.fillPictures();
     }
     /**
      * 查询产品详细信息，包含子表信息
