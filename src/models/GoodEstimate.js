@@ -23,6 +23,7 @@ class GoodEstimate{
         this.targetId = data.targetId;
         this.content = data.content;
         this.picIds = data.picIds;
+        this.pictures = data.pictures;
         this.createdAt = data.createdAt;
         this.updatedAt = data.updatedAt;
         this.scores    = data.scores;
