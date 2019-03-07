@@ -64,11 +64,11 @@ class GoodEstimate{
         }
     }
     async formatForClient(){
-        this.createdAt =  formatDate(this.latestAt)
+        this.createdAt = formatDate(this.createdAt)
     }
     static async count(target,targetId){
         let db_result = await db(G_TABLE_NAME).count('id as count').where({target:target,targetId:targetId});
-        return db_result[0].count;
+        return parseInt(db_result[0].count);
     }
     async store(trx){
         trx = trx || db;

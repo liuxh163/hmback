@@ -15,6 +15,7 @@ class GoodEstimateController {
             var tmp = await findById(ests[i].userId);
             ests[i].userName = tmp.userName;
             ests[i].iconPath = tmp.iconPath;
+            ests[i].formatForClient();
         }
 
         let cnt = await GoodEstimate.count(query.target,query.targetId);

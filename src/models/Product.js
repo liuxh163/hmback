@@ -2,6 +2,7 @@ import db from '../db/db';
 import { findByPid } from '../models/Tag';
 import {FilesQuery} from '../models/File'
 import {Attendant} from './Attendant'
+import GoodEstimate from './GoodEstimate'
 const func_getThumbs = require('./Thumb').getThumbs
 const func_getComments = require('./Comment').getComments
 const TARGET = '01'
@@ -92,8 +93,12 @@ class Product {
         let thumbNum = await getThumbs(this.id)
         this.thumbNum = thumbNum;
         // 获取评论数
-        let commentNum = await getComments(this.id)
+        // let commentNum = await getComments(this.id)
+        // this.commentNum = commentNum;
+
+        let commentNum  =  await GoodEstimate.count(TARGET,this.id);
         this.commentNum = commentNum;
+
     } 
     /**
      * 获取图片
