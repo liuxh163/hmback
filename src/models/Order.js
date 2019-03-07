@@ -188,7 +188,7 @@ class Order {
         let db_ret = await db(G_TABLE_NAME)
             .where({'buyerId':userId})
             .count('number as count')
-            .where({substate:'04'});
+            .where({substate:OrderSubStates.BEESTIMATE});
         return parseInt(db_ret[0].count);
     }
     async save(trx){

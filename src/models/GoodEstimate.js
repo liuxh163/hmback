@@ -37,6 +37,7 @@ class GoodEstimate{
                                         this.whereNot({content:''})
                                     }
                                 })
+                                .orderBy('createdAt','desc')
                                 .offset(page*pageNum).limit(pageNum);
         let results = [];
         for(let i = 0 ; i < db_results.length ; ++i){
