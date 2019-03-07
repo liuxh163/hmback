@@ -7,7 +7,7 @@ const getAttentans = require('./Attendant').findById
 const LongID = require('../genID/longID')
 const getTraveler = require('./CommonlyTraveler').findById
 import dateFormat from 'date-fns/format'
-import {OrderTargetCode,OrderTypeCode,OrderProductStatus,PayTargetCode} from '../codes'
+import {OrderTargetCode,OrderTypeCode,OrderProductStatus,PayTargetCode,OrderSubStates} from '../codes'
 import { Codes } from './Codes';
 import {MsgNames,QueueName, sendToDelayMQ,sendToUNHandle} from '../msgcenter/msgCenter'
 import { CommonlyTraveler } from './CommonlyTraveler';
@@ -322,6 +322,13 @@ class Order {
             }
         }
     }
+    async estimated(trx){
+        
+        trx = trx||db;
+
+        await trx(G_TABLE_NAME).update({substate:OrderSubStates.ESTIMATED}).where({number:this.number});
+
+    }
 }
 
 class OrderGood{
@@ -340,6 +347,8 @@ class OrderGood{
         this.operateFlag = data.operateFlag
         this.updatedAt = data.updatedAt
         this.createdAt = data.createdAt
+
+        this.isEstimate = data.isEstimate
     }
     async save(trx){
         let v = await trx(G_TABLT_ORDER_GOODS).insert(this);
@@ -363,6 +372,18 @@ class OrderGood{
             goods.push(new OrderGood(db_goods[i]));
         }
         return goods;
+    }
+    static async allNotEstimate(number){
+        let db_goods = await db(G_TABLT_ORDER_GOODS).select('*').where({number:number}).whereNot({isEstimate:1});
+        let goods = [];
+        for(let i = 0 ; i < db_goods.length ; ++i){
+            goods.push(new OrderGood(db_goods[i]));
+        }
+        return goods;
+    }
+    async estimated(trx){
+        trx = trx||db;
+        await trx(G_TABLT_ORDER_GOODS).update({isEstimate:1}).where({number:this.number,target:this.target,targetId:this.targetId});
     }
     formatForClient(){
         this.originPrice = this.originPrice/100
@@ -598,4 +619,4 @@ async function findByNumber(number,allowNonExist = false) {
     return new Order(db_order);
 }
 
-export { Order, OrderPeople , OrderAttendant, ProductTranscation,findByNumber,findById,OrderBill}
+export { Order, OrderPeople , OrderAttendant, ProductTranscation,findByNumber,findById,OrderBill,OrderGood}
