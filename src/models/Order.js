@@ -168,6 +168,7 @@ class Order {
             }
         }
         this.goods = goods;
+        this.bills  = await OrderBill.all(this.number);
     }
 
     async withdraw(){
@@ -293,6 +294,11 @@ class Order {
         if(this.goods){
             for(let i = 0 ; i < this.goods.length ; ++i){
                 this.goods[i].formatForClient();
+            }
+        }
+        if(this.bills){
+            for(let i = 0 ; i < this.bills.length ; ++i){
+                this.bills[i].formatForClient();
             }
         }
         if(this.type == OrderTypeCode.Product){
@@ -597,6 +603,19 @@ class OrderBill{
     async save(trx) {
         trx = trx||db;
         await trx(G_TABLT_ORDER_BILL).insert(this);
+    }
+    static async all(number){
+        let db_results = await db(G_TABLT_ORDER_BILL).select('*').where({number:number});
+        let results = [];
+        for(let i = 0 ; i < db_results.length ; ++i){
+            let bill = new OrderBill(db_results[i]);
+            results.push(bill);
+        }
+        return results;
+    }
+    formatForClient(){
+        this.fee = this.fee/100;
+        this.createdAt  = formatDate(new Date(this.createdAt));
     }
 }
 
