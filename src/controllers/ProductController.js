@@ -26,6 +26,20 @@ class ProductController {
         ctx.body = {products:result}
 
     }
+    //admin 获取列表
+    async indexWithAttendants(ctx){
+        let query = ctx.query
+        console.log(query)
+        if(!query.id){
+            ctx.throw(400, 'INVALID_QUERY_PARAMS')
+        } 
+        let product = await findById(query.id);
+        let result = await product.allSameNationForAdmin();
+        for(let i = 0 ; i < result.length ; ++i){
+            result[i].formatForClient();
+        }
+        ctx.body = {products:result}
+    }
     /**
      * 查询指定产品详情
      * @param  {[type]} ctx [description]

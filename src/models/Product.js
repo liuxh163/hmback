@@ -50,7 +50,23 @@ class Product {
         this.updatedAt = data.updatedAt;
         this.createdAt = data.createdAt;
     }
-
+    async allSameNationForAdmin(){
+        let dbresult = await db('t_hm101_products').select('id','desc','nation','status',
+        'adultPrice','womenPrice','followPrice','childPrice','hospitalId','displayUrl')
+        .where({nation:this.nation})
+        .whereNot({operateFlag:'D'})
+        .orderBy('updatedAt','desc')
+        let result = [];
+        for(let i = 0 ; i < dbresult.length ; ++i){
+            let product = new Product(dbresult[i]);
+            result.push(product);
+        }
+        for(var i in result){
+            let product = result[i];
+            await product.fillAttendants();
+        }
+        return result;
+    }
     static async all(request) {
 
         request.page = request.page || 1;
@@ -79,7 +95,6 @@ class Product {
         // 获取点赞数及评论数
         for(var i in result){
             // 获取点赞数
-            
             let product = result[i];
             await product.fillBrief();
         }
@@ -175,6 +190,7 @@ class Product {
         this.adultPrice = this.adultPrice/100;
         this.childPrice = this.childPrice/100;
         this.womenPrice = this.womenPrice/100;
+        this.followPrice = this.followPrice/100;
     }
     /**
      * 查询产品详细信息，包含子表信息
