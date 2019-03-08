@@ -47,13 +47,16 @@ class OrderController {
     }
 
     async productOrder(ctx){
+
         let itlLock = new IntervalLock({
             key:'order:'+ctx.state.user.id,
             interval:10,
             lockedMsg: '下单太频繁'
         })
         await itlLock.lock();
+        
         let params = ctx.request.body;
+        console.debug(params)
         params.buyerId = ctx.state.user.id;
         let productTranscation = new ProductTranscation(params);
         let order = await productTranscation.save();
