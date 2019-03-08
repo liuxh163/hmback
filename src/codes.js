@@ -23,6 +23,8 @@ const OrderProductStatus = {
 }
 const OrderSubStates = {
     NONE:'01',
+    BEREFUND:'02',
+    REFUND:'03',
     BEESTIMATE:'04',
     ESTIMATED:'05'
 }

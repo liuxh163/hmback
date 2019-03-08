@@ -3,7 +3,7 @@ import  {initConsumer} from '../amqp/initConsumer'
 import {registProcesser,MsgNames} from '../amqp/ProcesserFactory'
 import {sendToMQ,sendToDelayMQ,sendToUNHandle} from '../amqp/publisher'
 import saveID from './saveID'
-import {prepayExpire,wxpay_notify} from './order'
+import {prepayExpire,wxpay_notify,postpayExpire} from './order'
 
 let isMQStarted = false;
 async function startMQ(){
@@ -11,6 +11,7 @@ async function startMQ(){
         registProcesser(QueueName.LongIDQueue,MsgNames.SaveID,saveID);
         registProcesser(QueueName.OrderDelayQueue,MsgNames.PrepayExpire,prepayExpire);
         registProcesser(QueueName.OrderDelayQueue,MsgNames.WXPayNotify,wxpay_notify)
+        registProcesser(QueueName.OrderDelayQueue,MsgNames.PostpayExpire,postpayExpire)
         await initQueue();
         await initConsumer();
         console.log('amqp stated')

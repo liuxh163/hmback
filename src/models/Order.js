@@ -103,9 +103,43 @@ class Order {
         }
         if(this.type == OrderTypeCode.Product){
         //to do
-        //    this.prepayPrice = parseInt(this.realPrice * 0.3)
-            this.prepayPrice = 1;
+            this.prepayPrice = parseInt(this.realPrice * 0.3)
+        //    this.prepayPrice = 1;
         }
+    }
+    static async allBeConfirm(){
+        let db_orders = await db(G_TABLE_NAME)
+        .select('*')
+        .where({status:OrderProductStatus.PREPAID});
+        let orders = [];
+        for(let i = 0 ; i < db_orders.length ; ++i){
+            let order = new Order(db_orders[i]);
+            orders.push(order);
+        }
+        return orders;
+    }
+    async confirm(){
+
+        if(this.status != OrderProductStatus.PREPAID){
+            throw new Error('invalid order status flow:'+this.status+" =>"+OrderProductStatus.POSTPAY);
+        }
+        //暂时10分钟
+        let productExpiry = 60000
+        this.postpayExpiry = new Date(new Date().getTime()+productExpiry);
+        console.log(new Date());
+        console.log(this.postpayExpiry)
+        await db.transaction(async (trx)=>{
+            try{
+                let qret = await sendToDelayMQ(QueueName.OrderDelayQueue,MsgNames.PostpayExpire,{
+                    number:this.number
+                },productExpiry)
+                if(!qret) throw new error('cant send queue');
+                await trx(G_TABLE_NAME).update({status:OrderProductStatus.POSTPAY,confirmAt:this.confirmAt,postpayExpiry:this.postpayExpiry}).where({number:this.number});
+                return trx.commit();
+            }catch(error){
+                return trx.rollback(error);
+            }
+        })
     }
     static async all(request) {
         try {
@@ -219,12 +253,16 @@ class Order {
         }
         if(this.type == OrderTypeCode.Product){
             if(this.status == OrderProductStatus.PREPAY){
-                params.fee = this.prepayPrice
+                //todo
+                //params.fee = this.prepayPrice
+                params.fee = 1
                 params.trade_no = this.number
                 params.type = PayTargetCode.PREPAY
             }
             else if(this.status == OrderProductStatus.POSTPAY){
-                params.fee = this.realPrice - this.prepayPrice
+                //todo
+                //params.fee = this.realPrice - this.prepayPrice
+                params.fee = 1
                 params.trade_no = this.number
                 params.type = PayTargetCode.POSTPAY
             }else{
@@ -282,6 +320,16 @@ class Order {
                             .where({number:this.number});
         }
     }
+    /**
+     * 尾款过期
+     */
+    async postpayExpire(){
+        if(this.status === OrderProductStatus.POSTPAY){
+            await db(G_TABLE_NAME).update({status:OrderProductStatus.CANCELED,substate:OrderSubStates.BEREFUND,cancelReason:"支付尾款过期"})
+            .where({number:this.number});
+        }
+    }
+
     async formatForClient(){
         this.originPrice = this.originPrice/100;
         this.realPrice = this.realPrice/100;

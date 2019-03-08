@@ -1,10 +1,11 @@
 import Router from 'koa-router'
 import RdsToken from '../middleware/rdsToken'
-
+import AdminToken from '../middleware/adminToken'
 import OrderController from '../controllers/OrderController'
 import PayController from '../controllers/PayController'
 const router = new Router()
 const tokenMw = RdsToken()
+const adminMw = AdminToken()
 // const tokenMw = async (ctx,next)=>{
 //     ctx.state.user = {
 //         id:1
@@ -38,12 +39,19 @@ router.post('/api/v1/orders/wx_notify', async (ctx, next) => {
 router.post('/api/v1/orders/wxpay', tokenMw, async (ctx, next) => {
     await payController.wx_pay(ctx);
 })
-// 修改订单
-router.put('/api/v1/orders/:id', tokenMw, async (ctx, next) => {
-    await orderController.update(ctx)
-})
+
 //查询订单 详情
 router.get('/api/v1/orders/getOrderFullInfo',tokenMw,async(ctx,next)=>{
     await orderController.getOrderFullInfo(ctx);
+})
+
+//确认订单
+router.post('/api/v1/orders/confirm',tokenMw,adminMw,async(ctx,next)=>{
+    await orderController.confirm(ctx);
+})
+
+//获取待确认订单列表
+router.get('/api/v1/orders/beConfirm',tokenMw,adminMw,async(ctx,next)=>{
+    await orderController.beConfirm(ctx);
 })
 export default router

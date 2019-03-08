@@ -6,9 +6,12 @@ async function prepayExpire(data){
     let order = await Order.findNumber(data.number);
     await order.prepayExpire();
 }
-
+async function postpayExpire(data){
+    let order = await Order.findNumber(data.number);
+    await order.postpayExpire();
+}
 async function wxpay_notify(data){
     let result = await WXPay.checkFromQueue(data);
     if(!result) return  ProcesserACK.REQUE
 }
-export {prepayExpire,wxpay_notify}
+export {prepayExpire,wxpay_notify,postpayExpire}

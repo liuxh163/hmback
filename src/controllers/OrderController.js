@@ -67,6 +67,20 @@ class OrderController {
         order.formatForClient();
         ctx.body = order;
     }
+    async beConfirm(ctx){
+        ctx.body = await Order.allBeConfirm();
+    }
+    async confirm(ctx){
+        let params = ctx.request.body;
+        if(!params.number || ! params.confirmAt){
+            ctx.throw(400, 'INVALID_PARAM')
+        }
+        let order = await Order.findNumber(params.number);
+        
+        order.confirmAt = new Date(params.confirmAt);
+        await order.confirm();
+        ctx.body = {};
+    }
 }
 
 export default OrderController
