@@ -153,9 +153,9 @@ class Order {
             }
         })
     }
-    async confirmWithReset(trx){
-        await trx(G_TABLE_NAME).update({status:OrderProductStatus.POSTPAY,confirmAt:this.confirmAt,postpayExpiry:this.postpayExpiry,desc:this.desc}).where({number:this.number});
-    }
+    // async confirmWithReset(trx){
+    //     await trx(G_TABLE_NAME).update({status:OrderProductStatus.POSTPAY,confirmAt:this.confirmAt,postpayExpiry:this.postpayExpiry,desc:this.desc}).where({number:this.number});
+    // }
     static async all(request) {
         try {
             if(!request.status) request.status = '';
@@ -671,14 +671,7 @@ class ProductTranscation{
             try{
                 await trans.delProductDetails(order,trx);
                 await trans.saveProdecutOrderDetails(product,order,trx); 
-                order.fillForProductPostpay(product);
-                let productExpiry = order.productExpiry;
-                delete order.productExpiry;
-                await order.confirmWithReset(trx);
-                let qret = await sendToDelayMQ(QueueName.OrderDelayQueue,MsgNames.PostpayExpire,{
-                    number:order.number
-                },productExpiry)
-                if(!qret) throw new error('cant send queue');
+
             }catch(error){
                 return trx.rollback(error);
             }
