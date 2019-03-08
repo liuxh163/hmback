@@ -342,8 +342,16 @@ class Order {
      * 需加锁
      */
     async prepayExpire(){
+
         if(this.status === OrderProductStatus.PREPAY){
-            await db(G_TABLE_NAME).update({status:OrderProductStatus.CANCELED,cancelReason:"预支付过期"})
+            let updateData = {
+                status:OrderProductStatus.CANCELED,
+                cancelReason:"预支付过期",
+                updatedAt:new Date(),
+                operator:'system',
+                operateFlag:'U'
+            }
+            await db(G_TABLE_NAME).update(updateData)
                             .where({number:this.number});
         }
     }
@@ -351,8 +359,16 @@ class Order {
      * 尾款过期
      */
     async postpayExpire(){
+        let updateData = {
+            status:OrderProductStatus.CANCELED,
+            substate:OrderSubStates.BEREFUND,
+            cancelReason:"支付尾款过期",
+            updatedAt:new Date(),
+            operator:'system',
+            operateFlag:'U'
+        }
         if(this.status === OrderProductStatus.POSTPAY){
-            await db(G_TABLE_NAME).update({status:OrderProductStatus.CANCELED,substate:OrderSubStates.BEREFUND,cancelReason:"支付尾款过期"})
+            await db(G_TABLE_NAME).update(updateData)
             .where({number:this.number});
         }
     }
@@ -360,7 +376,14 @@ class Order {
      * ended
      */
     async ended(){
-        await db(G_TABLE_NAME).update({status:OrderProductStatus.SUCCESS,substate:OrderSubStates.BEESTIMATE})
+        let updateData = {
+            status:OrderProductStatus.SUCCESS,
+            substate:OrderSubStates.BEESTIMATE,
+            updatedAt:new Date(),
+            operator:'system',
+            operateFlag:'U'
+        }
+        await db(G_TABLE_NAME).update(updateData)
                 .where({number:this.number});
     }
     async formatForClient(){
@@ -416,11 +439,15 @@ class Order {
             }
         }
     }
-    async estimated(trx){
-        
+    async estimated(userId,trx){
         trx = trx||db;
-
-        await trx(G_TABLE_NAME).update({substate:OrderSubStates.ESTIMATED}).where({number:this.number});
+        let updateData = {
+            substate:OrderSubStates.ESTIMATED,
+            updatedAt:new Date(),
+            operator:userId,
+            operateFlag:'U'
+        }
+        await trx(G_TABLE_NAME).update(updateData).where({number:this.number});
 
     }
 }
@@ -477,9 +504,15 @@ class OrderGood{
         }
         return goods;
     }
-    async estimated(trx){
+    async estimated(userId,trx){
         trx = trx||db;
-        await trx(G_TABLT_ORDER_GOODS).update({isEstimate:1}).where({number:this.number,target:this.target,targetId:this.targetId});
+        let updateData = {
+            isEstimate:1,
+            updatedAt:new Date(),
+            operator:userId,
+            operateFlag:'U'
+        }
+        await trx(G_TABLT_ORDER_GOODS).update(updateData).where({number:this.number,target:this.target,targetId:this.targetId});
     }
     formatForClient(){
         this.originPrice = this.originPrice/100
@@ -731,7 +764,6 @@ class OrderBill{
         this.createdAt = new Date();
         this.updatedAt = this.createdAt;
         this.operator = 'system';
-
         this.operateFlag = 'A'
     }
     async save(trx) {

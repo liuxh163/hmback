@@ -87,7 +87,7 @@ class GoodEstimate{
         await trx(G_TABLE_NAME).insert(this);
     }
 
-    static async storeByNumber(params){
+    static async storeByNumber(params,userId){
         let goods = await OrderGood.allNotEstimate(params.number);
         if(goods.length == 0){
             throw new Error('无法评价,没有可评价商品');
@@ -115,11 +115,11 @@ class GoodEstimate{
         let est = new GoodEstimate(params);
         await db.transaction(async function(trx){
             try{
-                await good.estimated(trx);
+                await good.estimated(est.userId,trx);
                 await est.store(trx);
                 if(goods.length == 1){
                     let order = new Order({number:params.number});
-                    await order.estimated(trx);
+                    await order.estimated(est.userId,trx);
                 }
                 return trx.commit();
             }catch(error){
