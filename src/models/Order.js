@@ -368,6 +368,12 @@ class Order {
         this.realPrice = this.realPrice/100;
         if(this.prepayPrice) this.prepayPrice = this.prepayPrice/100;
         this.createdAt = formatDate(this.createdAt);
+        if(this.earliestAt){
+            this.earliestAt = formatDate(this.earliestAt);
+        }
+        if(this.latestAt){
+            this.latestAt = formatDate(this.latestAt);
+        }
         if(this.confirmAt) {
             this.confirmAt = formatDate(this.confirmAt)
         }else{
