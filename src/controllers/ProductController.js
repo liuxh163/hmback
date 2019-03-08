@@ -37,7 +37,9 @@ class ProductController {
 
         let product = await Product.find(params.id)
         product.formatForClient();
-        product.isLike = await isLike(ctx.state.user.id,'01',product.id);
+        if(ctx.state.user){
+            product.isLike = await isLike(ctx.state.user.id,'01',product.id);
+        }
         for(let i = 0 ; i < product.attendants.length ; ++i){
             product.attendants[i].formatForClient();
         }
@@ -51,7 +53,7 @@ class ProductController {
         if (!params.id) ctx.throw(500, 'INVALID_PARAM')
 
         let product = await Product.find(params.id)
-        if(params.getIsLike){
+        if(ctx.state.user){
             product.isLike = await isLike(ctx.state.user.id,'01',product.id);
         }
         ctx.body = product

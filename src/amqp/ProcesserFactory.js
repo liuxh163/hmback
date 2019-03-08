@@ -32,6 +32,7 @@ const MsgNames={
     //orders
     PrepayExpire:"PrepayExpire",
     PostpayExpire:"PostpayExpire",
+    OrderEnded:"OrderEnded",
     WXPayCheckFAIL:"WXPayCheckFail",
     WXPayNotify:"WXPayNotify",
     OrderStatusFlowException:"OrderStatusFlowException"

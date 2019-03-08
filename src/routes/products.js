@@ -1,11 +1,11 @@
 import Router from 'koa-router'
 import RdsToken from '../middleware/rdsToken'
-
+import WeakToken from '../middleware/weakToken'
 import ProductController from '../controllers/ProductController'
 
 const router = new Router()
 const tokenMw = RdsToken()
-
+const weakMw = WeakToken()
 const productController = new ProductController()
 // 获取指定国家产品，支持不同排序方法，支持分页
 router.get('/api/v1/products', tokenMw, async (ctx, next) => {
@@ -16,10 +16,10 @@ router.post('/api/v1/products', tokenMw, async (ctx, next) => {
     await productController.create(ctx)
 })
 // 查看指定产品
-router.get('/api/v1/products/:id', async (ctx, next) => {
+router.get('/api/v1/products/:id',weakMw, async (ctx, next) => {
     await productController.show(ctx)
 })
-router.get('/api/v2/products', async (ctx, next) => {
+router.get('/api/v2/products',weakMw, async (ctx, next) => {
     await productController.getProduct(ctx)
 })
 // 更新指定产品

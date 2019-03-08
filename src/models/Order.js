@@ -135,7 +135,7 @@ class Order {
 
         let goods = await OrderGood.all(this.number);
         if(goods.length != 1) throw new Error('cannot found product');
-        product = await  Product.find(goods[0].targetId);
+        let product = await  Product.find(goods[0].targetId);
     
         this.fillForProductPostpay(product);
         let productExpiry = this.productExpiry;
@@ -307,9 +307,13 @@ class Order {
                 if(this.status == OrderProductStatus.POSTPAY){
                     this.status = OrderProductStatus.TOTRAVEL;
                 //这里需要延迟消息已让订单完成
-                   // let timeToEnd = 
-
-
+                    let date = new Date(this.confirmAt);
+                    let now = new Date();
+                    let timeToEnd = (now.getTime()  - date.getTime());
+                    if(timeToEnd<0) timeToEnd = 0;
+                    timeToEnd = parseInt(timeToEnd);
+                    let qRet = await sendToDelayMQ(QueueName.OrderDelayQueue,MsgNames.OrderEnded,{number:this.number},timeToEnd);
+                    if(!qret) throw new error('cant send queue');
                 }else{
                     msg = "错误的订单状态流:"+this.status+" 支付目标:"+payType+" 金额"+payedMoney;
                     break;
@@ -352,7 +356,13 @@ class Order {
             .where({number:this.number});
         }
     }
-
+    /**
+     * ended
+     */
+    async ended(){
+        await db(G_TABLE_NAME).update({status:OrderProductStatus.SUCCESS,substate:OrderSubStates.BEESTIMATE})
+                .where({number:this.number});
+    }
     async formatForClient(){
         this.originPrice = this.originPrice/100;
         this.realPrice = this.realPrice/100;
