@@ -91,7 +91,7 @@ class OrderController {
     }
     async confirmWithReset(ctx){
         let params = ctx.request.body;
-        if(!params.number || ! params.confirmAt){
+        if(!params.number){
             ctx.throw(400, 'INVALID_PARAM')
         }
         params.admin = ctx.state.user.id;
