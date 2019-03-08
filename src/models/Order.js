@@ -3,7 +3,7 @@ import rand from 'randexp'
 
 const getServant = require('./Servant').findById
 const getProduct = require('./Product').findById
-const getAttentans = require('./Attendant').findById
+const getAttentans = require('./Attendant').findByIdAndHostpitalId
 const LongID = require('../genID/longID')
 const getTraveler = require('./CommonlyTraveler').findById
 import dateFormat from 'date-fns/format'
@@ -11,7 +11,7 @@ import {OrderTargetCode,OrderTypeCode,OrderProductStatus,PayTargetCode,OrderSubS
 import { Codes } from './Codes';
 import {MsgNames,QueueName, sendToDelayMQ,sendToUNHandle} from '../msgcenter/msgCenter'
 import { CommonlyTraveler } from './CommonlyTraveler';
-import { Attendant } from './Attendant';
+import { Product } from './Product';
 
 function formatDate(str){
     let date = null;
@@ -83,12 +83,21 @@ class Order {
         this.realPrice   = 0;
     }
     //暂定默认1分钟
-    fillForPruduct(product){
+    fillForPruductPrepay(product){
         let date = new Date();
         let productExpiry = +product.prepayExpiry;
         productExpiry = productExpiry===0?3600000:productExpiry;
         let prepayExpiry = new Date(date.getTime() +productExpiry);
         this.prepayExpiry = prepayExpiry;
+        this.productExpiry = productExpiry;
+    }
+    //
+    fillForProductPostpay(product){
+        let date = new Date();
+        let productExpiry = +product.postpayExpiry;
+        productExpiry = productExpiry===0?3600000:productExpiry;
+        let postpayExpiry = new Date(date.getTime() +productExpiry);
+        this.postpayExpiry = postpayExpiry;
         this.productExpiry = productExpiry;
     }
     computePrice(orderGoods){
@@ -110,7 +119,8 @@ class Order {
     static async allBeConfirm(){
         let db_orders = await db(G_TABLE_NAME)
         .select('*')
-        .where({status:OrderProductStatus.PREPAID});
+        .where({status:OrderProductStatus.PREPAID})
+        .whereNot({operateFlag:'D'});
         let orders = [];
         for(let i = 0 ; i < db_orders.length ; ++i){
             let order = new Order(db_orders[i]);
@@ -119,15 +129,17 @@ class Order {
         return orders;
     }
     async confirm(){
-
         if(this.status != OrderProductStatus.PREPAID){
             throw new Error('invalid order status flow:'+this.status+" =>"+OrderProductStatus.POSTPAY);
         }
-        //暂时10分钟
-        let productExpiry = 60000
-        this.postpayExpiry = new Date(new Date().getTime()+productExpiry);
-        console.log(new Date());
-        console.log(this.postpayExpiry)
+
+        let goods = await OrderGood.all(this.number);
+        if(goods.length != 1) throw new Error('cannot found product');
+        product = await  Product.find(goods[0].targetId);
+    
+        this.fillForProductPostpay(product);
+        let productExpiry = this.productExpiry;
+        delete this.productExpiry;
         await db.transaction(async (trx)=>{
             try{
                 let qret = await sendToDelayMQ(QueueName.OrderDelayQueue,MsgNames.PostpayExpire,{
@@ -140,6 +152,9 @@ class Order {
                 return trx.rollback(error);
             }
         })
+    }
+    async confirmWithReset(trx){
+        await trx(G_TABLE_NAME).update({status:OrderProductStatus.POSTPAY,confirmAt:this.confirmAt,postpayExpiry:this.postpayExpiry,desc:this.desc}).where({number:this.number});
     }
     static async all(request) {
         try {
@@ -171,6 +186,7 @@ class Order {
                     }
                 })
             })
+            .whereNot({operateFlag:'D'})
             .orderBy('createdAt', request.order)
             .offset(request.page*request.pageNum)
             .limit(+request.pageNum);
@@ -290,6 +306,10 @@ class Order {
             }else if(payType == PayTargetCode.POSTPAY){
                 if(this.status == OrderProductStatus.POSTPAY){
                     this.status = OrderProductStatus.TOTRAVEL;
+                //这里需要延迟消息已让订单完成
+                   // let timeToEnd = 
+
+
                 }else{
                     msg = "错误的订单状态流:"+this.status+" 支付目标:"+payType+" 金额"+payedMoney;
                     break;
@@ -304,6 +324,7 @@ class Order {
                 operateFlag:'U'
             }
             await trx(G_TABLE_NAME).update(updateData).where({number:this.number});
+
             isSuccess = true;
         }while(0);
         if(!isSuccess){
@@ -415,14 +436,15 @@ class OrderGood{
         this.createdAt = new Date();
         this.updatedAt = this.createdAt;
 
-        this.operator = order.buyerId;
+        this.operator = order.operator;
         this.operateFlag = 'A'
 
         this.originPrice = 0;
         this.realPrice = 0;
     }
     static async all(number){
-        let db_goods = await db(G_TABLT_ORDER_GOODS).select('*').where({number:number});
+        let db_goods = await db(G_TABLT_ORDER_GOODS).select('*').where({number:number})
+                            .whereNot({operateFlag:'D'});
         let goods = [];
         for(let i = 0 ; i < db_goods.length ; ++i){
             goods.push(new OrderGood(db_goods[i]));
@@ -430,7 +452,8 @@ class OrderGood{
         return goods;
     }
     static async allNotEstimate(number){
-        let db_goods = await db(G_TABLT_ORDER_GOODS).select('*').where({number:number}).whereNot({isEstimate:1});
+        let db_goods = await db(G_TABLT_ORDER_GOODS).select('*').where({number:number}).whereNot({isEstimate:1})
+                .whereNot({operateFlag:'D'});
         let goods = [];
         for(let i = 0 ; i < db_goods.length ; ++i){
             goods.push(new OrderGood(db_goods[i]));
@@ -494,7 +517,8 @@ class OrderPeople{
         await trx(G_TABLE_ORDER_PEOPLE_NAME).insert(this);
     }
     static async all(number){
-        let db_people = await db(G_TABLE_ORDER_PEOPLE_NAME).select('*').where({number:number});
+        let db_people = await db(G_TABLE_ORDER_PEOPLE_NAME).select('*').where({number:number})
+                                .whereNot({operateFlag:'D'});
         let peoples = [];
         for(let i = 0 ; i < db_people.length ; ++i){
             let people = new OrderPeople(db_people[i])
@@ -539,7 +563,7 @@ class OrderAttendant{
         this.originPrice = data.originPrice;
         this.realPrice = data.realPrice;
     }
-    async fillForInsert(orderGood,people){
+    async fillForInsert(product,orderGood,people){
         this.ownerId = people.travelerId;
         this.number = orderGood.number;
         this.createdAt = new Date();
@@ -548,7 +572,7 @@ class OrderAttendant{
         this.operateFlag = 'A'
         
         //这些是查库的
-        let attentans = await getAttentans(this.targetId);
+        let attentans = await getAttentans(this.targetId,product.hospitalId);
         this.name = attentans.name
         this.originPrice = attentans.price;
         this.realPrice = this.originPrice;
@@ -560,7 +584,8 @@ class OrderAttendant{
         await trx(G_TABLE_ORDER_ATTENTANTS_NAME).insert(this);
     }
     static async all(number,peopleId){
-        let db_results = await db(G_TABLE_ORDER_ATTENTANTS_NAME).select('*').where({number:number,ownerId:peopleId});
+        let db_results = await db(G_TABLE_ORDER_ATTENTANTS_NAME).select('*').where({number:number,ownerId:peopleId})
+                                    .whereNot({operateFlag:'D'});
         let results = [];
         for(let i = 0 ; i < db_results.length ; ++i){
             let att = new OrderAttendant(db_results[i]);
@@ -582,33 +607,72 @@ class ProductTranscation{
     }
     async reset(){
 
-    }
-    async save() {
-        let order = new Order(this.data);
-        let orderGood = new OrderGood(this.data);
-        orderGood.quantity = 1;
+        let trans = this;
+        let order = await Order.findNumber(this.data.number);
+        order.realPrice = 0;
+        order.originPrice = 0;
+        //todo
+        // if(order.status != OrderProductStatus.PREPAID){
+        //     throw new Error('invalid order status flow:'+order.status+" =>"+OrderProductStatus.POSTPAY);
+        // }
+        order.operator = this.data.admin;
+        let product = await getProduct(this.data.targetId);
         await db.transaction(async (trx)=>{
             try{
-                await order.fillForInsert();
-                await orderGood.fillForInsert(order);
-                let product = await getProduct(orderGood.targetId);
-                order.desc = product.desc;
-                for(let idx_peo = 0 ; idx_peo < this.data.peoples.length; ++idx_peo){
-                    let json_people = this.data.peoples[idx_peo];
-                    let people = new OrderPeople(json_people);
-                    await people.fillForInsert(orderGood,product);
-                    await people.save(trx);
-                    if(json_people.attendants){
-                        for(let idx_att = 0 ; idx_att < json_people.attendants.length ; ++idx_att ){
-                            let att = new OrderAttendant(json_people.attendants[idx_att]);
-                            await att.fillForInsert(orderGood,people);
-                            await att.save(trx);
-                        }
-                    }
-                }   
-                await orderGood.save(trx);
-                order.computePrice([orderGood]);
-                order.fillForPruduct(product);
+                await trans.delProductDetails(order,trx);
+                await trans.saveProdecutOrderDetails(product,order,trx); 
+                order.fillForProductPostpay(product);
+                let productExpiry = order.productExpiry;
+                delete order.productExpiry;
+                await order.confirmWithReset(trx);
+                let qret = await sendToDelayMQ(QueueName.OrderDelayQueue,MsgNames.PostpayExpire,{
+                    number:order.number
+                },productExpiry)
+                if(!qret) throw new error('cant send queue');
+            }catch(error){
+                return trx.rollback(error);
+            }
+        });
+    }
+    async delProductDetails(order,trx){
+        await trx(G_TABLT_ORDER_GOODS).delete().where({number:order.number});
+        await trx(G_TABLE_ORDER_PEOPLE_NAME).delete().where({number:order.number});
+        await trx(G_TABLE_ORDER_ATTENTANTS_NAME).delete().where({number:order.number});
+
+    //     await trx(G_TABLT_ORDER_GOODS).update({operator:order.operator,operateFlag:'D'}).where({number:order.number});
+    //     await trx(G_TABLE_ORDER_PEOPLE_NAME).update({operator:order.operator,operateFlag:'D'}).where({number:order.number});
+    //     await trx(G_TABLE_ORDER_ATTENTANTS_NAME).update({operator:order.operator,operateFlag:'D'}).where({number:order.number});
+     }
+    async saveProdecutOrderDetails(product,order,trx){
+        let orderGood = new OrderGood(this.data);
+        orderGood.quantity = 1;
+        await orderGood.fillForInsert(order);
+        order.desc = product.desc;
+        for(let idx_peo = 0 ; idx_peo < this.data.peoples.length; ++idx_peo){
+            let json_people = this.data.peoples[idx_peo];
+            let people = new OrderPeople(json_people);
+            await people.fillForInsert(orderGood,product);
+            await people.save(trx);
+            if(json_people.attendants){
+                for(let idx_att = 0 ; idx_att < json_people.attendants.length ; ++idx_att ){
+                    let att = new OrderAttendant(json_people.attendants[idx_att]);
+                    await att.fillForInsert(product,orderGood,people);
+                    await att.save(trx);
+                }
+            }
+        }   
+        await orderGood.save(trx);
+        order.computePrice([orderGood]);
+    }
+    async save() {
+        let trans = this;
+        let order = new Order(this.data);
+        await order.fillForInsert();
+        let product = await getProduct(this.data.targetId);
+        await db.transaction(async (trx)=>{
+            try{
+                await trans.saveProdecutOrderDetails(product,order,trx); 
+                order.fillForPruductPrepay(product);
                 let productExpiry = order.productExpiry;
                 delete order.productExpiry;
                 await order.save(trx);
@@ -658,7 +722,8 @@ class OrderBill{
         await trx(G_TABLT_ORDER_BILL).insert(this);
     }
     static async all(number){
-        let db_results = await db(G_TABLT_ORDER_BILL).select('*').where({number:number});
+        let db_results = await db(G_TABLT_ORDER_BILL).select('*').where({number:number})
+                    .whereNot({operateFlag:'D'});
         let results = [];
         for(let i = 0 ; i < db_results.length ; ++i){
             let bill = new OrderBill(db_results[i]);
@@ -677,6 +742,7 @@ async function findById(id,allowNonExist = false) {
     let [db_order] = await db(G_TABLE_NAME)
         .select('*')
         .where({ id: id })
+        .whereNot({operateFlag:'D'})
     if(!db_order && !allowNonExist) throw  new Error('no order id:'+id); 
     if(!db_order) return null;   
     return new Order(db_order);
@@ -686,6 +752,7 @@ async function findByNumber(number,allowNonExist = false) {
     let [db_order] = await db(G_TABLE_NAME)
         .select('*')
         .where({ number: number })
+        .whereNot({operateFlag:'D'})
     if(!db_order && !allowNonExist ) throw new Error('no order :'+number);
     if(!db_order) return null;   
     return new Order(db_order);

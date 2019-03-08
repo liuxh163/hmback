@@ -54,4 +54,8 @@ router.post('/api/v1/orders/confirm',tokenMw,adminMw,async(ctx,next)=>{
 router.get('/api/v1/orders/beConfirm',tokenMw,adminMw,async(ctx,next)=>{
     await orderController.beConfirm(ctx);
 })
+//确认订单并且修改订单商品
+router.post('/api/v1/orders/confirmWithReset',tokenMw,adminMw,async(ctx,next)=>{
+    await orderController.confirmWithReset(ctx);
+})
 export default router

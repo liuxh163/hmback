@@ -86,5 +86,15 @@ async function findById(id,allowNonExist = false) {
     return new Attendant(contentData);
 
 }
+async function findByIdAndHostpitalId(id,hospitalId,allowNonExist = false) {
+   
+    let [contentData] = await db('t_hm101_attendants')
+        .select('*')
+        .where({id:id,hospitalId:hospitalId})
+    if(!contentData && !allowNonExist) throw new Error("no attendants:"+id + "with hospital:"+hospitalId);
+    if(!contentData) return null;
 
-export { Attendant, findById }
+    return new Attendant(contentData);
+
+}
+export { Attendant, findById ,findByIdAndHostpitalId}

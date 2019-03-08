@@ -92,6 +92,7 @@ class OrderController {
         if(!params.number || ! params.confirmAt){
             ctx.throw(400, 'INVALID_PARAM')
         }
+        params.admin = ctx.state.user.id;
         let productTranscation = new ProductTranscation(params);
         await productTranscation.reset(params);
         ctx.body = {};

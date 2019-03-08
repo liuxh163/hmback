@@ -16,10 +16,10 @@ router.post('/api/v1/products', tokenMw, async (ctx, next) => {
     await productController.create(ctx)
 })
 // 查看指定产品
-router.get('/api/v1/products/:id', tokenMw, async (ctx, next) => {
+router.get('/api/v1/products/:id', async (ctx, next) => {
     await productController.show(ctx)
 })
-router.get('/api/v2/products', tokenMw, async (ctx, next) => {
+router.get('/api/v2/products', async (ctx, next) => {
     await productController.getProduct(ctx)
 })
 // 更新指定产品
