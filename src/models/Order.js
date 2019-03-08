@@ -503,7 +503,7 @@ class OrderPeople{
         let traveler = await getTraveler(this.travelerId);
         this.travelType = this.travelType||traveler.travelType;
         if(this.travelType === '02'){
-            this.originPrice = product.companyPrice;
+            this.originPrice = product.followPrice;
         }else{
             let birthday = new Date(traveler.birthday);
             let age = Date.now() - birthday;
