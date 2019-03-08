@@ -366,6 +366,7 @@ class Order {
     async formatForClient(){
         this.originPrice = this.originPrice/100;
         this.realPrice = this.realPrice/100;
+        if(this.prepayPrice) this.prepayPrice = this.prepayPrice/100;
         this.createdAt = formatDate(this.createdAt);
         if(this.confirmAt) {
             this.confirmAt = formatDate(this.confirmAt)
