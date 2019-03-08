@@ -35,7 +35,8 @@ class PayController {
         let body = '商品名';
  
         let spbill_create_ip = getRemoteIP(ctx);
-        let notify_url = "http://47.92.131.110:24651/api/v1/orders/wx_notify";
+        //let notify_url = "http://47.92.131.110:24651/api/v1/orders/wx_notify";
+        let notify_url = "https://app.haima101.com/api/v1/orders/wx_notify";
         let trade_type = 'APP';
         let inParam = {
             appid: appid,
