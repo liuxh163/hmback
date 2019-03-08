@@ -81,6 +81,15 @@ class OrderController {
         await order.confirm();
         ctx.body = {};
     }
+    async confirmWithReset(ctx){
+        let params = ctx.request.body;
+        if(!params.number || ! params.confirmAt){
+            ctx.throw(400, 'INVALID_PARAM')
+        }
+        let productTranscation = new ProductTranscation(params);
+        await productTranscation.reset(params);
+        ctx.body = {};
+    }
 }
 
 export default OrderController

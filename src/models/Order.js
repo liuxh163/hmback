@@ -214,9 +214,11 @@ class Order {
         let db_ret = await db(G_TABLE_NAME)
             .where({'buyerId':userId})
             .count('number as count')
-            .where({status:'01'})
-            .orWhere({status:'03'});
-        return parseInt(db_ret[0].count);
+            .where(function(){
+                this.where({status:'01'})
+                this.orWhere({status:'03'});
+            });
+            return parseInt(db_ret[0].count);
     }
     static async getBeCommentNum(userId){
         let db_ret = await db(G_TABLE_NAME)
@@ -577,6 +579,9 @@ class ProductTranscation{
         data.target = OrderTargetCode.Product;
         data.type = OrderTypeCode.Product;
         this.data = data;
+    }
+    async reset(){
+
     }
     async save() {
         let order = new Order(this.data);
