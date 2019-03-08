@@ -68,7 +68,12 @@ class OrderController {
         ctx.body = order;
     }
     async beConfirm(ctx){
-        ctx.body = await Order.allBeConfirm();
+        let orders = await Order.allBeConfirm();
+        for(let i = 0 ; i < orders.length ; ++i){
+            await orders[i].fillFullInfo();
+            await orders[i].formatForClient();
+        }
+        ctx.body = orders;
     }
     async confirm(ctx){
         let params = ctx.request.body;
@@ -78,6 +83,7 @@ class OrderController {
         let order = await Order.findNumber(params.number);
         
         order.confirmAt = new Date(params.confirmAt);
+
         await order.confirm();
         ctx.body = {};
     }
