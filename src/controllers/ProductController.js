@@ -29,7 +29,6 @@ class ProductController {
     //admin 获取列表
     async indexWithAttendants(ctx){
         let query = ctx.query
-        console.log(query)
         if(!query.id){
             ctx.throw(400, 'INVALID_QUERY_PARAMS')
         } 
