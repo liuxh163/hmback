@@ -622,9 +622,9 @@ class ProductTranscation{
         order.realPrice = 0;
         order.originPrice = 0;
         //todo
-        // if(order.status != OrderProductStatus.PREPAID){
-        //     throw new Error('invalid order status flow:'+order.status+" =>"+OrderProductStatus.POSTPAY);
-        // }
+        if(order.status != OrderProductStatus.PREPAID){
+            throw new Error('invalid order status flow:'+order.status+" =>"+OrderProductStatus.POSTPAY);
+        }
         order.operator = this.data.admin;
         let product = await getProduct(this.data.targetId);
         await db.transaction(async (trx)=>{
