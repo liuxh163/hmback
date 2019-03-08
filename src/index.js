@@ -175,4 +175,10 @@ app.use(updateRouter.allowedMethods())
 app.use(goodEstimateRouter.routes())
 app.use(goodEstimateRouter.allowedMethods())
 
+
+
+process.on('uncaughtException', function (err) { 
+    console.error('Caught exception: ' + err); 
+}); 
+
 export default app

@@ -26,6 +26,7 @@ async function initConsumer(){
                 if(!processer){
                     console.error("自动应答没有消费者:"+qName+" name:"+content.name);
                     channel.ack(msg);
+                    return;
                 }
                 try{
                     let result = await processer(content.data);
