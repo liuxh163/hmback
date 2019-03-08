@@ -56,7 +56,7 @@ class OrderController {
         await itlLock.lock();
         
         let params = ctx.request.body;
-        console.debug(params)
+        console.debug(JSON.stringify(params));
         params.buyerId = ctx.state.user.id;
         let productTranscation = new ProductTranscation(params);
         let order = await productTranscation.save();
