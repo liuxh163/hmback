@@ -59,6 +59,7 @@ class OrderController {
         params.buyerId = ctx.state.user.id;
         let productTranscation = new ProductTranscation(params);
         let order = await productTranscation.save();
+        order.formatForClient();
         ctx.body = order;
     }
     async getOrderFullInfo(ctx){
