@@ -31,6 +31,7 @@ import updateRouter from './routes/update'
 import goodEstimateRouter from './routes/goodestimate'
 import {startMQ} from './msgcenter/msgCenter'
 
+
 startMQ();
 
 console.log = function(logText){

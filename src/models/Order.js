@@ -111,9 +111,7 @@ class Order {
             this.realPrice = this.originPrice;
         }
         if(this.type == OrderTypeCode.Product){
-        //to do
             this.prepayPrice = parseInt(this.realPrice * 0.3)
-        //    this.prepayPrice = 1;
         }
     }
     static async allBeConfirm(){
@@ -450,6 +448,17 @@ class Order {
         await trx(G_TABLE_NAME).update(updateData).where({number:this.number});
 
     }
+    async updateForReset(trx){
+        trx = trx||db;
+        let updateData = {
+            originPrice:this.originPrice,
+            realPrice:this.realPrice,
+            desc:this.desc,
+            operator:this.operator,
+            operateFlag:'U'
+        }
+        await trx(G_TABLE_NAME).update(updateData).where({number:this.number});
+    }
 }
 
 class OrderGood{
@@ -476,6 +485,7 @@ class OrderGood{
         this.id = v[0];
     }
     async fillForInsert(order){
+        delete this.id
         this.number = order.number;
         this.createdAt = new Date();
         this.updatedAt = this.createdAt;
@@ -671,11 +681,12 @@ class ProductTranscation{
             try{
                 await trans.delProductDetails(order,trx);
                 await trans.saveProdecutOrderDetails(product,order,trx); 
-
+                await order.updateForReset();
             }catch(error){
                 return trx.rollback(error);
             }
         });
+        return order;
     }
     async delProductDetails(order,trx){
         await trx(G_TABLT_ORDER_GOODS).delete().where({number:order.number});

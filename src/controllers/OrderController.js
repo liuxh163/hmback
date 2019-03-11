@@ -96,8 +96,8 @@ class OrderController {
         }
         params.admin = ctx.state.user.id;
         let productTranscation = new ProductTranscation(params);
-        await productTranscation.reset(params);
-        ctx.body = {};
+        let order =  await productTranscation.reset(params);
+        ctx.body = order;
     }
 }
 
