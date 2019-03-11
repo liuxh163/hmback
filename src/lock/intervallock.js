@@ -11,7 +11,6 @@ class IntervalLock{
     async lock(){
         let val = await redisdb.set(this.key,new Date().getTime(),'EX',this.interval,'NX');
         if(!val) throw new Error(this.lockedMsg);
-        if(v.length !=  1 || v[0].length != 2) throw new Error(this.lockedMsg);
     }
 }
 
