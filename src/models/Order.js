@@ -307,7 +307,7 @@ class Order {
                 //这里需要延迟消息已让订单完成
                     let date = new Date(this.confirmAt);
                     let now = new Date();
-                    let timeToEnd = (now.getTime()  - date.getTime());
+                    let timeToEnd = (date.getTime() - now.getTime());
                     if(timeToEnd<0) timeToEnd = 0;
                     timeToEnd = parseInt(timeToEnd);
                     let qret = await sendToDelayMQ(QueueName.OrderDelayQueue,MsgNames.OrderEnded,{number:this.number},timeToEnd);
