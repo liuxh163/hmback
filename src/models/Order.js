@@ -310,7 +310,7 @@ class Order {
                     let timeToEnd = (now.getTime()  - date.getTime());
                     if(timeToEnd<0) timeToEnd = 0;
                     timeToEnd = parseInt(timeToEnd);
-                    let qRet = await sendToDelayMQ(QueueName.OrderDelayQueue,MsgNames.OrderEnded,{number:this.number},timeToEnd);
+                    let qret = await sendToDelayMQ(QueueName.OrderDelayQueue,MsgNames.OrderEnded,{number:this.number},timeToEnd);
                     if(!qret) throw new error('cant send queue');
                 }else{
                     msg = "错误的订单状态流:"+this.status+" 支付目标:"+payType+" 金额"+payedMoney;
