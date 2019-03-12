@@ -264,22 +264,21 @@ class Order {
     getPayParamsForWX(){
         let params = {
             fee:0,
-            trade_no:"",
-            type:""
+            trade_no:this.number,
+            type:"",
+            body:"商品名"
         }
         if(this.type == OrderTypeCode.Product){
             if(this.status == OrderProductStatus.PREPAY){
                 //todo
                 //params.fee = this.prepayPrice
                 params.fee = 1
-                params.trade_no = this.number
                 params.type = PayTargetCode.PREPAY
             }
             else if(this.status == OrderProductStatus.POSTPAY){
                 //todo
                 //params.fee = this.realPrice - this.prepayPrice
                 params.fee = 1
-                params.trade_no = this.number
                 params.type = PayTargetCode.POSTPAY
             }else{
                 throw new Error('INVALID STATUS FOR PAY:'+this.status)

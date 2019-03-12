@@ -109,15 +109,13 @@ class WXPay{
 
 
         this.userId = data.userId
-        this.notify_url = data.notify_url;
         this.number = data.number;
         this.type = data.type;
+        this.appid = data.appid;
+        this.mch_id = data.mch_id;
 
-
-        this.nonce_str = data.nonce_str;
         this.body = data.body;
         this.out_trade_no = data.out_trade_no;
-        this.spbill_create_ip = data.spbill_create_ip;
         this.total_fee = data.total_fee;
         this.trade_type = data.trade_type;
         this.result_code = data.result_code;
@@ -137,12 +135,30 @@ class WXPay{
     }
     async fillForInsert() {
         this.id = await genLongID(G_MODULE_WXPAYCHECK_NAME,'10',10);
+        //this.id = '123'
         this.createdAt = new Date();
         this.updatedAt = this.createdAt;
         this.operator = this.userId;
         //to do
         this.operateFlag = 'A';
         this.out_trade_no = ''+this.id+"_"+this.number
+    }
+    static async getByPayParam(params){
+        params.number = params.trade_no;
+        let payObjs = await db(G_TABLE_NAME).select('*').where({
+            number:params.number,
+            type:params.type
+        }).whereNot({
+            operateFlag:'D'
+        })
+        if(payObjs.length == 1){
+            return new WXPay(payObjs[0]);
+        }
+        if(payObjs.length == 0) return null;
+        if(payObjs.length >1) throw new Error('异常的订单:'+params.number+" 多次发起一个类型的支付:"+params.type);
+    }
+    checkParams(total_fee,body,mch_id,appid){
+        return this.total_fee == total_fee && this.body == body && this.mch_id == mch_id && this.appid == appid
     }
     async store(){
         await db(G_TABLE_NAME).insert(this);
@@ -158,6 +174,10 @@ class WXPay{
     async save(trx){
         trx = trx||db;
         await trx(G_TABLE_NAME).update(this).where({id:this.id})
+    }
+    async update(updateData,trx){
+        trx = trx||db;
+        await trx(G_TABLE_NAME).update(updateData).where({id:this.id})
     }
     async checkAndTranscation(inParam){
         let updObj = new WXPay(inParam);

@@ -1,10 +1,14 @@
 import Axios from "axios";
 import {Order ,findByNumber} from '../models/Order'
 var xmlreader = require("xmlreader");
-
+const xml2js = require('xml2js')
+const xmlParser = new xml2js.Parser({
+    explicitArray:false,
+    ignoreAttrs:true,
+    trim:true
+});
 import {wxpay,WXPay} from '../models/WXPay'
-import { loadavg } from "os";
-
+import db from '../db/db'
 function getRemoteIP(ctx){
     return ctx.headers['x-forwarded-for'] ||
         ctx.socket.remoteAddress 
@@ -14,10 +18,231 @@ const appid = "wx0d83ef9bd8190fe0";
 const mch_id = "1501887481";
 //要在微信支付平台设置
 const mchkey = "q2eu8pxycp2018CP0418Irt1650BjLxh";
-
+const notify_url = "https://app.haima101.com/api/v1/orders/wx_notify";
+const trade_type = 'APP';
 class PayController {
     async wx_pay(ctx){
-        await this.wx_unifiedorder(ctx);
+        await this.wx_unifiedorder1(ctx);
+    }
+    async wx_close(payObj){
+        let ctrl = this;
+        await db.transaction(async function(trx){
+            try{
+                await ctrl.__wx_close_order(payObj,trx)
+                return trx.commit();
+            }catch(error){
+                return trx.rollback(error);
+            }
+        })
+    }
+    async __wx_close_order(payObj,trx){
+        let updateData = {
+            result_code:'CLOSED',
+            operator:'system',
+            operateFlag:'D',
+            updatedAt:new Date()
+        }
+        await payObj.update(updateData,trx)
+        let nonce_str = wxpay.createNonceStr();
+        let inParam = {
+            appid:payObj.appid,
+            mch_id:payObj.mch_id,
+            nonce_str:nonce_str,
+            out_trade_no:payObj.out_trade_no
+        }
+        let sign = wxpay.paysignapi(mchkey,inParam);
+        var formData  = "<xml>";
+        formData  += "<appid>"+inParam.appid+"</appid>";  //appid
+        formData  += "<mch_id>"+inParam.mch_id+"</mch_id>";  //商户号
+        formData  += "<nonce_str>"+inParam.nonce_str+"</nonce_str>"; //随机字符串，不长于32位。
+        formData  += "<out_trade_no>"+inParam.out_trade_no+"</out_trade_no>";       
+        formData  += "<sign>"+sign+"</sign>";
+        formData  += "</xml>";
+        let response = await  Axios.post('https://api.mch.weixin.qq.com/pay/closeorder',formData,{headers: {'Content-Type': 'text/xml'}});
+        do{
+            if(response.status != 200) {
+                throw new Error('访问微信服务器失败,无法关闭原单');
+            }
+            let xmlobj = null;
+            xmlParser.parseString(response.data.toString("utf-8"),function(errors,xml){
+                if (null !== errors) {
+                    console.error(errors)
+                    return;
+                }
+                xmlobj = xml.xml;
+            })
+            if( xmlobj == null) {
+                throw new Error('xml解析失败');
+            }
+            if(!this.checkWXNotifySign(xmlobj,mchkey)){
+                throw new Error('签名校验失败，微信服务被劫持了?');
+            }
+            //微信写的
+            if( xmlobj.return_code === "FAIL") {
+                console.error(xmlobj.return_msg);
+                throw new Error('调用微信关单失败')
+            }
+
+
+            if( xmlobj.result_code === "FAIL") {
+                console.error(xmlobj.err_code);
+                console.error(xmlobj.err_code_des);
+                if(xmlobj.err_code == 'SYSTEMERROR'){
+                    throw new Error('微信支付系统异常');
+                }else if(xmlobj.err_code == 'ORDERPAID'){
+                    throw new Error('订单已支付，不能发起关单');
+                }
+                break;
+            }
+        }while(0);
+
+    }
+    //下单逻辑流，会很复杂
+    async wx_unifiedorder1(ctx){
+        let params = ctx.request.body;
+        let number = params.number;
+        let order = await findByNumber(number);
+        
+        let payParams = order.getPayParamsForWX();
+        let payObj = await WXPay.getByPayParam(payParams);
+
+        let total_fee = wxpay.getmoney(payParams.fee);
+        let body = payParams.body;
+
+        let prepayId = null;
+        //没有下过单
+        if(!payObj){
+            //开始一个新的下单
+            console.debug('开始一个新的微信下单')
+            prepayId = await this.wx_neworder(order,ctx);
+        }else{
+            //检查参数是否对应
+            //需要检查 总金额 body 商户号 appid
+            if(!payObj.checkParams(total_fee,body,mch_id,appid)){
+                console.debug('检查失败,转入微信关单流程')
+
+                //检查失败,转入关单流程
+                //关单里任何异常都会强制中断此次支付流程
+                await this.wx_close(payObj,ctx);
+                prepayId = await this.wx_neworder(order,ctx);
+            }else{
+                console.debug('继续使用原参数下单')
+                prepayId = await this.wx_continueOrder(order,payObj,ctx);
+            }
+
+        }
+        let result = null;
+        let nonce_str = wxpay.createNonceStr();
+        if(prepayId){
+            result = wxpay.paysignjsapifinal(appid,mch_id,prepayId,nonce_str,mchkey);
+        }
+        if(!result){
+            throw new Error('cannot get prepayID');
+        }
+        ctx.body = result;
+    }
+    async wx_neworder(order,ctx){
+        let payParams = order.getPayParamsForWX();
+        let payObj = new WXPay({
+            type:payParams.type,
+            userId:ctx.state.user.id,
+            number:order.number,
+            appid: appid,
+            mch_id: mch_id,
+            body: payParams.body,
+            out_trade_no: payParams.trade_no,
+            total_fee: payParams.fee,
+            trade_type: trade_type
+        })
+        await payObj.fillForInsert();
+        let prepayId = await this.wx_getPrepayId(payObj,ctx);
+        if(prepayId){
+            await payObj.store();
+        }
+        return prepayId;
+    }
+    async wx_continueOrder(order,payObj,ctx){
+        let prepayId = await this.wx_getPrepayId(payObj,ctx);
+        if(!prepayId){
+            console.debug('原obj得不到id，只能从新来了')
+            await this.wx_close(payObj,ctx);
+            prepayId = await this.wx_neworder(order,ctx);
+        }
+        return prepayId;
+    }
+    async wx_getPrepayId(payObj,ctx){
+        let nonce_str = wxpay.createNonceStr();
+        let inParam = {
+            appid: payObj.appid,
+            mch_id: payObj.mch_id,
+            nonce_str: nonce_str,
+            body: payObj.body,
+            notify_url: notify_url,
+            out_trade_no: payObj.out_trade_no,
+            spbill_create_ip: getRemoteIP(ctx),
+            total_fee: payObj.total_fee,
+            trade_type: payObj.trade_type,
+            attach:payObj.attach
+        }
+        let sign = wxpay.paysignapi(mchkey,inParam);
+        var formData  = "<xml>";
+        formData  += "<appid>"+inParam.appid+"</appid>";  //appid
+        formData  += "<body><![CDATA["+inParam.body+"]]></body>";
+        formData  += "<mch_id>"+inParam.mch_id+"</mch_id>";  //商户号
+        formData  += "<nonce_str>"+inParam.nonce_str+"</nonce_str>"; //随机字符串，不长于32位。
+        formData  += "<notify_url>"+inParam.notify_url+"</notify_url>";
+        formData  += "<out_trade_no>"+inParam.out_trade_no+"</out_trade_no>";
+        formData  += "<spbill_create_ip>"+inParam.spbill_create_ip+"</spbill_create_ip>";
+        formData  += "<total_fee>"+inParam.total_fee+"</total_fee>";
+        formData  += "<trade_type>"+inParam.trade_type+"</trade_type>";
+        formData  += "<sign>"+sign+"</sign>";
+        formData  += "<attach>"+inParam.attach+"</attach>"
+        formData  += "</xml>";
+        let response = await  Axios.post('https://api.mch.weixin.qq.com/pay/unifiedorder',formData,{headers: {'Content-Type': 'text/xml'}});
+        let result = null;
+        do{
+            if(response.status != 200) {
+                throw new Error('访问微信服务器失败');
+
+            }
+            let xmlobj = null;
+            
+            xmlParser.parseString(response.data.toString("utf-8"), function (errors, xml) {
+                if (null !== errors) {
+                    console.debug(errors)
+                    return;
+                }
+                xmlobj = xml.xml;
+            });
+            if( xmlobj == null) {
+                throw new Error('xml解析失败');
+            }
+            if(!this.checkWXNotifySign(xmlobj,mchkey)){
+                throw new Error('签名校验失败，微信服务被劫持了?');
+            }
+            //微信写的
+            if( xmlobj.return_code === "FAIL") {
+                console.error(xmlobj.return_msg);
+                break;
+            }
+            if( xmlobj.result_code === "FAIL") {
+                console.error(xmlobj.err_code);
+                console.error(xmlobj.err_code_des);
+                if(xmlobj.err_code == 'SYSTEMERROR'){
+                    throw new Error('微信支付系统异常');
+                }else if(xmlobj.err_code == 'ORDERPAID'){
+                    throw new Error('订单已支付,耐心等待结果');
+                }
+                
+                break;
+            }
+            var prepay_id = xmlobj.prepay_id;
+            console.debug('解析后的prepay_id=='+prepay_id);
+            result = prepay_id;
+        }while(0);
+        // console.log('hello world')
+        // console.log(result)
+        return result;
     }
     async wx_unifiedorder(ctx){
         let params = ctx.request.body;
@@ -27,6 +252,7 @@ class PayController {
         //从数据库取到对应的微信商品代码，商品价格
         let payParams = order.getPayParamsForWX();
         let total_fee = wxpay.getmoney(payParams.fee);
+        //total_fee = '123'
         //这个是我们自己的订单号，需要插库取ID
         let out_trade_no = payParams.trade_no;
 
@@ -35,9 +261,10 @@ class PayController {
         let body = '商品名';
  
         let spbill_create_ip = getRemoteIP(ctx);
+       //let spbill_create_ip = '123.123.123.123'
         //let notify_url = "http://47.92.131.110:24651/api/v1/orders/wx_notify";
         let notify_url = "https://app.haima101.com/api/v1/orders/wx_notify";
-        let trade_type = 'APP';
+
         let inParam = {
             appid: appid,
             mch_id: mch_id,
@@ -92,9 +319,16 @@ class PayController {
             });
             if( xmlobj == null) break;
             //微信写的
-            if( xmlobj.xml.return_code.text() === "FAIL") break;
+            if( xmlobj.xml.return_code.text() === "FAIL") {
+                console.debug(xmlobj.xml.return_code.return_msg.text());
+                break;
+            }
 
-            if( xmlobj.xml.result_code.text() === "FAIL") break;
+            if( xmlobj.xml.result_code.text() === "FAIL") {
+                console.debug(xmlobj.xml.return_code.err_code.text());
+                console.debug(xmlobj.xml.return_code.err_code_des.text());
+                break;
+            }
 
             var prepay_id = xmlobj.xml.prepay_id.text();
             console.debug('解析后的prepay_id=='+prepay_id);
@@ -107,7 +341,7 @@ class PayController {
             throw new Error("can not get prepay id");
         }
         payObj.sign = sign;
-        await payObj.store();
+        //await payObj.store();
         ctx.body=result;
     }
     /**
@@ -128,7 +362,7 @@ class PayController {
     checkWXNotifySign(xmlObj, PAY_API_KEY) {
         let string = ''
         const keys = Object.keys(xmlObj)
-        //keys.sort()
+        keys.sort()
         keys.forEach(key => {
             if (xmlObj[key] && key !== 'sign') {
                 string = string + key + '=' + xmlObj[key] + '&'
@@ -138,6 +372,7 @@ class PayController {
         console.debug(string)
         var crypto = require('crypto');
         let localSign = crypto.createHash('md5').update(string, 'utf8').digest('hex').toUpperCase();
+        console.debug(localSign);
         return localSign === xmlObj.sign
     }
     async wx_notify(ctx){
