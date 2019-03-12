@@ -5,7 +5,11 @@ import {CommonlyTraveler, findById} from '../models/CommonlyTraveler'
 class CommonlyTravelerController{
     async all(ctx){
         let userId = ctx.state.user.id;
-        ctx.body = await CommonlyTraveler.all(userId);
+        let results = await CommonlyTraveler.all(userId);
+        for(let i = 0 ; i < results.length ; ++i){
+            results[i].formatForClient();
+        }
+        ctx.body = results;
     }
     async add(ctx){
         let userId = ctx.state.user.id;
@@ -18,7 +22,9 @@ class CommonlyTravelerController{
         let userId = ctx.state.user.id;
         let ct = new CommonlyTraveler(ctx.request.body);
         await ct.store(userId);
-        ctx.body = ct.id;
+        ct = await CommonlyTraveler.find(ct.id);
+        ct.formatForClient();
+        ctx.body = ct;
     }
     async del(ctx){
         let params = ctx.request.body;
