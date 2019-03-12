@@ -11,7 +11,8 @@ class CommonlyTravelerController{
         let userId = ctx.state.user.id;
         let ct = new CommonlyTraveler(ctx.request.body);
         await ct.save(userId);
-        ctx.body = ct.id;
+        ct.formatForClient();
+        ctx.body = ct;
     }
     async update(ctx){
         let userId = ctx.state.user.id;

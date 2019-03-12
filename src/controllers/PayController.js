@@ -182,7 +182,7 @@ class PayController {
             spbill_create_ip: getRemoteIP(ctx),
             total_fee: payObj.total_fee,
             trade_type: payObj.trade_type,
-            attach:payObj.attach
+            attach:payObj.id
         }
         let sign = wxpay.paysignapi(mchkey,inParam);
         var formData  = "<xml>";
