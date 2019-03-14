@@ -34,7 +34,13 @@ class UserController {
         await user.findPhone(request.telephone)
         if (!user.telephone){
             console.debug("create new user by "+request.telephone)
+            let tel = request.telephone;
+            tel = "" + tel;
+            let reg=/(\d{3})\d{4}(\d{4})/;
+            let tel1 = tel.replace(reg, "$1****$2")
             // 用户不存在则创建新用户
+            request.userName = tel1;
+            console.debug(tel1);
             request.loginId = new rand(/[0-9]{9}/).gen();
             request.ipAddress = ctx.request.ip
             request.type = '01';
