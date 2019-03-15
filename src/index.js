@@ -29,6 +29,7 @@ import adminsRouter from './routes/admins';
 import commonlyTraverler from './routes/commonlytraveler'
 import updateRouter from './routes/update'
 import goodEstimateRouter from './routes/goodestimate'
+import olserviceRouter from './routes/olservice'
 import {startMQ} from './msgcenter/msgCenter'
 
 
@@ -176,7 +177,8 @@ app.use(updateRouter.allowedMethods())
 app.use(goodEstimateRouter.routes())
 app.use(goodEstimateRouter.allowedMethods())
 
-
+app.use(olserviceRouter.routes())
+app.use(olserviceRouter.allowedMethods())
 
 process.on('uncaughtException', function (err) { 
     console.error('Caught exception: ' + err); 
