@@ -2,17 +2,18 @@ import Router from 'koa-router'
 import RdsToken from '../middleware/rdsToken'
 
 import CarouselController from '../controllers/CarouselController'
+import WeakToken from '../middleware/weakToken'
 
 const router = new Router()
 const tokenMw = RdsToken()
-
+const weakMW = WeakToken()
 const carouselController = new CarouselController()
 // 查询轮播图
-router.get('/api/v1/carousels', tokenMw, async (ctx, next) => {
+router.get('/api/v1/carousels', weakMW, async (ctx, next) => {
     await carouselController.index(ctx)
 })
 // 新建轮播图
-router.post('/api/v1/carousels', tokenMw,  async (ctx, next) => {
+router.post('/api/v1/carousels', tokenMw, async (ctx, next) => {
     await carouselController.create(ctx)
 })
 
