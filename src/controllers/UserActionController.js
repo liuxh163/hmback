@@ -71,9 +71,15 @@ class UserController {
         if(logined){
             // token续期
             ctx.redisdb.expire('login-'+request.telephone, token_expire)
-            ctx.redisdb.expire(logined, token_expire)
+            ctx.redisdb.expire(logined, token_expire);
+            // 获取用户信息
+            var userId;
+            await ctx.redisdb.get(logined).then(function (result){
+                // 用户已经登录
+                if(result){userId = JSON.parse(result).id}
+            })
             // 返回用户token
-            ctx.body = {accessToken: logined}
+            ctx.body = {accessToken: logined,uid:  userId}
         }else{
             //已有用户但未登录，则基于时间戳生成新token
             var token = UUID.v1();
@@ -88,8 +94,8 @@ class UserController {
             // 设置redis双向绑定
             ctx.redisdb.set(token, JSON.stringify(user), 'EX', token_expire);
             ctx.redisdb.set('login-'+request.telephone, token, 'EX', token_expire);
-            // 返回用户token
-            ctx.body = {accessToken: token}
+            // 返回用户token以及用户id
+            ctx.body = {accessToken: token, uid: user.id}
         }
     }
 
