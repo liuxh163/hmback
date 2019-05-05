@@ -14,10 +14,10 @@ function getRemoteIP(ctx){
         ctx.socket.remoteAddress 
 }
 
-const appid = "wx0d83ef9bd8190fe0";
-const mch_id = "1501887481";
+const appid = "wx95c8cd3694e4df4e";
+const mch_id = "1532194821";
 //要在微信支付平台设置
-const mchkey = "q2eu8pxycp2018CP0418Irt1650BjLxh";
+const mchkey = "1323c74768ba5497dea2078a27d19fa8";
 const notify_url = "https://app.haima101.com/api/v1/orders/wx_notify";
 const trade_type = 'APP';
 class PayController {

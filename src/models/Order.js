@@ -111,7 +111,7 @@ class Order {
             this.realPrice = this.originPrice;
         }
         if(this.type == OrderTypeCode.Product){
-            this.prepayPrice = parseInt(this.realPrice * 0.3)
+            this.prepayPrice = parseInt(this.realPrice * 0.1)
         }
     }
     static async allBeConfirm(){
