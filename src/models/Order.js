@@ -271,14 +271,14 @@ class Order {
         if(this.type == OrderTypeCode.Product){
             if(this.status == OrderProductStatus.PREPAY){
                 //todo
-                //params.fee = this.prepayPrice
-                params.fee = 1
+                params.fee = this.prepayPrice
+                // params.fee = 1
                 params.type = PayTargetCode.PREPAY
             }
             else if(this.status == OrderProductStatus.POSTPAY){
                 //todo
-                //params.fee = this.realPrice - this.prepayPrice
-                params.fee = 1
+                params.fee = this.realPrice - this.prepayPrice
+                // params.fee = 1
                 params.type = PayTargetCode.POSTPAY
             }else{
                 throw new Error('INVALID STATUS FOR PAY:'+this.status)
