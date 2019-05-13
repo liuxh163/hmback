@@ -36,9 +36,9 @@ router.post('/api/v1/orders/wxpay', tokenMw, async (ctx, next) => {
 router.post('/api/v1/orders/wx_notify', async (ctx, next) => {
     await payController.wx_notify(ctx);
 })
-router.post('/api/v1/orders/wxpay', tokenMw, async (ctx, next) => {
-    await payController.wx_pay(ctx);
-})
+// router.post('/api/v1/orders/wxpay', tokenMw, async (ctx, next) => {
+//     await payController.wx_pay(ctx);
+// })
 
 //查询订单 详情
 router.get('/api/v1/orders/getOrderFullInfo',tokenMw,async(ctx,next)=>{

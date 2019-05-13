@@ -10,7 +10,7 @@ const config = {
     development:{
         protocol:"amqp",
         hostname:"localhost",
-        port:"6752",
+        port:"5672",
         username:"admin",
         password:"admin"
     },

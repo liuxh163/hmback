@@ -271,8 +271,8 @@ class Order {
         if(this.type == OrderTypeCode.Product){
             if(this.status == OrderProductStatus.PREPAY){
                 //todo
-                params.fee = this.prepayPrice
-                // params.fee = 1
+                // params.fee = this.prepayPrice
+                params.fee = 1
                 params.type = PayTargetCode.PREPAY
             }
             else if(this.status == OrderProductStatus.POSTPAY){
@@ -293,6 +293,7 @@ class Order {
         let isSuccess = false;
         let msg = '未知错误';
         do{
+            console.log("微信支付回调过程中开始修改订单的状态啦-------");
             if(payType == PayTargetCode.PREPAY){
                 if(this.status == OrderProductStatus.PREPAY){
                     this.status = OrderProductStatus.PREPAID;
@@ -741,10 +742,6 @@ class ProductTranscation{
         return order;
     }
 }
-
-
-
-
 
 class OrderBill{
     constructor(data){

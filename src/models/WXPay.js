@@ -180,12 +180,16 @@ class WXPay{
         await trx(G_TABLE_NAME).update(updateData).where({id:this.id})
     }
     async checkAndTranscation(inParam){
+        console.log("我赛，微信回调成功，开始进入本地参数的事务性修改过程啦啦啦----");
         let updObj = new WXPay(inParam);
         updObj.id = inParam.attach;
         delete updObj.out_trade_no;
         delete updObj.total_fee;
         delete updObj.trade_type
         let payObj = this;
+        Object.keys(payObj).forEach(function(param, index){
+            console.log("支付对象参数-"+index+"--参数值是什么呢--"+param);
+        });
 
         await db.transaction(async function(trx){
             try{
@@ -221,12 +225,14 @@ class WXPay{
         let code = 'SUCCESS'
         let msg  = 'OK'
         let isResend = false;
+        console.log("开始进行微信回调参数的校验啦啦啦啦----");
 
         let payObj = await this.find(inParam.attach,true);
         if(!payObj){
             code = 'FAIL'
             msg = '未通过attach找到对账单'
             nextNotifyFunction&&nextNotifyFunction(code,msg,isResend);
+            console.log("微信支付回调中没有找到微信的对账单呀----"+msg);
             return;
         }
         //首先进行单号和金额确认
