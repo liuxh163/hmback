@@ -18,7 +18,8 @@ const appid = "wx95c8cd3694e4df4e";
 const mch_id = "1532194821";
 //要在微信支付平台设置
 const mchkey = "1323c74768ba5497dea2078a27d19fa8";
-const notify_url = "https://app.haima101.com/api/v1/orders/wx_notify";
+// const notify_url = "https://app.haima101.com/api/v1/orders/wx_notify";
+const notify_url = "http://app.haima101.com/api/v1/orders/wx_notify";
 const trade_type = 'APP';
 class PayController {
     async wx_pay(ctx){
@@ -264,7 +265,8 @@ class PayController {
         let spbill_create_ip = getRemoteIP(ctx);
        //let spbill_create_ip = '123.123.123.123'
         //let notify_url = "http://47.92.131.110:24651/api/v1/orders/wx_notify";
-        let notify_url = "https://app.haima101.com/api/v1/orders/wx_notify";
+        // let notify_url = "https://app.haima101.com/api/v1/orders/wx_notify";
+        let notify_url = "http://app.haima101.com/api/v1/orders/wx_notify";
 
         let inParam = {
             appid: appid,
