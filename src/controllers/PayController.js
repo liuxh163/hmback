@@ -199,7 +199,7 @@ class PayController {
         formData  += "<sign>"+sign+"</sign>";
         formData  += "<attach>"+inParam.attach+"</attach>"
         formData  += "</xml>";
-        console.log("微信支付的时候发给微信的都是些什么呀，来看看看看看-"+formData);
+        console.debug("微信支付的时候发给微信的都是些什么呀，来看看看看看-"+formData);
         let response = await  Axios.post('https://api.mch.weixin.qq.com/pay/unifiedorder',formData,{headers: {'Content-Type': 'text/xml'}});
         let result = null;
         do{
@@ -372,20 +372,20 @@ class PayController {
             }
         })
         string = string + 'key=' + PAY_API_KEY
-        console.log("微信callback中校验微信签名的串串-------"+string)
+        console.debug("微信callback中校验微信签名的串串-------"+string)
         var crypto = require('crypto');
         let localSign = crypto.createHash('md5').update(string, 'utf8').digest('hex').toUpperCase();
-        console.log(localSign);
+        console.debug(localSign);
         return localSign === xmlObj.sign
     }
     async wx_notify(ctx){
-        console.log("微信callback我啦，啦啦啦啦啦发来的Xml内容----"+ctx.request.body.xml);
+        console.debug("微信callback我啦，啦啦啦啦啦发来的Xml内容----"+ctx.request.body.xml);
         let wx_code = 'FAIL';
         let wx_msg = '系统处理异常';
         let wx_isResend = false;
         let xmlobj = ctx.request.body.xml;
         let v = this.checkWXNotifySign(xmlobj,mchkey);
-        console.log("微信callback中检验签名结果----"+v);
+        console.debug("微信callback中检验签名结果----"+v);
         //测试代码
         //todo
         //v = true;
@@ -415,7 +415,7 @@ class PayController {
                     inParam.err_code_des = xmlobj.err_code_des
                 }
             }else{
-                console.log("微信支付通知接口中返回码为空，出现异常");
+                console.error("微信支付通知接口中返回码为空，出现异常");
                 wx_msg = "这是什么意思";
                 var formData  = "<xml>";
                 formData += "<return_code><![CDATA["+wx_code+"]]></return_code>";  //appid

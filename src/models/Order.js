@@ -293,7 +293,7 @@ class Order {
         let isSuccess = false;
         let msg = '未知错误';
         do{
-            console.log("微信支付回调过程中开始修改订单的状态啦-------");
+            console.debug("微信支付回调过程中开始修改订单的状态啦-------");
             if(payType == PayTargetCode.PREPAY){
                 if(this.status == OrderProductStatus.PREPAY){
                     this.status = OrderProductStatus.PREPAID;
