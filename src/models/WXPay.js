@@ -182,8 +182,8 @@ class WXPay{
     async checkAndTranscation(inParam){
         console.debug("我赛，微信回调成功，开始进入本地参数的事务性修改过程啦啦啦----");
         // 调用经纪人返佣确认接口
-        await  Axios.post('http://app.haima101.com/haima/user/orderConfirm',{operator: inParam.number});
-        
+        await  Axios.post('http://app.haima101.com/haima/user/orderConfirm',{orderID: inParam.number});
+
         let updObj = new WXPay(inParam);
         updObj.id = inParam.attach;
         delete updObj.out_trade_no;
