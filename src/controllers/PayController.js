@@ -14,13 +14,17 @@ function getRemoteIP(ctx){
         ctx.socket.remoteAddress 
 }
 
-const appid = "wx95c8cd3694e4df4e";
-const mch_id = "1532194821";
+if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
+require('dotenv').config();
+
+const appid = process.env.WXAPPID;
+const mch_id = process.env.WXMCHID;
 //要在微信支付平台设置
-const mchkey = "1323c74768ba5497dea2078a27d19fa8";
-// const notify_url = "https://app.haima101.com/api/v1/orders/wx_notify";
-const notify_url = "http://app.haima101.com/api/v1/orders/wx_notify";
-const trade_type = 'APP';
+const mchkey = process.env.WXMCH_KEY;
+const notify_url = process.env.HAIMA_BASE+"/api/v1/orders/wx_notify";
+const closeOrderUrl = process.env.WXMCH_BASE+"/pay/closeorder";
+const uniOrderUrl = process.env.WXMCH_BASE+"/pay/unifiedorder";
+const trade_type = process.env.WXPAY_TYPE;
 class PayController {
     async wx_pay(ctx){
         await this.wx_unifiedorder1(ctx);
@@ -59,7 +63,7 @@ class PayController {
         formData  += "<out_trade_no>"+inParam.out_trade_no+"</out_trade_no>";       
         formData  += "<sign>"+sign+"</sign>";
         formData  += "</xml>";
-        let response = await  Axios.post('https://api.mch.weixin.qq.com/pay/closeorder',formData,{headers: {'Content-Type': 'text/xml'}});
+        let response = await  Axios.post(closeOrderUrl,formData,{headers: {'Content-Type': 'text/xml'}});
         do{
             if(response.status != 200) {
                 throw new Error('访问微信服务器失败,无法关闭原单');
@@ -200,7 +204,7 @@ class PayController {
         formData  += "<attach>"+inParam.attach+"</attach>"
         formData  += "</xml>";
         console.debug("微信支付的时候发给微信的都是些什么呀，来看看看看看-"+formData);
-        let response = await  Axios.post('https://api.mch.weixin.qq.com/pay/unifiedorder',formData,{headers: {'Content-Type': 'text/xml'}});
+        let response = await  Axios.post(uniOrderUrl,formData,{headers: {'Content-Type': 'text/xml'}});
         let result = null;
         do{
             if(response.status != 200) {
@@ -266,7 +270,7 @@ class PayController {
        //let spbill_create_ip = '123.123.123.123'
         //let notify_url = "http://47.92.131.110:24651/api/v1/orders/wx_notify";
         // let notify_url = "https://app.haima101.com/api/v1/orders/wx_notify";
-        let notify_url = "http://app.haima101.com/api/v1/orders/wx_notify";
+        // let notify_url = "http://app.haima101.com/api/v1/orders/wx_notify";
 
         let inParam = {
             appid: appid,
@@ -308,7 +312,7 @@ class PayController {
         formData  += "<attach>"+attach+"</attach>"
         formData  += "</xml>";
 
-        let response = await  Axios.post('https://api.mch.weixin.qq.com/pay/unifiedorder',formData,{headers: {'Content-Type': 'text/xml'}});
+        let response = await  Axios.post(uniOrderUrl,formData,{headers: {'Content-Type': 'text/xml'}});
         let result = null;
         do{
             if(response.status != 200) break;

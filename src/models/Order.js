@@ -1,5 +1,5 @@
-import db from '../db/db'
-import rand from 'randexp'
+import db from '../db/db';
+import Axios from 'axios';
 
 const getServant = require('./Servant').findById
 const getProduct = require('./Product').findById
@@ -12,6 +12,11 @@ import { Codes } from './Codes';
 import {MsgNames,QueueName, sendToDelayMQ,sendToUNHandle} from '../msgcenter/msgCenter'
 import { CommonlyTraveler } from './CommonlyTraveler';
 import { Product } from './Product';
+
+if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
+require('dotenv').config();
+
+const couponUrl = process.env.HAIMA_BASE+"/haima/user/changeCouponStatus";
 
 function formatDate(str){
     let date = null;
@@ -100,7 +105,7 @@ class Order {
         this.postpayExpiry = postpayExpiry;
         this.productExpiry = productExpiry;
     }
-    computePrice(orderGoods){
+    computePrice(orderGoods,discount){
 
         this.originPrice = 0;
         this.realPrice = 0;
@@ -110,6 +115,11 @@ class Order {
             this.originPrice += orderGood.realPrice * orderGood.quantity;
             this.realPrice = this.originPrice;
         }
+        // 计算优惠金额
+        if(discount){
+            this.realPrice = this.originPrice - discount;
+        };
+        
         if(this.type == OrderTypeCode.Product){
             this.prepayPrice = parseInt(this.realPrice * 0.1)
         }
@@ -697,7 +707,7 @@ class ProductTranscation{
     //     await trx(G_TABLE_ORDER_PEOPLE_NAME).update({operator:order.operator,operateFlag:'D'}).where({number:order.number});
     //     await trx(G_TABLE_ORDER_ATTENTANTS_NAME).update({operator:order.operator,operateFlag:'D'}).where({number:order.number});
      }
-    async saveProdecutOrderDetails(product,order,trx){
+    async saveProdecutOrderDetails(product,order,trx,couponId){
         let orderGood = new OrderGood(this.data);
         orderGood.quantity = 1;
         await orderGood.fillForInsert(order);
@@ -716,7 +726,19 @@ class ProductTranscation{
             }
         }   
         await orderGood.save(trx);
-        order.computePrice([orderGood]);
+        // 如果订单中有优惠券，则计算优惠金额
+        let discount = 0;
+        if(couponId){
+            let inParam = `{"couponid":"${couponId}","status":"02"}`;
+            let couponStr = await Axios.post(couponUrl,inParam, {headers: {'Content-Type': 'application/json'}});
+            if(couponStr.status != 200) {
+                throw new Error('使用优惠券失败,关闭订单');
+            }
+            if(couponStr.data.data.discount){
+                discount = couponStr.data.data.discount;
+            }
+        };
+        order.computePrice([orderGood],discount);
     }
     async save() {
         let trans = this;
@@ -725,7 +747,7 @@ class ProductTranscation{
         let product = await getProduct(this.data.targetId);
         await db.transaction(async (trx)=>{
             try{
-                await trans.saveProdecutOrderDetails(product,order,trx); 
+                await trans.saveProdecutOrderDetails(product,order,trx,this.data.couponID); 
                 order.fillForPruductPrepay(product);
                 let productExpiry = order.productExpiry;
                 delete order.productExpiry;
