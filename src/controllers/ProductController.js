@@ -2,6 +2,13 @@ import dateFormat from 'date-fns/format'
 
 import { Product ,findById} from '../models/Product'
 import {isLike} from '../models/Thumb'
+import Axios from 'axios';
+
+if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
+require('dotenv').config();
+
+const cardDiscountUrl = process.env.HAIMA_BASE+"/haima/user/getBCDiscount";
+
 class ProductController {
     /**
      * 获取指定参数的产品列表
@@ -10,8 +17,6 @@ class ProductController {
      */
     async index(ctx) {
         const query = ctx.query
-
-
         //检测查询参数
         if (query.page&&!query.number) {
             ctx.throw(400, 'INVALID_QUERY_PARAMS')
@@ -19,9 +24,35 @@ class ProductController {
 
         //获取产品列表
 
-        let result = await Product.all(query)
+        let result = await Product.all(query);
+        let prdid = "";
         for(let i = 0 ; i < result.length ; ++i){
-            result[i].formatForClient();
+            prdid = prdid+result[i].id+ ",";
+        }
+        let discMap = new Map();
+        if(prdid){
+            prdid=prdid.substring(0,prdid.length-1)+"";
+            let inParam = `?prdid=${prdid}&id=${ctx.state.user.id}`;
+            let prdDiscount = [];
+            try{
+                prdDiscount = await Axios.get(cardDiscountUrl+inParam, {headers: {'Content-Type': 'application/json'}});
+            }catch(err){
+                console.error(err)
+            }
+            if(prdDiscount.data.data.discountList){
+                console.debug("产品列表获取折扣数据成功");
+                for(var key in prdDiscount.data.data.discountList){
+                    console.debug("产品-"+prdDiscount.data.data.discountList[key].prdid);
+                    console.debug("折扣-"+prdDiscount.data.data.discountList[key].discount);
+                    discMap.set(prdDiscount.data.data.discountList[key].prdid,
+                        prdDiscount.data.data.discountList[key].discount);
+                }
+            }
+        }
+        for(let ii = 0 ; ii < result.length ; ++ii){
+            let discRate = discMap.get((result[ii].id).toString());
+            result[ii].computeDiscount(discRate);
+            result[ii].formatForClient();
         }
         ctx.body = {products:result}
 
@@ -48,7 +79,28 @@ class ProductController {
         const params = ctx.params
         if (!params.id) ctx.throw(500, 'INVALID_PARAM')
 
-        let product = await Product.find(params.id)
+        let product = await Product.find(params.id);
+        // 获取产品折扣
+        let inParam = `?prdid=${product.id}&id=${ctx.state.user.id}`;
+        let prdDiscount = [];
+        try{
+            prdDiscount = await Axios.get(cardDiscountUrl+inParam, {headers: {'Content-Type': 'application/json'}});
+        }catch(err){
+            console.error(err)
+        }
+        let discRate = 1;
+        if(prdDiscount.data.data.discountList){
+            console.debug("折扣数据获取成功");
+            for(var key in prdDiscount.data.data.discountList){
+                console.debug("产品-"+prdDiscount.data.data.discountList[key].prdid);
+                console.debug("折扣-"+prdDiscount.data.data.discountList[key].discount);
+                if(product.id == prdDiscount.data.data.discountList[key].prdid){
+                    discRate = prdDiscount.data.data.discountList[key].discount;
+                }
+            }
+        }
+        product.computeDiscount(discRate);
+
         product.formatForClient();
         if(ctx.state.user){
             product.isLike = await isLike(ctx.state.user.id,'01',product.id);
@@ -56,6 +108,11 @@ class ProductController {
         for(let i = 0 ; i < product.attendants.length ; ++i){
             product.attendants[i].formatForClient();
         }
+        
+        // 删掉儿童金额
+        delete product.childPrice;
+        delete product.childPrice_discount;
+
         ctx.body = product
     }
     /**

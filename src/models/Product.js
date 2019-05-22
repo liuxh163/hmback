@@ -192,6 +192,13 @@ class Product {
         this.womenPrice = this.womenPrice/100;
         this.followPrice = this.followPrice/100;
     }
+    // 计算产品折扣价格
+    computeDiscount(discount=1){
+        this.adultPrice_discount = this.adultPrice*discount/100;
+        this.childPrice_discount = this.childPrice*discount/100;
+        this.womenPrice_discount = this.womenPrice*discount/100;
+        this.followPrice_discount = this.followPrice*discount/100;
+    }
     /**
      * 查询产品详细信息，包含子表信息
      * @param  {[type]} id [description]

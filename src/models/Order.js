@@ -17,6 +17,9 @@ if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
 require('dotenv').config();
 
 const couponUrl = process.env.HAIMA_BASE+"/haima/user/changeCouponStatus";
+const PREPAY_EXPIRE = process.env.ORDER_PRE_EXPIRE*1000;
+const POSTPAY_EXPIRE = process.env.ORDER_POST_EXPIRE*1000;
+const PREPAY_RATE = process.env.PREPAY_RATE;
 
 function formatDate(str){
     let date = null;
@@ -91,7 +94,7 @@ class Order {
     fillForPruductPrepay(product){
         let date = new Date();
         let productExpiry = +product.prepayExpiry;
-        productExpiry = productExpiry===0?3600000:productExpiry;
+        productExpiry = productExpiry===0?PREPAY_EXPIRE:productExpiry;
         let prepayExpiry = new Date(date.getTime() +productExpiry);
         this.prepayExpiry = prepayExpiry;
         this.productExpiry = productExpiry;
@@ -100,7 +103,7 @@ class Order {
     fillForProductPostpay(product){
         let date = new Date();
         let productExpiry = +product.postpayExpiry;
-        productExpiry = productExpiry===0?3600000:productExpiry;
+        productExpiry = productExpiry===0?POSTPAY_EXPIRE:productExpiry;
         let postpayExpiry = new Date(date.getTime() +productExpiry);
         this.postpayExpiry = postpayExpiry;
         this.productExpiry = productExpiry;
@@ -121,7 +124,7 @@ class Order {
         };
         
         if(this.type == OrderTypeCode.Product){
-            this.prepayPrice = parseInt(this.realPrice * 0.1)
+            this.prepayPrice = parseInt(this.realPrice * PREPAY_RATE)
         }
     }
     static async allBeConfirm(){
@@ -281,8 +284,8 @@ class Order {
         if(this.type == OrderTypeCode.Product){
             if(this.status == OrderProductStatus.PREPAY){
                 //todo
-                // params.fee = this.prepayPrice
-                params.fee = 1
+                params.fee = this.prepayPrice
+                // params.fee = 1
                 params.type = PayTargetCode.PREPAY
             }
             else if(this.status == OrderProductStatus.POSTPAY){
@@ -737,6 +740,27 @@ class ProductTranscation{
             if(couponStr.data.data.discount){
                 discount = couponStr.data.data.discount;
             }
+        }else{// 黑卡折扣计算
+            // 获取产品折扣
+            let inParam = `?prdid=${product.id}&id=${ctx.state.user.id}`;
+            let prdDiscount = [];
+            try{
+                prdDiscount = await Axios.get(cardDiscountUrl+inParam, {headers: {'Content-Type': 'application/json'}});
+            }catch(err){
+                console.error(err)
+            }
+            let discRate = 1;
+            if(prdDiscount.data.data.discountList){
+                console.debug("折扣数据获取成功");
+                for(var key in prdDiscount.data.data.discountList){
+                    console.debug("产品-"+prdDiscount.data.data.discountList[key].prdid);
+                    console.debug("折扣-"+prdDiscount.data.data.discountList[key].discount);
+                    if(product.id == prdDiscount.data.data.discountList[key].prdid){
+                        discRate = prdDiscount.data.data.discountList[key].discount;
+                    }
+                };
+                discount = orderGood.originPrice*(1-discRate);
+            };
         };
         order.computePrice([orderGood],discount);
     }
