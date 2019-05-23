@@ -42,8 +42,6 @@ class ProductController {
             if(prdDiscount.data.data.discountList){
                 console.debug("产品列表获取折扣数据成功");
                 for(var key in prdDiscount.data.data.discountList){
-                    console.debug("产品-"+prdDiscount.data.data.discountList[key].prdid);
-                    console.debug("折扣-"+prdDiscount.data.data.discountList[key].discount);
                     discMap.set(prdDiscount.data.data.discountList[key].prdid,
                         prdDiscount.data.data.discountList[key].discount);
                 }
@@ -53,7 +51,11 @@ class ProductController {
             let discRate = discMap.get((result[ii].id).toString());
             result[ii].computeDiscount(discRate);
             result[ii].formatForClient();
-        }
+            // 删掉儿童金额
+            delete result[ii].childPrice;
+            delete result[ii].childPrice_discount;
+        };
+        
         ctx.body = {products:result}
 
     }
@@ -93,8 +95,6 @@ class ProductController {
             if(prdDiscount.data.data.discountList){
                 console.debug("折扣数据获取成功");
                 for(var key in prdDiscount.data.data.discountList){
-                    console.debug("产品-"+prdDiscount.data.data.discountList[key].prdid);
-                    console.debug("折扣-"+prdDiscount.data.data.discountList[key].discount);
                     if(product.id == prdDiscount.data.data.discountList[key].prdid){
                         discRate = prdDiscount.data.data.discountList[key].discount;
                     }

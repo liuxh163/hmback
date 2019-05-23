@@ -80,7 +80,7 @@ class Product {
         };
         let result = [];
         let dbresult = await db('t_hm101_products').select('id','desc','nation','status',
-                                        'coverPicId','adultPrice','viewNum',
+                                        'coverPicId','adultPrice','womenPrice','followPrice','childPrice','viewNum',
                                         'isMainPage','category','hospitalId','displayUrl')
                                         .where(conditions)
                                         .whereNot(notConditions)
@@ -187,17 +187,17 @@ class Product {
         await this.fillHospital();
     }
     formatForClient(){
-        this.adultPrice = this.adultPrice/100;
-        this.childPrice = this.childPrice/100;
-        this.womenPrice = this.womenPrice/100;
-        this.followPrice = this.followPrice/100;
+        this.adultPrice = (this.adultPrice/100).toFixed();
+        this.childPrice = (this.childPrice/100).toFixed();
+        this.womenPrice = (this.womenPrice/100).toFixed();
+        this.followPrice = (this.followPrice/100).toFixed();
     }
     // 计算产品折扣价格
     computeDiscount(discount=1){
-        this.adultPrice_discount = this.adultPrice*discount/100;
-        this.childPrice_discount = this.childPrice*discount/100;
-        this.womenPrice_discount = this.womenPrice*discount/100;
-        this.followPrice_discount = this.followPrice*discount/100;
+        this.adultPrice_discount = (this.adultPrice*discount/100).toFixed();
+        this.childPrice_discount = (this.childPrice*discount/100).toFixed();
+        this.womenPrice_discount = (this.womenPrice*discount/100).toFixed();
+        this.followPrice_discount = (this.followPrice*discount/100).toFixed();
     }
     /**
      * 查询产品详细信息，包含子表信息
