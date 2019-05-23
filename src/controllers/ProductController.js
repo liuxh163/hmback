@@ -81,21 +81,23 @@ class ProductController {
 
         let product = await Product.find(params.id);
         // 获取产品折扣
-        let inParam = `?prdid=${product.id}&id=${ctx.state.user.id}`;
-        let prdDiscount = [];
-        try{
-            prdDiscount = await Axios.get(cardDiscountUrl+inParam, {headers: {'Content-Type': 'application/json'}});
-        }catch(err){
-            console.error(err)
-        }
         let discRate = 1;
-        if(prdDiscount.data.data.discountList){
-            console.debug("折扣数据获取成功");
-            for(var key in prdDiscount.data.data.discountList){
-                console.debug("产品-"+prdDiscount.data.data.discountList[key].prdid);
-                console.debug("折扣-"+prdDiscount.data.data.discountList[key].discount);
-                if(product.id == prdDiscount.data.data.discountList[key].prdid){
-                    discRate = prdDiscount.data.data.discountList[key].discount;
+        if(ctx.state.user){
+            let inParam = `?prdid=${product.id}&id=${ctx.state.user.id}`;
+            let prdDiscount = [];
+            try{
+                prdDiscount = await Axios.get(cardDiscountUrl+inParam, {headers: {'Content-Type': 'application/json'}});
+            }catch(err){
+                console.error(err)
+            }
+            if(prdDiscount.data.data.discountList){
+                console.debug("折扣数据获取成功");
+                for(var key in prdDiscount.data.data.discountList){
+                    console.debug("产品-"+prdDiscount.data.data.discountList[key].prdid);
+                    console.debug("折扣-"+prdDiscount.data.data.discountList[key].discount);
+                    if(product.id == prdDiscount.data.data.discountList[key].prdid){
+                        discRate = prdDiscount.data.data.discountList[key].discount;
+                    }
                 }
             }
         }
