@@ -17,6 +17,7 @@ if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
 require('dotenv').config();
 
 const couponUrl = process.env.HAIMA_BASE+"/haima/user/changeCouponStatus";
+const cardDiscountUrl = process.env.HAIMA_BASE+"/haima/user/getBCDiscount";
 const PREPAY_EXPIRE = process.env.ORDER_PRE_EXPIRE*1000;
 const POSTPAY_EXPIRE = process.env.ORDER_POST_EXPIRE*1000;
 const PREPAY_RATE = process.env.PREPAY_RATE;
@@ -742,7 +743,7 @@ class ProductTranscation{
             }
         }else{// 黑卡折扣计算
             // 获取产品折扣
-            let inParam = `?prdid=${product.id}&id=${ctx.state.user.id}`;
+            let inParam = `?prdid=${product.id}&id=${order.buyerId}`;
             let prdDiscount = [];
             try{
                 prdDiscount = await Axios.get(cardDiscountUrl+inParam, {headers: {'Content-Type': 'application/json'}});
