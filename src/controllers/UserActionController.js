@@ -167,7 +167,7 @@ class UserController {
 
         if(smsCode && smsCode == request.smscode ) {
             passed = true;
-            await redisdb.del(key)
+            // await redisdb.del(key)
         }
         return passed
     }
