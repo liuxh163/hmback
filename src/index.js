@@ -31,8 +31,10 @@ import updateRouter from './routes/update'
 import goodEstimateRouter from './routes/goodestimate'
 import olserviceRouter from './routes/olservice'
 import {startMQ} from './msgcenter/msgCenter'
+import eureka from './eureka/euraka'
+// import eurekaClient from './eureka/eureka'
 
-
+eureka.start();
 startMQ();
 
 console.log = function(logText){
@@ -48,6 +50,7 @@ console.debug = function(logText){
 }
 //Initialize app
 const app = new Koa()
+// eurekaClient.heartBeat(app);
 app.silent = true
 if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
 require('dotenv').config();
