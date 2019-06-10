@@ -25,36 +25,40 @@ class ProductController {
         //获取产品列表
 
         let result = await Product.all(query);
+
         let prdid = "";
         for(let i = 0 ; i < result.length ; ++i){
             prdid = prdid+result[i].id+ ",";
+            // 删掉儿童金额
+            delete result[i].childPrice;
+            delete result[i].childPrice_discount;
         }
-        let discMap = new Map();
-        if(prdid){
-            prdid=prdid.substring(0,prdid.length-1)+"";
-            let inParam = `?prdid=${prdid}&id=${ctx.state.user.id}`;
-            let prdDiscount = [];
-            try{
-                prdDiscount = await Axios.get(cardDiscountUrl+inParam, {headers: {'Content-Type': 'application/json'}});
-            }catch(err){
-                console.error(err)
-            }
-            if(prdDiscount.data.data.discountList){
-                console.debug("产品列表获取折扣数据成功");
-                for(var key in prdDiscount.data.data.discountList){
-                    discMap.set(prdDiscount.data.data.discountList[key].prdid,
-                        prdDiscount.data.data.discountList[key].discount);
+        // 如果存在查询用户，则根据用户及产品列表查询折扣信息
+        if(ctx.state.user){
+            let discMap = new Map();
+            if(prdid){
+                prdid=prdid.substring(0,prdid.length-1)+"";
+                let inParam = `?prdid=${prdid}&id=${ctx.state.user.id}`;
+                let prdDiscount = [];
+                try{
+                    prdDiscount = await Axios.get(cardDiscountUrl+inParam, {headers: {'Content-Type': 'application/json'}});
+                }catch(err){
+                    console.error(err)
+                }
+                if(prdDiscount.data.data.discountList){
+                    console.debug("产品列表获取折扣数据成功");
+                    for(var key in prdDiscount.data.data.discountList){
+                        discMap.set(prdDiscount.data.data.discountList[key].prdid,
+                            prdDiscount.data.data.discountList[key].discount);
+                    }
                 }
             }
+            for(let ii = 0 ; ii < result.length ; ++ii){
+                let discRate = discMap.get((result[ii].id).toString());
+                result[ii].computeDiscount(discRate);
+                result[ii].formatForClient();
+            };
         }
-        for(let ii = 0 ; ii < result.length ; ++ii){
-            let discRate = discMap.get((result[ii].id).toString());
-            result[ii].computeDiscount(discRate);
-            result[ii].formatForClient();
-            // 删掉儿童金额
-            delete result[ii].childPrice;
-            delete result[ii].childPrice_discount;
-        };
         
         ctx.body = {products:result}
 
@@ -92,14 +96,14 @@ class ProductController {
             }catch(err){
                 console.error(err)
             }
-            // if(prdDiscount.data.data.discountList){
-            //     console.debug("折扣数据获取成功");
-            //     for(var key in prdDiscount.data.data.discountList){
-            //         if(product.id == prdDiscount.data.data.discountList[key].prdid){
-            //             discRate = prdDiscount.data.data.discountList[key].discount;
-            //         }
-            //     }
-            // }
+            if(prdDiscount.data.data.discountList){
+                console.debug("折扣数据获取成功");
+                for(var key in prdDiscount.data.data.discountList){
+                    if(product.id == prdDiscount.data.data.discountList[key].prdid){
+                        discRate = prdDiscount.data.data.discountList[key].discount;
+                    }
+                }
+            }
         }
         product.computeDiscount(discRate);
 

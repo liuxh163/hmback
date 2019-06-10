@@ -2,13 +2,15 @@ import Router from 'koa-router'
 import RdsToken from '../middleware/rdsToken'
 
 import PostController from '../controllers/PostController'
+import WeakToken from '../middleware/weakToken'
 
-const router = new Router()
-const tokenMw = RdsToken()
+const router = new Router();
+const tokenMw = RdsToken();
+const weakMW = WeakToken();
 
 const postController = new PostController()
 // 获取指定话题下所有帖子
-router.get('/api/v1/topics/:id/posts', tokenMw, async (ctx, next) => {
+router.get('/api/v1/topics/:id/posts', weakMW, async (ctx, next) => {
     await postController.index(ctx)
 })
 // 在指定话题下发帖
