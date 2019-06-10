@@ -12,7 +12,7 @@ const productController = new ProductController()
 // 获取指定国家产品，支持不同排序方法，支持分页
 router.get('/api/v1/products', tokenMw, async (ctx, next) => {
     await productController.index(ctx)
-})
+});
 router.get('/api/v2/productsWithAttendants', tokenMw,adminMw,async (ctx, next) => {
     await productController.indexWithAttendants(ctx)
 })

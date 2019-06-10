@@ -172,7 +172,7 @@ class Product {
         await this.fillExperts();
         await this.fillH5();
         await this.fillPictures();
-        await this.fillHospital();
+        // await this.fillHospital();
         await this.fillAttendants();
     }
     /**
@@ -184,7 +184,7 @@ class Product {
         await this.fillExperts();
         await this.fillH5();
         await this.fillPictures();
-        await this.fillHospital();
+        // await this.fillHospital();
     }
     formatForClient(){
         this.adultPrice = (this.adultPrice/100).toFixed();
