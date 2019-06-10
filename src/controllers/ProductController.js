@@ -92,14 +92,14 @@ class ProductController {
             }catch(err){
                 console.error(err)
             }
-            if(prdDiscount.data.data.discountList){
-                console.debug("折扣数据获取成功");
-                for(var key in prdDiscount.data.data.discountList){
-                    if(product.id == prdDiscount.data.data.discountList[key].prdid){
-                        discRate = prdDiscount.data.data.discountList[key].discount;
-                    }
-                }
-            }
+            // if(prdDiscount.data.data.discountList){
+            //     console.debug("折扣数据获取成功");
+            //     for(var key in prdDiscount.data.data.discountList){
+            //         if(product.id == prdDiscount.data.data.discountList[key].prdid){
+            //             discRate = prdDiscount.data.data.discountList[key].discount;
+            //         }
+            //     }
+            // }
         }
         product.computeDiscount(discRate);
 

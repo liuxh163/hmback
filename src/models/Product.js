@@ -169,7 +169,7 @@ class Product {
         await this.fillThumbsAndCommentsNum();
         await this.fillTags();
         await this.fillOperations();
-        await this.fillExperts();
+        // await this.fillExperts();
         await this.fillH5();
         await this.fillPictures();
         // await this.fillHospital();
@@ -181,7 +181,7 @@ class Product {
     async fillSelf(){
         await this.fillTags();
         await this.fillOperations();
-        await this.fillExperts();
+        // await this.fillExperts();
         await this.fillH5();
         await this.fillPictures();
         // await this.fillHospital();
