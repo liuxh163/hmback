@@ -28,7 +28,9 @@ class PostController {
                 result[i].iconPath = tmp.iconPath;
                 let date = new Date(result[i].createdAt);
                 result[i].createdAt = dateFormat(date, 'YYYY-MM-DD HH:mm:ss');
-                result[i].isLike = await isLike(ctx.state.user.id,'02',result[i].id);
+                if(ctx.state.user){
+                    result[i].isLike = await isLike(ctx.state.user.id,'02',result[i].id);
+                }
             }
             ctx.body = {posts:result}
         } catch (error) {

@@ -18,7 +18,7 @@ router.post('/api/v1/topics/:id/posts', tokenMw, async (ctx, next) => {
     await postController.create(ctx)
 })
 // 查询指定帖子的详细信息，每次查询阅读数加1
-router.get('/api/v1/posts/:id', tokenMw, async (ctx, next) => {
+router.get('/api/v1/posts/:id', weakMW, async (ctx, next) => {
     await postController.show(ctx)
 })
 // 更新指定帖子

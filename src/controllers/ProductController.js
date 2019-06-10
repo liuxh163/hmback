@@ -26,15 +26,13 @@ class ProductController {
 
         let result = await Product.all(query);
 
-        let prdid = "";
-        for(let i = 0 ; i < result.length ; ++i){
-            prdid = prdid+result[i].id+ ",";
-            // 删掉儿童金额
-            delete result[i].childPrice;
-            delete result[i].childPrice_discount;
-        }
+        
         // 如果存在查询用户，则根据用户及产品列表查询折扣信息
         if(ctx.state.user){
+            let prdid = "";
+            for(let i = 0 ; i < result.length ; ++i){
+                prdid = prdid+result[i].id+ ",";
+            }
             let discMap = new Map();
             if(prdid){
                 prdid=prdid.substring(0,prdid.length-1)+"";
@@ -56,8 +54,14 @@ class ProductController {
             for(let ii = 0 ; ii < result.length ; ++ii){
                 let discRate = discMap.get((result[ii].id).toString());
                 result[ii].computeDiscount(discRate);
-                result[ii].formatForClient();
+                
             };
+        }
+        for(let a = 0 ; a < result.length ; ++a){
+            // 删掉儿童金额
+            delete result[a].childPrice;
+            delete result[a].childPrice_discount;
+            result[a].formatForClient();
         }
         
         ctx.body = {products:result}
