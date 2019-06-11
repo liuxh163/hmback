@@ -1,10 +1,12 @@
 import Router from 'koa-router'
-import RdsToken from '../middleware/rdsToken'
+import RdsToken from '../middleware/rdsToken';
+import WeakToken from '../middleware/weakToken'
 
 import UserActionController from '../controllers/UserActionController'
 
-const router = new Router()
-const tokenMw = RdsToken()
+const router = new Router();
+const tokenMw = RdsToken();
+const weakMW = WeakToken();
 
 router.get('/', async (ctx, next, opt) => {
     ctx.body = { message: 'Hi there. ' + process.env.npm_package_version}
@@ -17,6 +19,15 @@ const userActionController = new UserActionController()
 router.put('/api/v1/user/login', async (ctx, next) => {
     await userActionController.login(ctx)
 })
+// 匿名用户登录
+router.get('/api/v1/user/anoyLogin', async (ctx, next) => {
+    await userActionController.anoyLogin(ctx)
+});
+// 匿名用户注册
+router.post('/api/v1/user/anoyRegister', weakMW, async (ctx, next) => {
+    await userActionController.update(ctx)
+})
+
 // 用户信息修改
 router.put('/api/v1/users', tokenMw, async (ctx, next) => {
     await userActionController.update(ctx)

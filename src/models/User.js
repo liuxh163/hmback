@@ -23,7 +23,8 @@ class User {
         this.gender = data.gender;
         this.ipAddress = data.ipAddress;
         this.address = data.address;
-        this.loginCount = data.loginCount
+        this.loginCount = data.loginCount;
+        this.deviceId = data.deviceId;
 
         this.hmCoins = data.hmCoins;
         this.operator = data.operator
@@ -93,6 +94,18 @@ class User {
             throw new Error('ERROR')
         }
     }
+
+    async findDevice(dId, type="01") {
+        try {
+            let result = await findByDevice(dId,type)
+            if (!result) return {}
+            this.constructor(result)
+        } catch (error) {
+            console.error(error)
+            throw new Error('ERROR')
+        }
+    }
+    
     /**
      * 增加用户类型参数，默认普通用户，支持新建管理员
      * @param {用户类型} type 
@@ -132,7 +145,7 @@ async function findById(id,type="01") {
 async function findByPhone(telephone, type="01") {
     try {
         const [result] = await db('t_hm101_users')
-            .select('id','telephone','userName','type','password','iconPath')
+            .select('id','telephone','userName','type','password','iconPath','deviceId')
             .where({ telephone: telephone, status: '01', type: type })
         return result
     } catch (error) {
@@ -140,4 +153,16 @@ async function findByPhone(telephone, type="01") {
         throw new Error('ERROR')
     }
 }
-export { User, findById, findByPhone }
+async function findByDevice(dId, type="01") {
+    try {
+        const [result] = await db('t_hm101_users')
+            .select('id','telephone','userName','type','password','iconPath','deviceId')
+            .where({ deviceId: dId, status: '01', type: type })
+            .whereNull('telephone');
+        return result
+    } catch (error) {
+        console.error(error)
+        throw new Error('ERROR')
+    }
+}
+export { User, findById, findByPhone, findByDevice }

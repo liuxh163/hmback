@@ -1,12 +1,10 @@
 import rand from 'randexp';
 import dateFormat from 'date-fns/format';
 
-import { User,findById } from '../models/User'
-import {getThumbNumAndCommentNumForUser} from '../models/Post'
-import {Order} from '../models/Order'
-import redisdb from '../db/redis'
-import { isIterable } from 'core-js';
-import IntervalLock from '../lock/intervallock'
+import { User,findById } from '../models/User';
+import {getThumbNumAndCommentNumForUser} from '../models/Post';
+import {Order} from '../models/Order';
+import IntervalLock from '../lock/intervallock';
 if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
 require('dotenv').config();
 
@@ -46,7 +44,7 @@ class UserController {
             request.type = '01';
             delete request.smscode
             
-            user = new User(request);
+            user = new User();
             user.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss');
             user.operator = '1';
             try {
@@ -97,6 +95,69 @@ class UserController {
             // 返回用户token以及用户id
             ctx.body = {accessToken: token, uid: user.id}
         }
+    }
+    //用户登录/注册操作
+    async anoyLogin(ctx, returnUser=false) {
+        const request = ctx.request.body;
+        
+        request.deviceId = ctx.header.deviceid;
+        if(!request.deviceId){
+            ctx.throw(401, 'ANONYUSER_NO_DEVICEID_ERROR')
+        }
+
+        let user = new User();
+        await user.findDevice(request.deviceId);
+        if(!user.id){//数据库中没有该用户，需要重新创建用户
+            request.userName = "游客"+new rand(/[0-9]{6}/).gen();
+            request.loginId = new rand(/[0-9]{9}/).gen();
+            request.ipAddress = ctx.request.ip
+            request.type = '01'; 
+            request.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss');
+            request.operator = '1';
+
+            user = new User(request);
+            try {
+                let userid = await user.store();
+                user.id = userid[0];
+                user.iconPath = "";
+                user.telephone = "";
+            } catch (error) {
+                ctx.throw(400, 'INVALID_DATA_IN_INSERT')
+            }
+        }
+        // 如果已有用户则根据手机号判断用户是否已经登录
+        let logined = false;
+        try {
+            await ctx.redisdb.get(user.deviceId).then(function (result){
+                // 用户已经登录
+                if(result){logined = true}
+            })
+
+        } catch (error) {
+            ctx.throw(401, 'AUTHENTICATION_ERROR')
+        }
+        if(logined){
+            // token续期
+            ctx.redisdb.expire(user.deviceId, token_expire)
+        }else{
+            //已有用户但未登录redis
+            console.debug("before="+Object.keys(user))
+            Object.keys(user).forEach(function(param){
+                if('id' != param && 'telephone' != param && 'type' != param 
+                    && 'userName' != param && 'iconPath' != param
+                    && 'deviceId' != param){
+                    delete user[param];
+                }
+            });
+            console.debug("after="+Object.keys(user))
+            // 设置redis双向绑定
+            ctx.redisdb.set(user.deviceId, JSON.stringify(user), 'EX', token_expire);     
+        }
+        // 返回用户deviceId以及用户id
+        if(!returnUser){
+            ctx.body = {device: user.deviceId, uid: user.id};
+        }
+        return user;
     }
 
     // 禁用用户

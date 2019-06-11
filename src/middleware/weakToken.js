@@ -1,4 +1,5 @@
-import { Codes } from '../models/Codes'
+import { Codes } from '../models/Codes';
+import UserController from '../controllers/UserActionController';
 
 if (!process.env.NODE_ENV) { throw new Error('NODE_ENV not set') };
 require('dotenv').config();
@@ -8,16 +9,30 @@ module.exports = (opts = {}) => {
     const middleware = async function rdsToken(ctx, next) {
         //Grab the token
         const token = getToken(ctx);
-        if(!token){
+        const deviceId = getDeviceId(ctx);
+
+        if(!token && !deviceId){
+            console.debug("token and deviceid are null");
             return await next();
         }
+        console.debug("token and deviceid are not null");
         try {
-            await ctx.redisdb.get(token).then(function (result){
-                if(result){
-                    ctx.state.user = JSON.parse(result);
+            if(token){
+                await ctx.redisdb.get(token).then(function (result){
+                    if(result){
+                        ctx.state.user = JSON.parse(result);
+                    }
+                });
+            }else{
+                await ctx.redisdb.get(deviceId).then(function (result){
+                    if(result){ ctx.state.user = JSON.parse(result); }
+                });
+                if(!ctx.state.user){
+                    const userCtrl = new UserController();
+                    ctx.state.user = await userCtrl.anoyLogin(ctx, true);
                 }
-            });
-
+            }
+            
             // 代码表保存至redis缓存中，长期有效
             let codeFlag = false;
             await ctx.redisdb.get('codes').then(function (result){
@@ -45,10 +60,17 @@ module.exports = (opts = {}) => {
             // 根据token从redis缓存中读取用户信息保存在上下文中
             if(ctx.state.user){
                 var expiration = process.env.TOKEN_EXPIRATION_TIME;
-                // token访问后续期
-                await ctx.redisdb.expire(token, expiration)
-                await ctx.redisdb.expire('login-'+ctx.state.user.telephone, expiration)
-                return next()
+                if(token){
+                    // token访问后续期
+                    await ctx.redisdb.expire(token, expiration);
+                    await ctx.redisdb.expire('login-'+ctx.state.user.telephone, expiration);
+                    return next();
+                }else{
+                    // token访问后续期
+                    await ctx.redisdb.expire(deviceId, expiration);
+                    return next();
+                }
+                
             }
 
             
@@ -71,6 +93,15 @@ module.exports = (opts = {}) => {
             return ctx.header.hmtoken;
         }
         return null;
+    }
+    function getDeviceId(ctx) {
+        if (!ctx.header || !ctx.header.deviceid) {
+            return
+        }
+        if(ctx.header.deviceid){
+            return ctx.header.deviceid;
+        }
+        return ctx.throw(401, 'AUTHENTICATION_ERROR')
     }
 
     return middleware
