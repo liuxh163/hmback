@@ -44,7 +44,7 @@ class UserController {
             request.type = '01';
             delete request.smscode
             
-            user = new User();
+            user = new User(request);
             user.updatedAt = dateFormat(new Date(), 'YYYY-MM-DD HH:mm:ss');
             user.operator = '1';
             try {
