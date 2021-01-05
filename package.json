@@ -20,7 +20,7 @@
     "@sendgrid/mail": "6.2.1",
     "ali-oss": "^6.0.2",
     "amqplib": "",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "bcrypt": "^2.0.1",
     "date-fns": "^1.29.0",
     "dotenv": "^6.0.0",
