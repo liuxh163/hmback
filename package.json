@@ -39,7 +39,7 @@
     "koa-useragent": "^1.1.0",
     "koa-xml-body": "",
     "koa2-cors": "^2.0.6",
-    "log4js": "^2.8.0",
+    "log4js": "^6.4.0",
     "mysql": "^2.15.0",
     "node-pinyin": "^0.2.3",
     "npm": "^6.1.0",
